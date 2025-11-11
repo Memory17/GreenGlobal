@@ -1,195 +1,297 @@
-/* CONTACT PAGE STYLES */
+/* --- Imports --- */
+/* (Tùy chọn) Thêm một font chữ hiện đại từ Google Fonts */
+/* @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap'); */
 
-/* Container tổng thể */
+/* --- Biến CSS (Nếu bạn muốn) --- */
+:root {
+  --primary-color: #0f172a; /* slate-900 */
+  --primary-color-hover: #1e293b; /* slate-800 */
+  --card-bg: #ffffff;
+  --page-bg: linear-gradient(135deg, #f8fafc, #f1f5f9); /* slate-50 to slate-100 */
+  --text-dark: #1e293b;
+  --text-light: #475569;
+  --text-accent: #f8fafc;
+  --border-color: #e2e8f0; /* slate-200 */
+}
+
+/* --- Tổng thể trang --- */
+.contact-page-wrapper {
+  /* font-family: 'Inter', sans-serif; */ /* Bỏ comment nếu bạn import font */
+  background: var(--page-bg);
+  min-height: 100vh;
+  padding: 4rem 1rem;
+  overflow: hidden; /* Ngăn các hiệu ứng animation tràn ra ngoài */
+}
+
 .contact-container {
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 28px 12px;
 }
 
-/* Banner Liên hệ */
-.contact-banner {
-  width: 100vw;
-  margin-left: calc(-50vw + 50%);
-  background: linear-gradient(180deg, #fff9fb 0%, #f4f6ff 60%);
-  padding: 56px 20px 44px;
+/* --- Tiêu đề (Header) --- */
+.contact-header {
   text-align: center;
-  border-bottom-left-radius: 18px;
-  border-bottom-right-radius: 18px;
-  box-shadow: 0 8px 30px rgba(2, 6, 23, 0.04);
+  margin-bottom: 4rem;
+  animation: fadeInDown 0.8s ease-out;
 }
 
-.contact-banner-content {
-  max-width: 1180px;
-  margin: 0 auto;
-  position: relative;
-}
-
-.contact-banner-title {
-  margin-bottom: 8px;
-  color: #0f1724;
+.contact-header h1 {
+  font-size: 3.75rem; /* 60px */
   font-weight: 800;
-  font-size: 28px;
+  margin-bottom: 1rem;
+  letter-spacing: -0.025em;
+  /* Hiệu ứng Gradient cho văn bản */
+  background: linear-gradient(135deg, var(--primary-color), var(--text-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
 }
 
-/* Breadcrumb (nếu sử dụng) */
-.contact-banner .ant-breadcrumb {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(255, 255, 255, 0.75);
-  padding: 8px 12px;
-  border-radius: 999px;
-  box-shadow: 0 6px 18px rgba(2, 6, 23, 0.03);
-  margin-top: 12px;
+.contact-header p {
+  font-size: 1.125rem; /* 18px */
+  color: var(--text-light);
+  max-width: 60rem;
+  margin: 0 auto;
 }
 
-.contact-banner .ant-breadcrumb a,
-.contact-banner .ant-breadcrumb span {
-  color: #374151;
+/* --- Bố cục chính --- */
+.contact-main-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
 }
 
-/* Thông tin liên hệ */
-.contact-info {
-  background: transparent;
+@media (min-width: 1024px) {
+  .contact-main-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
-.contact-info .contact-info-item {
+/* --- Thẻ (Card) Chung --- */
+.contact-card {
+  background: var(--card-bg);
+  border-radius: 1.5rem; /* 24px */
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+  border: 1px solid var(--border-color);
+  padding: 3rem;
+  transition: all 0.3s ease-in-out;
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.contact-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+.contact-card h2 {
+  font-size: 1.5rem; /* 24px */
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 2rem;
+}
+
+/* --- Form (Bên Trái) --- */
+.contact-form .space-y-6 > * + * {
+  margin-top: 1.5rem;
+}
+.contact-form .space-y-2 > * + * {
+  margin-top: 0.5rem;
+}
+
+.contact-form label {
+  font-weight: 600;
+  color: var(--text-light);
+}
+
+/* Tinh chỉnh Ant Design Inputs */
+.contact-form .ant-input-lg,
+.contact-form .ant-input-affix-wrapper-lg,
+.contact-form .ant-input-textarea-lg textarea {
+  font-size: 1rem;
+  border-radius: 0.5rem !important; /* 8px */
+  border: 1px solid #cbd5e1;
+}
+
+/* Hiệu ứng Focus siêu đỉnh */
+.contact-form .ant-input-affix-wrapper:focus-within,
+.contact-form .ant-input-affix-wrapper-focused,
+.contact-form .ant-input:focus,
+.contact-form .ant-input-textarea-affix-wrapper:focus-within {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.2) !important;
+}
+
+/* Nút Gửi (Submit) */
+.contact-submit-btn {
+  background: var(--primary-color) !important;
+  border: none !important;
+  padding: 26px 0 !important; /* Làm nút cao hơn */
+  height: auto !important;
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+  border-radius: 0.5rem !important;
+  transition: all 0.3s ease;
+  line-height: 1;
+}
+
+.contact-submit-btn:not([disabled]):hover {
+  background: var(--primary-color-hover) !important;
+  transform: scale(1.02);
+  box-shadow: 0 4px 15px rgba(15, 23, 42, 0.3);
+}
+
+.ant-btn-primary[disabled] {
+  background-color: #94a3b8 !important;
+  color: #e2e8f0 !important;
+}
+
+/* --- Thông tin (Bên Phải) --- */
+.contact-info-column > * + * {
+  margin-top: 2rem;
+}
+
+/* Thẻ Thông tin liên hệ */
+.contact-info-item {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 0;
-  color: #374151;
+  align-items: flex-start;
+  gap: 1rem;
 }
 
-.info-icon {
-  color: #10b981; /* emerald */
-  font-size: 20px;
-  background: rgba(16, 185, 129, 0.08);
-  padding: 8px;
-  border-radius: 8px;
+.contact-info-item-icon-wrapper {
+  flex-shrink: 0;
+  width: 3rem;  /* 48px */
+  height: 3rem; /* 48px */
+  background-color: #f1f5f9; /* slate-100 */
+  border-radius: 0.75rem; /* 12px */
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.3s ease;
 }
 
-.contact-info-title {
-  margin-left: 10px;
-  color: #777;
-  font-size: 14px;
+.contact-info-item-icon-wrapper .anticon {
+  font-size: 1.25rem; /* 20px */
+  color: var(--text-light);
+  transition: all 0.3s ease;
 }
 
-/* CÂN ĐỐI FORM LIÊN HỆ - BỔ SUNG VÀO CONTACT.CSS */
-
-/* 1. Điều chỉnh padding bên trong thẻ Card chứa Form */
-.contact-card {
-  padding: 30px 30px; /* Tăng padding để form có không gian thở (breathing room) */
-  /* Giữ nguyên các thuộc tính box-shadow và border-radius */
+.contact-info-item:hover .contact-info-item-icon-wrapper {
+  background-color: var(--primary-color);
 }
 
-/* Tiêu đề Form */
-.contact-card .ant-typography.ant-typography-h3 {
-  /* Title level 3: Send Us a Message */
-  margin-bottom: 25px; /* Tăng khoảng cách dưới tiêu đề */
-  font-weight: 700;
-  color: #0f1724;
+.contact-info-item:hover .anticon {
+  color: white;
+  transform: scale(1.1);
 }
 
-/* Khoảng cách giữa các trường Form (Form.Item) */
-.contact-card .ant-form-item {
-  margin-bottom: 22px; /* Tăng khoảng cách giữa các Form.Item */
+.contact-info-item-content h3 {
+  font-size: 0.875rem; /* 14px */
+  font-weight: 600;
+  color: #64748b; /* slate-500 */
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
 }
 
-/* Label (nhãn) của Form */
-.ant-form-item-label > label {
-  font-weight: 600; /* Nhấn mạnh label hơn */
-  font-size: 14px;
-  color: #1f2937;
+.contact-info-item-content p,
+.contact-info-item-content a {
+  color: var(--text-dark);
+  font-size: 1rem;
+  white-space: pre-line;
+  transition: color 0.3s ease;
 }
 
-/* 2. Chiều cao và style cho Input */
-.contact-card .ant-input,
-.contact-card .ant-input-textarea {
-  height: 44px; /* Tăng chiều cao Input lên 44px */
-  padding: 0 14px; /* Căn chỉnh padding ngang */
-  font-size: 15px;
+.contact-info-item-content a:hover {
+  color: var(--primary-color-hover);
 }
 
-/* CONTACT.CSS - Phần điều chỉnh TextArea */
-
-.input-text-message{
-    height: 80px !important;
-}
-.contact-card .ant-input-textarea {
-  height: auto !important; 
-  /* Tăng chiều cao tối thiểu cho ô nhập liệu dài */
-  min-height: 220px !important; /* TĂNG CHIỀU CAO TỐI THIỂU */
-  padding-top: 10px; 
-  padding-bottom: 10px; 
+/* Thẻ Mạng Xã Hội */
+.contact-social-card {
+  background: var(--primary-color) !important;
+  border-color: #334155 !important;
 }
 
-/* Placeholder text */
-.ant-input::placeholder,
-.ant-input-textarea::placeholder {
-    color: #9ca3af; /* Làm cho placeholder nhẹ nhàng hơn */
+.contact-social-card h2,
+.contact-social-card p {
+  color: var(--text-accent);
 }
 
-/* 3. Điều chỉnh Nút Gửi */
-.contact-card .ant-btn-primary {
-  height: 50px; /* Tăng chiều cao nút */
-  font-size: 16px;
-  /* Giữ nguyên các thuộc tính gradient và shadow */
+.contact-social-card p {
+  color: #cbd5e1; /* slate-300 */
+  margin-bottom: 2rem;
 }
 
-/* Vùng chứa nút */
-.contact-card .ant-form-item:last-child {
-    margin-bottom: 0; /* Loại bỏ margin dưới cùng nếu đó là Form.Item cuối cùng (nút) */
-}
-
-/* CONTACT.CSS - Cập nhật cho Map Card để làm nổi bật border */
-
-.map-card {
-  background: #fff;
-  border-radius: 14px;
-  
-  /* CẢI THIỆN ĐỘ NỔI BẬT */
-  /* 1. Thêm đường viền mỏng nhưng rõ ràng */
-  border: 1px solid #d1d5db; 
-
-  /* 2. Tăng cường box-shadow để map trông "nổi" hơn */
-  box-shadow: 0 15px 50px rgba(2, 6, 23, 0.1); /* Đổ bóng sâu hơn so với 0.06 */
-  
-  overflow: hidden;
-  height: 100%;
+.contact-social-links {
   display: flex;
-  flex-direction: column;
-  padding: 0;
-  /* Giữ các thuộc tính khác như cũ */
+  gap: 1rem;
 }
 
-.map-card .map-container {
-  padding: 0;
-  flex: 1 1 auto;
-  display: block;
+.contact-social-links a {
+  width: 3rem;
+  height: 3rem;
+  background-color: #334155; /* slate-700 */
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
 }
 
-/* iframe Bản đồ */
-.map-card .map-container iframe {
-  display: block;
-  width: 100%;
-  height: 100%; /* fill the map-card */
-  min-height: 420px; /* ensure a sensible minimum */
-  margin: 0; /* remove previous 20px bottom margin */
-  border: 0;
+.contact-social-links a .anticon {
+  font-size: 1.25rem;
+  color: white;
 }
 
-/* Responsive cho Bản đồ */
-@media (max-width: 768px) {
-  .map-container iframe {
-    height: 340px;
+.contact-social-links a:hover {
+  background-color: #475569; /* slate-600 */
+  transform: translateY(-5px) scale(1.1);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+}
+
+/* Thẻ Giờ Làm Việc */
+.contact-hours-card {
+  background: linear-gradient(135deg, #f1f5f9, #e2e8f0); /* slate-100 to slate-200 */
+}
+
+.contact-hours-card h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 1rem;
+}
+.contact-hours-card .space-y-2 > * + * {
+  margin-top: 0.75rem;
+}
+.contact-hours-card p {
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-light);
+}
+.contact-hours-card p span:first-child {
+  font-weight: 500;
+}
+
+
+/* Hiệu ứng Animation (Fade In) */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
   }
-  .map-card .map-container iframe {
-    height: 340px;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

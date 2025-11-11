@@ -1,0 +1,422 @@
+/* src/style/Header.css */
+
+/* --- Biến CSS (Variables) để dễ dàng thay đổi giao diện --- */
+:root {
+  --primary-color: #1677ff; /* Màu xanh dương mặc định của Antd */
+  --primary-hover-color: #4096ff;
+  --header-bg: #ffffff;
+  --header-text-color: #333;
+  --header-border-color: #f0f0f0;
+  --header-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Giữ shadow cũ của bạn */
+  --header-height: 68px; /* Chiều cao header cũ của bạn */
+}
+
+/*
+ * ===================================================================
+ * 1. MAIN HEADER CONTAINER (Giữ nguyên của bạn)
+ * ===================================================================
+ */
+.ant-layout-header {
+  display: flex;
+  align-items: center;
+  background: var(--header-bg) !important;
+  padding: 0 40px; /* Padding ngang cho desktop */
+  height: var(--header-height) !important;
+  line-height: normal !important; /* Reset line-height */
+  
+  /* Hiệu ứng "hiện đại" */
+  position: sticky !important;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+  box-shadow: var(--header-shadow) !important;
+  transition: all 0.3s ease;
+}
+
+/*
+ * ===================================================================
+ * 2. LOGO (Giữ nguyên của bạn)
+ * ===================================================================
+ */
+.header-logo {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: transform 0.3s ease;
+  flex-shrink: 0; /* Ngăn logo bị co lại */
+}
+
+.header-logo:hover {
+  transform: scale(1.05);
+}
+
+.header-logo img {
+  height: 45px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+/*
+ * ===================================================================
+ * 3. DESKTOP - NAVIGATION MENU (Giữ nguyên của bạn)
+ * ===================================================================
+ */
+.desktop-menu-container {
+  flex: 1;
+  display: flex;
+  justify-content: flex-start; /* Căn giữa menu (hoặc flex-start nếu bạn muốn) */
+  margin-left: -100px;
+}
+
+/* Layout menu (giữ của bạn) */
+.desktop-menu-container .ant-menu {
+  border-bottom: none !important;
+  background: transparent !important;
+  line-height: calc(var(--header-height) - 4px) !important; /* Căn giữa theo chiều cao */
+  width: auto; 
+}
+
+/* Style menu item (Giữ nguyên của bạn) */
+.desktop-menu-container .ant-menu-item {
+  font-size: 16px;
+  font-weight: 500; 
+  color: var(--header-text-color) !important;
+  transition: all 0.3s ease;
+  border-top: 3px solid transparent; 
+  border-bottom: 3px solid transparent !important; 
+  margin-top: -1px; 
+}
+
+/* Hiệu ứng khi di chuột và khi được chọn (Giữ nguyên của bạn) */
+.desktop-menu-container .ant-menu-item:hover {
+  color: var(--primary-color) !important;
+  border-bottom-color: var(--primary-hover-color) !important;
+}
+
+.desktop-menu-container .ant-menu-item-selected {
+  color: var(--primary-color) !important;
+  border-bottom-color: var(--primary-color) !important;
+}
+
+/* Xóa pseudo-element :after mặc định (Giữ nguyên của bạn) */
+.desktop-menu-container .ant-menu-item::after,
+.desktop-menu-container .ant-menu-item-selected::after {
+  border-bottom: none !important;
+}
+
+
+/*
+ * ===================================================================
+ * 4. DESKTOP - CATEGORIES FULL WIDTH DROPDOWN (Giữ nguyên của bạn)
+ * ===================================================================
+ */
+
+/* Keyframes (Giữ của bạn) */
+@keyframes categoriesDropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Wrapper (Giữ của bạn) */
+.desktop-categories-dropdown {
+  display: block;
+  position: absolute; 
+  top: var(--header-height); /* Ngay bên dưới header */
+  left: 0;
+  width: 100%;
+  z-index: 99; 
+}
+
+/* Style cho nội dung dropdown (Giữ nguyên của bạn) */
+.categories-full-width-dropdown {
+  background: var(--header-bg);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-top: 1px solid var(--header-border-color);
+  animation: categoriesDropdownFadeIn 0.3s ease-out;
+}
+
+
+/*
+ * ===================================================================
+ * 5. DESKTOP - HEADER RIGHT (Giữ nguyên của bạn)
+ * ===================================================================
+ */
+.header-right-desktop {
+  display: flex;
+  align-items: center;
+  gap: 24px; /* Khoảng cách "hiện đại" */
+  flex-shrink: 0; /* Ngăn bị co lại */
+  margin-left: auto;
+}
+
+/*
+* ===================================================================
+* 5.5. [ĐÃ THAY THẾ] - STYLE "UI SIÊU ĐỈNH" CHO THANH TÌM KIẾM
+* (Áp dụng cho .header-search trên Desktop VÀ .drawer-search trên Mobile)
+* ===================================================================
+*/
+
+/* Giữ lại style cho wrapper AutoComplete trên desktop */
+.header-right-desktop .ant-autocomplete {
+  /* Tăng độ rộng để chứa thanh search "viên thuốc" mới */
+  width: 250px !important; 
+}
+  
+/* * 1. Định hình Wrapper chính (Lớp vỏ)
+ * Sử dụng selector của bạn:
+ * - .header-search (trên desktop)
+ * - .drawer-search (trên mobile)
+ */
+.header-search.ant-input-search,
+.drawer-search.ant-input-search {
+  width: 100%; /* Lấp đầy 250px của AutoComplete parent */
+  border-radius: 50px; /* Bo tròn tối đa -> hình viên thuốc */
+  background: #f4f7f9;  /* Một màu nền xám rất nhạt, sạch sẽ */
+  border: 1px solid  white; /* Border ẩn, sẽ hiện khi focus */
+  overflow: hidden; /* Rất quan trọng: để bo góc cả nút search bên trong */
+  
+  /* Hiệu ứng chuyển động mượt mà cho border và bóng đổ */
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  
+  /* Một chút bóng đổ tinh tế để tạo độ sâu */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+/* * 2. Hiệu ứng "Siêu Đỉnh" khi Focus (Bấm vào)
+ * Áp dụng cho cả hai thanh search
+ */
+.header-search:focus-within,
+.drawer-search:focus-within {
+  transform: translateX(-80px);
+
+  width: 310px !important;
+  background: #ffffff; /* Chuyển nền sang trắng khi gõ */
+  border-color: #1677ff; /* Màu xanh chủ đạo của Antd */
+  border-radius: 50px;
+  
+  /* Hiệu ứng "phát sáng" (glow) hiện đại và bắt mắt */
+  box-shadow: 0 4px 12px rgba(22, 119, 255, 0.2);
+}
+
+/* * 3. Tùy chỉnh ô Input bên trong
+ * Áp dụng cho cả hai thanh search
+ */
+.header-search .ant-input,
+.drawer-search .ant-input {
+  border-radius: 50px; /* Bo tròn tối đa */
+  background: transparent !important; /* Nền trong suốt */
+  border: none !important; /* Tắt border của input */
+  box-shadow: none !important; /* Tắt bóng đổ của input */
+  font-size: 15px; /* Tăng nhẹ cỡ chữ */
+  color: #333;
+  padding-left: 16px; /* Tăng khoảng cách lề trái */
+  
+  /* Fix lỗi outline/border khi focus của Antd */
+  &:focus, &:hover {
+     border-color: transparent !important;
+     box-shadow: none !important;
+  }
+}
+
+/* Tùy chỉnh chữ placeholder (mờ) cho cả hai */
+.header-search .ant-input::placeholder,
+.drawer-search .ant-input::placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+/* * 4. Tùy chỉnh Nút Search (Icon)
+ * Áp dụng cho cả hai thanh search
+ */
+.header-search .ant-input-search-button,
+.drawer-search .ant-input-search-button {
+  border: none !important;
+  background: #1677ff; /* Màu xanh chủ đạo, nổi bật */
+  
+  /* Bo góc phải theo hình viên thuốc */
+  border-radius: 0 50px 50px 0 !important; 
+  
+  color: white !important; /* Màu icon trắng */
+  font-size: 16px !important; /* Tăng nhẹ cỡ icon (thêm !important) */
+  width: 50px; /* Tăng độ rộng của nút */
+  
+  /* Hiệu ứng mượt mà cho nút */
+  transition: all 0.3s ease;
+}
+
+/* Hiệu ứng hover cho nút Search (bắt mắt) cho cả hai */
+.header-search .ant-input-search-button:hover,
+.drawer-search .ant-input-search-button:hover {
+  background: #0958d9 !important; /* Đậm hơn (thêm !important để ghi đè) */
+  
+  /* Phóng to nhẹ, tạo cảm giác tương tác "nảy" */
+  transform: scale(1.05); 
+}
+
+
+/*
+* ===================================================================
+* 5.6. [ĐÃ THAY THẾ] - DESKTOP - SEARCH AUTOCOMPLETE DROPDOWN
+* ===================================================================
+*/
+/* Class này được set trong `popupClassName` của AutoComplete */
+.search-autocomplete-popup .ant-select-item {
+  padding: 0 !important; /* Xóa padding mặc định */
+}
+
+/* Style cho div JSX custom (hình ảnh, tên, giá) */
+.search-autocomplete-popup .ant-select-item-option-content {
+  width: 100%;
+  transition: background-color 0.2s ease;
+  line-height: 1.4;
+  /* padding: 8px 12px; (Tùy chọn) */
+}
+
+/* Khi hover vào một gợi ý */
+.search-autocomplete-popup .ant-select-item-option-active > .ant-select-item-option-content {
+  background-color: #f0f5ff; /* Màu nền xanh nhạt khi hover */
+}
+
+
+/*
+ * ===================================================================
+ * 6. DESKTOP - CART ICON (Giữ nguyên của bạn)
+ * ===================================================================
+ */
+.header-right-desktop .ant-badge {
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.header-right-desktop .ant-badge:hover {
+  transform: scale(1.1);
+}
+
+.header-right-desktop .ant-shopping-cart-outlined {
+  font-size: 28px !important;
+  color: #333;
+  transition: color 0.3s ease;
+}
+
+.header-right-desktop .ant-badge:hover .ant-shopping-cart-outlined {
+  color: #1677ff;
+}
+
+.header-right-desktop .ant-badge-count {
+  background-color: #ff4d4f;
+  box-shadow: 0 0 10px rgba(255, 77, 79, 0.7);
+  font-weight: 600;
+}
+
+/*
+ * ===================================================================
+ * 7. DESKTOP - USER AVATAR & DROPDOWN (Giữ nguyên của bạn)
+ * ===================================================================
+ */
+.header-right-desktop .ant-space-item > .ant-avatar {
+  border: 2px solid transparent;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.header-right-desktop .ant-space:hover .ant-avatar {
+  transform: scale(1.1);
+  border-color: #1677ff;
+  box-shadow: 0 0 15px rgba(22, 119, 255, 0.3);
+}
+
+.header-right-desktop .ant-space .anticon-down {
+  transition: transform 0.3s ease;
+  font-size: 12px;
+  color: #888;
+}
+
+.header-right-desktop .ant-dropdown-open .anticon-down {
+  transform: rotate(180deg);
+}
+
+/*
+ * ===================================================================
+ * 8. DESKTOP - LOGIN/LOGOUT BUTTON (Giữ nguyên của bạn)
+ * ===================================================================
+ */
+.header-right-desktop .ant-btn-primary {
+  border-radius: 20px; /* Bo tròn */
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(22, 119, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.header-right-desktop .ant-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(22, 119, 255, 0.3);
+}
+
+/*
+ * ===================================================================
+ * 9. MOBILE - BURGER ICON (Giữ nguyên của bạn)
+ * ===================================================================
+ */
+.mobile-burger {
+  display: none; /* Ẩn trên desktop */
+  border-radius: 8px; /* Bo góc nút burger */
+}
+
+/*
+ * ===================================================================
+ * 10. RESPONSIVE - MOBILE STYLES (Giữ nguyên của bạn)
+ * ===================================================================
+ */
+@media (max-width: 991px) { 
+  
+  /* Ẩn toàn bộ phần desktop */
+  .desktop-menu-container,
+  .header-right-desktop,
+  .desktop-categories-dropdown {
+    display: none !important; /* Dùng !important để đảm bảo ghi đè */
+  }
+
+  /* Hiển thị nút burger trên mobile */
+  .mobile-burger {
+    display: block !important;
+  }
+
+  /* Căn chỉnh lại Header trên mobile: Logo bên trái, Burger bên phải */
+  .ant-layout-header {
+    justify-content: space-between !important; 
+    padding: 0 16px !important; /* Giảm padding trên mobile */
+    height: 64px !important; 
+  }
+
+  /* (Tùy chọn) Giảm kích thước logo trên mobile */
+  .header-logo img {
+    height: 40px;
+  }
+}
+
+/*
+ * ===================================================================
+ * 11. STYLE CHO DRAWER MENU (Giữ nguyên của bạn)
+ * ===================================================================
+ */
+  
+/* Style cho các mục menu trong Drawer */
+.ant-drawer .ant-menu-vertical {
+    border-right: none !important;
+}
+.ant-drawer .ant-menu-item {
+    font-size: 16px;
+    margin-block: 4px !important;
+    border-radius: 8px;
+}
+.ant-drawer .ant-menu-item-selected {
+    background-color: rgba(22, 119, 255, 0.1) !important;
+    color: var(--primary-color) !important;
+    font-weight: 500 !important;
+}

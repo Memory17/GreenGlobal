@@ -1,0 +1,121 @@
+/* OrderHistory.css */
+
+/* --- 1. Container Chính --- */
+.order-history-container {
+  max-width: 900px; /* Giới hạn chiều rộng để dễ đọc trên màn hình lớn */
+  margin: 2rem auto; /* Căn giữa và tạo khoảng cách */
+  padding: 2rem;
+  background-color: #f9f9f9; /* Nền xám rất nhạt */
+  border-radius: 12px; /* Bo góc container chính */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  
+  /* Hiệu ứng fade-in khi component được tải */
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- 2. Styling Ant Design Collapse (Các Panel Đơn Hàng) --- */
+
+/* Bỏ viền và nền mặc định của Collapse */
+.order-history-container .ant-collapse {
+  background-color: transparent;
+  border: none;
+}
+
+/* Tùy chỉnh từng Panel (mỗi đơn hàng) */
+.order-history-container .ant-collapse-item {
+  background-color: #ffffff; /* Nền trắng cho mỗi panel */
+  border: 1px solid #e8e8e8;
+  border-radius: 8px !important; /* Bo góc mạnh tay hơn */
+  margin-bottom: 1.5rem; /* Khoảng cách giữa các đơn hàng */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  overflow: hidden; /* Giữ cho nội dung không tràn ra ngoài khi bo góc */
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+/* Hiệu ứng hover cho Panel */
+.order-history-container .ant-collapse-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px); /* Nhấc panel lên một chút */
+}
+
+/* Tùy chỉnh Header của Panel */
+.order-history-container .ant-collapse-header {
+  padding: 16px 20px !important;
+  align-items: center; /* Căn giữa icon mũi tên và text */
+  border-bottom: 1px solid #f0f0f0;
+  font-weight: 500;
+}
+
+/* Header khi Panel đang được mở (active) */
+.order-history-container .ant-collapse-item-active > .ant-collapse-header {
+  background-color: #fafafa; /* Nền hơi xám khi mở */
+}
+
+/* Tùy chỉnh nội dung Panel */
+.order-history-container .ant-collapse-content {
+  border-top: none;
+}
+
+.order-history-container .ant-collapse-content-box {
+  padding: 20px 24px !important;
+}
+
+/* --- 3. Styling Danh Sách Sản Phẩm (Ant List) --- */
+
+/* Tùy chỉnh mỗi mục sản phẩm */
+.order-history-container .ant-list-item {
+  padding: 16px 8px;
+  transition: background-color 0.3s ease;
+  border-radius: 6px;
+}
+
+.order-history-container .ant-list-item:hover {
+  background-color: #f7f7f7; /* Hiệu ứng hover cho từng sản phẩm */
+}
+
+/* Làm nổi bật tiêu đề sản phẩm */
+.order-history-container .ant-list-item-meta-title {
+  font-weight: 600;
+  margin-bottom: 2px !important;
+}
+
+/* Thêm style cho ảnh thumbnail */
+.order-history-container .ant-list-item-meta .ant-avatar {
+  border-radius: 6px; /* Bo góc ảnh */
+  border: 1px solid #eee;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+/* --- 4. Styling Bảng Mô Tả (Ant Descriptions) --- */
+
+/* Làm nổi bật phần "Label" (Tạm tính, Phí vận chuyển,...) */
+.order-history-container .ant-descriptions-item-label {
+  font-weight: 500;
+  color: #555;
+  background-color: #fafafa !important; /* Phân biệt rõ ô label */
+}
+
+/* Làm nổi bật TỔNG CỘNG (dựa trên thẻ <Text strong> bạn đã dùng) */
+.order-history-container .ant-descriptions-item-content strong {
+  font-size: 1.15rem; /* To hơn một chút */
+  color: #1677ff; /* Màu xanh chủ đạo của AntD */
+}
+
+/* Style cho các icon ở phần thông tin người nhận */
+.order-history-container .ant-descriptions-item-label .anticon {
+  font-size: 16px;
+  margin-right: 8px;
+  color: #1677ff;
+  vertical-align: middle;
+}

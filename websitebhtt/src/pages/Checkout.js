@@ -1,405 +1,371 @@
-import React, { useState } from "react";
-import "../style/Checkout.css";
-
+import React, { useState } from 'react';
 import {
-  Layout,
-  Row,
-  Col,
-  Typography,
   Form,
   Input,
-
   DatePicker,
   Radio,
   Button,
+  Row,
+  Col,
+  Card,
+  List,
+  Avatar,
+  Typography,
   Divider,
+  Space,
   Result,
   Descriptions,
-} from "antd";
+  message,
+} from 'antd';
+import {
+  UserOutlined,
+  PhoneOutlined,
+  MailOutlined,
+  HomeOutlined,
+  EnvironmentOutlined,
+  ScheduleOutlined,
+  CreditCardOutlined,
+  DollarCircleOutlined,
+  WalletOutlined
+} from '@ant-design/icons';
+import '../style/Checkout.css'; // Sử dụng file CSS
 
-import { useNavigate, useLocation } from "react-router-dom";
-import { useCart } from "../context/CartContext";
-import { useAuth } from "../context/AuthContext";
-import { saveOrder } from "../API";
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext'; // <-- THÊM MỚI
+import { useOrder } from '../context/OrderContext'; // <-- THÊM MỚI (Context đếm count)
+import { useOrderHistory } from '../context/OrderHistoryContext'; // <-- THÊM MỚI (Context lưu lịch sử)
 
 const { Title, Text } = Typography;
-
+const { TextArea } = Input;
 
 const Checkout = () => {
   const navigate = useNavigate();
-  const [showSuccess, setShowSuccess] = React.useState(false);
+  const location = useLocation();
+  const { cartItems, clearCart } = useCart();
 
-  // State (giữ nguyên)
+  // --- Lấy Contexts ---
+  const { currentUser } = useAuth(); // <-- THÊM MỚI
+  const { addConfirmingOrder } = useOrder(); // <-- THÊM MỚI
+  const { addOrderToHistory } = useOrderHistory(); // <-- THÊM MỚI
+
+  // --- States (giữ nguyên) ---
+  const [showSuccess, setShowSuccess] = useState(false);
   const [orderedItems, setOrderedItems] = useState([]);
   const [orderTotals, setOrderTotals] = useState({
     total: 0,
     discount: 0,
     shipping: 0,
+    subtotal: 0,
   });
   const [deliveryInfo, setDeliveryInfo] = useState(null);
 
-  const [deliveryForm] = Form.useForm();
-  const [scheduleForm] = Form.useForm();
-  const [paymentForm] = Form.useForm();
+  const [form] = Form.useForm();
+  const passedState = location.state || {};
 
-  const { cartItems, clearCart } = useCart();
-  const { currentUser, isLoggedIn } = useAuth();
-  const location = useLocation();
-  const buyNowItems = (location && location.state && location.state.buyNowItems) || null;
+  // Support both normal cart checkout and "Buy Now" flow where caller passes buyNowItems
+  const buyNowItems = Array.isArray(passedState.buyNowItems) ? passedState.buyNowItems : [];
+  const effectiveItems = buyNowItems.length > 0 ? buyNowItems : cartItems;
 
-  // Use buyNowItems (passed from product listing) if present; otherwise use cartItems
-  const itemsForOrder = buyNowItems && buyNowItems.length > 0 ? buyNowItems : cartItems;
+  // --- Tính toán giá (bảo vệ khi giá trị bị thiếu) ---
+  const subtotal = Array.isArray(effectiveItems)
+    ? effectiveItems.reduce((acc, item) => acc + ((item?.product?.price || 0) * (item?.quantity || 0)), 0)
+    : 0;
 
-  // Logic tính toán (giữ nguyên)
-  const subtotal = itemsForOrder.reduce(
-    (acc, item) => acc + (item.product.price || 0) * item.quantity,
-    0
-  );
-  const discount = subtotal * 0.2;
-  const deliveryFee = subtotal > 0 ? 20 : 0;
-  const total = subtotal - discount + deliveryFee;
+  const discount = passedState.discountAmount ?? 0; // default 0 if undefined
+  const defaultBaseDeliveryFee = subtotal > 0 ? 20 : 0;
+  const deliveryFee = (passedState.finalDeliveryFee ?? defaultBaseDeliveryFee);
+  const total = subtotal + deliveryFee - discount;
 
-  // CẬP NHẬT HÀM NÀY (Giữ nguyên logic sửa lỗi date)
+  const discountLabel = passedState.appliedCouponName
+    ? `Giảm giá (${passedState.appliedCouponName})`
+    : "Giảm giá";
+  const shippingLabel = passedState.appliedShippingRuleName
+    ? `Phí Vận chuyển (${passedState.appliedShippingRuleName})`
+    : "Phí Vận chuyển";
+
+  // --- Xử lý xác nhận đơn hàng (ĐÃ CẬP NHẬT) ---
   const handleConfirmOrder = async () => {
+    // 1. Kiểm tra giỏ hàng / buy-now items
+    if (effectiveItems.length === 0) {
+      message.warning("Không có sản phẩm để thanh toán.");
+      return;
+    }
+
+    // 2. KIỂM TRA ĐĂNG NHẬP (THÊM MỚI)
+    if (!currentUser) {
+      message.error("Vui lòng đăng nhập để hoàn tất đơn hàng.");
+      navigate('/login'); // Chuyển đến trang đăng nhập
+      return;
+    }
+
+    // 3. Validate form và xử lý đơn hàng
     try {
-      // Validate và lấy giá trị từ 3 form
-      const deliveryValues = await deliveryForm.validateFields();
-      const scheduleValues = await scheduleForm.validateFields();
-      const paymentValues = await paymentForm.validateFields();
+      // Validate MỘT form duy nhất (giữ nguyên)
+      const allFormInfo = await form.validateFields();
 
-      // Gom tất cả thông tin form lại
-      const allFormInfo = {
-        ...deliveryValues,
-        ...scheduleValues,
-        ...paymentValues,
-      };
-
-      // ===== SỬA LỖI "INVALID DATE" =====
-      // Chuyển đổi đối tượng 'dayjs' thành chuỗi ISO string chuẩn
       if (allFormInfo.date) {
         allFormInfo.date = allFormInfo.date.toISOString();
       }
-      // ===================================
 
-      // LƯU LẠI TẤT CẢ THÔNG TIN
-      setOrderedItems([...itemsForOrder]); // Lưu sản phẩm
-      setOrderTotals({
-        // Lưu tổng tiền
-        total: total,
-        discount: discount,
-        shipping: deliveryFee,
-        subtotal: subtotal,
-      });
-      setDeliveryInfo(allFormInfo); // Lưu thông tin giao hàng (với date đã là string)
+      // 4. TẠO DỮ LIỆU ĐƠN HÀNG (THAY ĐỔI)
+      const newOrderData = {
+        items: Array.isArray(effectiveItems) ? [...effectiveItems] : [],
+        totals: {
+          total: total,
+          discount: discount,
+          shipping: deliveryFee,
+          subtotal: subtotal,
+        },
+        delivery: allFormInfo, // Thông tin giao hàng từ form
+        // Context sẽ tự động thêm: id, orderDate, status
+      };
 
-      setShowSuccess(true);
-      // Persist order to storage so admin can see it
-      try {
-        const orderPayload = {
-          items: itemsForOrder.map(ci => ({ id: ci.product.id, title: ci.product.title, price: ci.product.price, quantity: ci.quantity, thumbnail: ci.product.thumbnail })),
-          totals: { total, discount, shipping: deliveryFee, subtotal },
-          delivery: allFormInfo,
-          customer: isLoggedIn && currentUser ? { name: currentUser.firstName ? `${currentUser.firstName} ${currentUser.lastName || ''}`.trim() : currentUser.email || 'User', email: currentUser.email } : { name: allFormInfo.name || 'Guest', email: allFormInfo.email || '' },
-          status: 'processing',
-        };
-        saveOrder(orderPayload);
-      } catch (e) {
-        console.error('save order failed', e);
+      // 5. GỌI CẢ HAI CONTEXT (THÊM MỚI)
+      addOrderToHistory(newOrderData); // Lưu toàn bộ đơn hàng vào lịch sử
+      addConfirmingOrder();           // Tăng số đếm (badge)
+
+      // 6. Lưu state tạm thời để hiển thị popup (giữ nguyên)
+  setOrderedItems(Array.isArray(effectiveItems) ? [...effectiveItems] : []);
+      setOrderTotals(newOrderData.totals);
+      setDeliveryInfo(allFormInfo);
+
+      setShowSuccess(true); // Hiển thị popup thành công
+      // Nếu đây là checkout từ giỏ hàng, xóa giỏ; nếu là Buy Now, giữ giỏ hàng
+      if (!buyNowItems.length) {
+        clearCart(); // Xóa giỏ hàng sau khi đặt thành công
       }
-      // Only clear global cart if there were real cart items (don't clear when using buy-now state only)
-      if (cartItems && cartItems.length > 0) clearCart();
+
     } catch (errorInfo) {
       console.log("Validation Failed:", errorInfo);
+      if (errorInfo.errorFields && errorInfo.errorFields.length > 0) {
+        message.error("Vui lòng điền đầy đủ thông tin bắt buộc.");
+      }
     }
   };
 
+  // --- Hàm đóng Popup (giữ nguyên) ---
   const handleClosePopup = () => {
     setShowSuccess(false);
-    navigate("/");
+    navigate("/"); // Chuyển về trang chủ
   };
 
+  /*
+  useEffect(() => {
+    if (cartItems.length === 0 && !showSuccess) {
+      navigate('/cart');
+    }
+  }, [cartItems.length, showSuccess, navigate]);
+  */
+
+  // --- PHẦN RENDER JSX (giữ nguyên) ---
   return (
-    <Layout className="checkout-page">
-      <Row className="checkout" gutter={16}>
-        {/* CỘT TRÁI */}
-        <Col className="checkout-col-left" span={14}>
-          <Title level={5} className="delivery-information-title">
-            Delivery Information
-          </Title>
-          <Form
-            form={deliveryForm}
-            className="delivery-information-form"
-            layout="vertical"
-          >
-            {/* Hàng 1: Name và Phone */}
-            <Row gutter={16}>
-              <Col span={12}>
-                <Form.Item
-                  name="name"
-                  label="Name"
-                  rules={[
-                    { required: true, message: "Please enter your name" },
-                  ]}
-                >
-                  <Input placeholder="Enter your name"></Input>
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item
-                  name="phone"
-                  label="Phone"
-                  rules={[
-                    { required: true, message: "Please enter your phone" },
-                  ]}
-                >
-                  <Input placeholder="Enter your Number"></Input>
-                </Form.Item>
-              </Col>
-            </Row>
-            {/* Hàng 2: Email và City */}
-            <Row gutter={16}>
-              <Col span={12}>
-                <Form.Item
-                  name="email"
-                  label="Email"
-                  rules={[
-                    { required: true, message: "Please enter your email" },
-                    { type: "email", message: "Invalid email format" },
-                  ]}
-                >
-                  <Input placeholder="Enter your Email"></Input>
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item
-                  name="city"
-                  label="City"
-                  rules={[{ required: true, message: "Please enter your city" }]}
-                >
-                  <Input placeholder="Enter your City"></Input>
-                </Form.Item>
-              </Col>
-            </Row>
-            {/* Hàng 3: Address (Full width) - Đã chuyển lên trên */}
-            <Row gutter={16}>
-              <Col span={24}>
-                <Form.Item
-                  name="address"
-                  label="Address"
-                  rules={[
-                    { required: true, message: "Please enter your address" },
-                  ]}
-                >
-                  <Input placeholder="Enter your house number and street name"></Input>
-                </Form.Item>
-              </Col>
-            </Row>
-            {/* Hàng 4: State/Province và Zip/Postal Code - Đã gộp và đơn giản hóa */}
-            <Row gutter={16}>
-              <Col span={12}>
-                <Form.Item
-                  name="state"
-                  label="State/Province"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please enter your state/province",
-                    },
-                  ]}
-                >
-                  <Input placeholder="e.g., Vietnam"></Input>
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item name="zip" label="Zip/Postal Code">
-                  <Input placeholder="e.g., 001122"></Input>
-                </Form.Item>
-              </Col>
-              {/* Đã loại bỏ trường State (abbr) */}
-            </Row>
-          </Form>
+    <div className="checkout-page-container">
+      <Title level={2} className="checkout-title">Hoàn Tất Thanh Toán</Title>
 
-          <Title level={5} className="schedule-delivery-title">
-            Schedule Delivery
-          </Title>
-          <Form
-            form={scheduleForm}
-            className="schedule-delivery-form"
-            layout="vertical"
-          >
-            {/* Giữ nguyên: Date Picker */}
-            <Row gutter={16}>
-              <Col className="schedule-delivery-dates" span={24}>
-                <Form.Item
-                  name="date"
-                  label="Date"
-                  rules={[
-                    { required: true, message: "Please select a date" },
-                  ]}
-                >
-                  <DatePicker style={{ width: "100%" }} />
-                </Form.Item>
-              </Col>
-            </Row>
-            {/* Giữ nguyên: Note */}
-            <Row gutter={16}>
-              <Col className="schedule-delivery-note" span={24}>
-                <Form.Item name="note" label="Note" rules={[{ required: false }]}>
-                  <Input.TextArea placeholder="Enter your note (e.g., call before delivery)" />
-                </Form.Item>
-              </Col>
-            </Row>
-          </Form>
+      <Row gutter={[32, 32]}>
+        {/* Cột bên trái: Thông tin và Thanh toán */}
+        <Col xs={24} lg={16}>
 
-          <Title level={5} className="schedule-delivery-title">
-            Payment Method
-          </Title>
-          <Form
-            form={paymentForm}
-            className="payment-method-form"
-            layout="vertical"
-          >
-            {/* Giữ nguyên: Payment Radio Group */}
-            <Form.Item
-              className="payment-method-form-item"
-              name="payment"
-              label=""
-              rules={[
-                { required: true, message: "Please select a payment method" },
-              ]}
-            >
-              <Radio.Group>
-                <Radio value="Online Payment">Online Payment (Credit/Debit Card)</Radio>
-                <Radio value="Card on Delivery">Card on Delivery (POS)</Radio>
-                <Radio value="Cash on Delivery">Cash on Delivery</Radio>
-              </Radio.Group>
-            </Form.Item>
-          </Form>
-        </Col>
+          <Form form={form} layout="vertical" className="checkout-form">
 
-        {/* CỘT PHẢI - (Giữ nguyên) */}
-        <Col className="checkout-col-right" span={10}>
-          <Title level={5} className="order-summary-title">
-            Order Summary
-          </Title>
-          <Form className="checkout-col-right-form">
-            {/* ... (Hiển thị sản phẩm động - giữ nguyên) ... */}
-            {itemsForOrder.map((item) => (
-              <Row
-                className="order-summary-row"
-                gutter={16}
-                key={item.product.id}
-              >
-                <Col className="order-summary-col-image" span={5}>
-                  <img
-                    className=""
-                    src={item.product.thumbnail}
-                    alt={item.product.title}
-                  />
+            {/* 1. Thông tin Giao Hàng */}
+            <Card title="1. Thông Tin Giao Hàng" className="checkout-card">
+              <Row gutter={16}>
+                <Col xs={24} sm={12}>
+                  <Form.Item
+                    name="name"
+                    rules={[{ required: true, message: 'Vui lòng nhập họ và tên!' }]}
+                  >
+                    <Input prefix={<UserOutlined />} placeholder="Họ và Tên" />
+                  </Form.Item>
                 </Col>
-                <Col className="order-summary-col-content" span={14}>
-                  <Text className="order-summary-content-name">
-                    {item.product.title}
-                  </Text>
-                  <br />
-                  <Text className="order-summary-content-code">
-                    {item.product.category}
-                  </Text>
-                  <br />
-                  <Text className="order-summary-content-price">
-                    ${item.product.price}
-                  </Text>
-                </Col>
-                <Col className="order-summary-col-quality" span={5}>
-                  <Text style={{ fontSize: 16 }}>Qty: {item.quantity}</Text>
+                <Col xs={24} sm={12}>
+                  <Form.Item
+                    name="phone"
+                    rules={[{ required: true, message: 'Vui lòng nhập SĐT!' }]}
+                  >
+                    <Input prefix={<PhoneOutlined />} placeholder="Số Điện Thoại" />
+                  </Form.Item>
                 </Col>
               </Row>
-            ))}
-
-            <Divider style={{ marginTop: "20px" }} />
-
-            {/* ... (Tính tiền động - giữ nguyên) ... */}
-            <Row className="subtotal-price-checkout" gutter={16}>
-              <Col className="subtotal-price-checkout-title" span={12}>
-                <Text>Subtotal</Text>
-              </Col>
-              <Col className="subtotal-price-checkout-content" span={12}>
-                <Text>${subtotal.toFixed(2)}</Text>
-              </Col>
-            </Row>
-            <Row className="subtotal-price-checkout" gutter={16}>
-              <Col className="subtotal-price-checkout-title" span={12}>
-                <Text style={{ color: "red" }}>Discount(-20%)</Text>
-              </Col>
-              <Col
-                className="subtotal-price-checkout-content"
-                span={12}
-                style={{ color: "red" }}
+              <Form.Item
+                name="email"
+                rules={[
+                  { required: true, message: 'Vui lòng nhập email!' },
+                  { type: 'email', message: 'Email không hợp lệ!' }
+                ]}
               >
-                <Text type="danger">-${discount.toFixed(2)}</Text>
-              </Col>
-            </Row>
-            <Row className="subtotal-price-checkout" gutter={16}>
-              <Col className="subtotal-price-checkout-title" span={12}>
-                <Text>Shipping</Text>
-              </Col>
-              <Col className="subtotal-price-checkout-content" span={12}>
-                <Text>${deliveryFee.toFixed(2)}</Text>
-              </Col>
-            </Row>
-            <Row className="total-price-checkout" gutter={16}>
-              <Col className="total-price-checkout-title" span={12}>
-                <Text>Total</Text>
-              </Col>
-              <Col className="total-price-checkout-content" span={12}>
-                <Text>${total.toFixed(2)}</Text>
-              </Col>
-            </Row>
+                <Input prefix={<MailOutlined />} placeholder="Email" />
+              </Form.Item>
+              <Form.Item
+                name="address"
+                rules={[{ required: true, message: 'Vui lòng nhập địa chỉ!' }]}
+              >
+                <Input prefix={<HomeOutlined />} placeholder="Địa chỉ (Số nhà, Tên đường, Phường/Xã)" />
+              </Form.Item>
+              <Row gutter={16}>
+                <Col xs={24} sm={12}>
+                  <Form.Item
+                    name="city"
+                    rules={[{ required: true, message: 'Vui lòng nhập Tỉnh/Thành phố!' }]}
+                  >
+                    <Input prefix={<EnvironmentOutlined />} placeholder="Tỉnh / Thành phố" />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={12}>
+                  <Form.Item
+                    name="state"
+                    rules={[{ required: true, message: 'Vui lòng nhập Quận/Huyện!' }]}
+                  >
+                    <Input prefix={<EnvironmentOutlined />} placeholder="Quận / Huyện" />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Form.Item name="zip" >
+                <Input prefix={<EnvironmentOutlined />} placeholder="Mã Zip/Bưu điện (Không bắt buộc)" />
+              </Form.Item>
+            </Card>
+
+            {/* 2. Lịch Giao Hàng */}
+            <Card title="2. Lịch Hẹn Giao Hàng" className="checkout-card">
+              <Row gutter={16}>
+                <Col xs={24} sm={12}>
+                  <Form.Item
+                    name="date"
+                    rules={[{ required: true, message: 'Vui lòng chọn ngày giao!' }]}
+                  >
+                    <DatePicker
+                      style={{ width: '100%' }}
+                      placeholder="Chọn ngày giao"
+                      format="DD/MM/YYYY"
+                      suffixIcon={<ScheduleOutlined />}
+                    />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={12}>
+                  <Form.Item name="note">
+                    <TextArea rows={1} placeholder="Ghi chú cho người giao hàng..." />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Card>
+
+            {/* 3. Phương Thức Thanh Toán */}
+            <Card title="3. Phương Thức Thanh Toán" className="checkout-card">
+              <Form.Item
+                name="payment"
+                rules={[{ required: true, message: 'Vui lòng chọn phương thức thanh toán!' }]}
+                className="payment-form-item"
+              >
+                <Radio.Group style={{ width: '100%' }}>
+                  <Space direction="vertical" style={{ width: '100%' }}>
+                    <Radio value="Online Payment" className="payment-radio">
+                      <CreditCardOutlined /> Thanh toán Online (Thẻ Tín dụng/Ghi nợ)
+                    </Radio>
+                    <Radio value="Card on Delivery" className="payment-radio">
+                      <WalletOutlined /> Quẹt Thẻ khi Nhận hàng (POS)
+                    </Radio>
+                    <Radio value="Cash on Delivery" className="payment-radio">
+                      <DollarCircleOutlined /> Thanh toán bằng Tiền mặt (COD)
+                    </Radio>
+                  </Space>
+                </Radio.Group>
+              </Form.Item>
+            </Card>
+
+          </Form>
+
+        </Col>
+
+        {/* Cột bên phải: Tóm Tắt Đơn Hàng */}
+        <Col xs={24} lg={8}>
+          <Card title="Tóm Tắt Đơn Hàng" className="order-summary-card">
+            <List
+              itemLayout="horizontal"
+              dataSource={effectiveItems}
+              renderItem={(item) => (
+                <List.Item>
+                  <List.Item.Meta
+                    avatar={<Avatar src={item.product.thumbnail} shape="square" size={64} />}
+                    title={<Text strong>{item.product?.title || 'Untitled'} (x{item.quantity || 0})</Text>}
+                    description={`$${((item?.product?.price || 0) * (item?.quantity || 0)).toFixed(2)}`}
+                  />
+                </List.Item>
+              )}
+            />
+            <Divider className="summary-divider" />
+
+            <div className="summary-row">
+              <Text>Tạm tính</Text>
+              <Text strong>${subtotal.toFixed(2)}</Text>
+            </div>
+            <div className="summary-row">
+              <Text>{shippingLabel}</Text>
+              <Text strong>${deliveryFee.toFixed(2)}</Text>
+            </div>
+            <div className="summary-row discount">
+              <Text>{discountLabel}</Text>
+              <Text strong>- ${discount.toFixed(2)}</Text>
+            </div>
+
+            <Divider className="summary-divider" />
+            <div className="summary-row total">
+              <Title level={4}>Tổng Cộng</Title>
+              <Title level={4} className="total-price">
+                ${total.toFixed(2)}
+              </Title>
+            </div>
             <Button
               type="primary"
-              className="confirm-order-button"
+              size="large"
+              block
+              className="confirm-order-btn"
               onClick={handleConfirmOrder}
-              disabled={!(itemsForOrder && itemsForOrder.length > 0)}
+              disabled={cartItems.length === 0}
             >
-              Confirm Order
+              Xác Nhận Đơn Hàng
             </Button>
-          </Form>
+          </Card>
         </Col>
       </Row>
 
-      {/* POPUP (Giữ nguyên) */}
+      {/* POPUP Đặt hàng thành công */}
       {showSuccess && (
         <div className="order-success-overlay">
           <div className="order-success-div">
             <Result
               status="success"
-              title="Thank you for your order!"
+              title="Cảm ơn bạn đã đặt hàng!"
               subTitle={
                 <>
-                  <Text className="text-success">Your order ID: </Text>
+                  <Text className="text-success">Mã đơn hàng của bạn: </Text>
+                  {/* Bạn có thể lấy ID đơn hàng thật từ Context nếu muốn,
+                      nhưng làm vậy sẽ phức tạp hơn. Giữ tạm mã giả: */}
                   <div className="id-order-succcess">#LM20251027</div>
                 </>
               }
               extra={
                 <div className="order-success-details">
                   <Descriptions column={1} size="default" bordered>
-                    <Descriptions.Item label="Estimated Delivery">
-                      <b>Friday, Oct 30, 2025</b>
+                    <Descriptions.Item label="Giao hàng dự kiến">
+                      {/* TODO: Tính ngày giao dựa trên ngày đặt */}
+                      <b>Thứ Sáu, 30/10/2025</b>
                     </Descriptions.Item>
-                    <Descriptions.Item label="Email Sent To">
-                      <b>{deliveryInfo?.email || "user@gmail.com"}</b>
+                    <Descriptions.Item label="Email xác nhận gửi tới">
+                      <b>{deliveryInfo?.email || "N/A"}</b>
                     </Descriptions.Item>
                   </Descriptions>
 
                   <Text className="spam-warning">
-                    Please check your <b>Spam</b> folder if you don’t see the
+                    Vui lòng kiểm tra thư mục <b>Spam</b> nếu bạn không thấy
                     email.
                   </Text>
 
                   <Text
                     className="review-your-order"
                     onClick={() =>
-                      navigate("/revieworder", {
+                      navigate("/revieworder", { // Chức năng review này vẫn hoạt động
                         state: {
                           items: orderedItems,
                           totals: orderTotals,
@@ -408,7 +374,7 @@ const Checkout = () => {
                       })
                     }
                   >
-                    Review your order
+                    Xem lại đơn hàng
                   </Text>
 
                   <Button
@@ -416,8 +382,9 @@ const Checkout = () => {
                     onClick={handleClosePopup}
                     size="large"
                     style={{ marginTop: 24, width: "100%" }}
+                    className="confirm-order-btn"
                   >
-                    Continue Shopping
+                    Tiếp Tục Mua Sắm
                   </Button>
                 </div>
               }
@@ -425,7 +392,8 @@ const Checkout = () => {
           </div>
         </div>
       )}
-    </Layout>
+    </div>
   );
 };
+
 export default Checkout;

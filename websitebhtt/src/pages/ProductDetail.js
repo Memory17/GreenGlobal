@@ -44,7 +44,7 @@ const ProductDetail = () => {
   if (!product) {
     return (
       <div style={{ padding: "100px", textAlign: "center" }}>
-        <Empty description="Không tìm thấy sản phẩm. Đang quay về...">
+        <Empty description="Không tìm thấy sản phẩm. Đang quay về trang sản phẩm...">
           {setTimeout(() => navigate("/products"), 2000)}
         </Empty>
       </div>
@@ -75,15 +75,13 @@ const ProductDetail = () => {
     message.success(`Đã thêm ${value} sản phẩm "${product.title}" vào giỏ hàng!`);
   };
   
-  // HÀM XỬ LÝ MUA NGAY (BUY IT NOW)
+  // HÀM XỬ LÝ MUA NGAY
   const handleBuyNow = () => {
     if (!checkValidity()) return;
 
-    // 1. Thêm sản phẩm vào giỏ hàng (để đảm bảo Checkout thấy sản phẩm)
     addToCart(product, value);
     
-    // 2. Chuyển hướng tới trang Checkout
-    message.info('Chuyển hướng đến trang thanh toán...');
+    message.info('Đang chuyển hướng đến trang thanh toán...');
     navigate('/checkout'); 
   };
   // ==========================================
@@ -110,7 +108,7 @@ const ProductDetail = () => {
                 <Image
                   key={index}
                   src={img} 
-                  alt={`thumbnail ${index + 1}`}
+                  alt={`ảnh nhỏ ${index + 1}`}
                   preview={false}
                   style={{
                     width: 80,
@@ -149,20 +147,16 @@ const ProductDetail = () => {
         <Col xs={24} md={12}>
           <Title level={3}>{product.title}</Title>
           <Text type="secondary" style={{ textTransform: 'capitalize' }}>
-            Thương hiệu: {product.brand || 'N/A'}
+            Thương hiệu: {product.brand || 'Không có thông tin'}
           </Text>
 
           <div style={{ margin: "16px 0" }}>
             <Text strong className="product-price" style={{ fontSize: 24, color: '#d0021b' }}>
-              ${product.price.toFixed(2)}
+              {product.price.toFixed(2)}₫
             </Text>
             {product.discountPercentage > 0 && (
               <Text delete style={{ marginLeft: 12, fontSize: 16 }}>
-                $
-                {(
-                  product.price /
-                  (1 - product.discountPercentage / 100)
-                ).toFixed(2)}
+                {(product.price / (1 - product.discountPercentage / 100)).toFixed(2)}₫
               </Text>
             )}
           </div>
@@ -181,10 +175,8 @@ const ProductDetail = () => {
                 {availableStock > 0 ? `${availableStock} sản phẩm` : 'Hết hàng'}
             </Text>
           </Text>
-          {/* ================================== */}
 
-
-          {/* === SỬA LỖI VÀ CĂN CHỈNH VỊ TRÍ NÚT TĂNG GIẢM === */}
+          {/* === CHỌN SỐ LƯỢNG === */}
           <div className="select-quantity">
             <Text strong>
               Số lượng mua
@@ -205,9 +197,8 @@ const ProductDetail = () => {
               </Button>
             </Space>
           </div>
-          {/* ================================== */}
 
-
+          {/* === NÚT MUA === */}
           <Row className="primary-buy" gutter={16} style={{ marginTop: '24px' }}>
             <Col span={12} className="add-to-cart">
               <Button 
@@ -217,7 +208,7 @@ const ProductDetail = () => {
                 disabled={availableStock === 0} 
                 onClick={handleAddToCart} 
               >
-                Add to cart
+                Thêm vào giỏ hàng
               </Button>
             </Col>
             <Col span={12} className="buy-now">
@@ -227,9 +218,9 @@ const ProductDetail = () => {
                 style={{ width: '100%', height: 48, fontSize: 16 }}
                 icon={<MoneyCollectOutlined />}
                 disabled={availableStock === 0} 
-                onClick={handleBuyNow} /* <--- GẮN HANDLER MỚI VÀO NÚT */
+                onClick={handleBuyNow}
               >
-                Buy it now
+                Mua ngay
               </Button>
             </Col>
           </Row>

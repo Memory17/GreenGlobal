@@ -1,177 +1,302 @@
-/* Nền tối mờ */
+/* ---- Tổng thể trang ---- */
+.checkout-page-container {
+  max-width: 1400px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #f9f9f9; /* Màu nền xám nhạt */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+.checkout-title {
+  text-align: center;
+  margin-bottom: 32px;
+  font-weight: 700;
+  color: #222;
+}
+
+/* ---- Hiệu ứng cho Card (siêu đỉnh) ---- */
+.checkout-card {
+  border-radius: 16px; /* Bo góc mềm mại */
+  border: 1px solid #e8e8e8;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05); /* Đổ bóng nhẹ nhàng */
+  margin-bottom: 24px;
+  transition: all 0.3s ease-in-out; /* Hiệu ứng transition */
+  
+}
+
+/* Hiệu ứng HOVER: Nâng card lên và thêm viền */
+.checkout-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+  border-color: #1890ff; /* Viền xanh khi hover */
+}
+
+.checkout-card .ant-card-head {
+  border-bottom: 1px solid #f0f0f0;
+  border-radius: 16px 16px 0 0;
+  background-color: #fafafa;
+}
+
+.checkout-card .ant-card-head-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #1890ff; /* Màu tiêu đề card */
+}
+
+/* * === [SỬA LỖI] ===
+ * Fix lỗi nội dung (như thông báo lỗi validation) 
+ * bị lấp/cắt xén do 'overflow: hidden' của .ant-card-body
+*/
+.checkout-card .ant-card-body {
+  overflow: visible;
+}
+
+/* ---- Tùy chỉnh Form Inputs ---- */
+.checkout-form .ant-input-affix-wrapper,
+.checkout-form .ant-picker,
+.checkout-form .ant-input-affix-wrapper > textarea.ant-input {
+  border-radius: 8px; /* Bo góc input */
+  padding: 10px 15px; /* Tăng kích thước cho dễ nhìn */
+  border: 1px solid #d9d9d9;
+  transition: all 0.3s;
+}
+
+/* Hiệu ứng FOCUS: Viền và bóng mờ */
+.checkout-form .ant-input-affix-wrapper:focus,
+.checkout-form .ant-input-affix-wrapper-focused,
+.checkout-form .ant-picker-focused {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.1);
+}
+
+.checkout-form .ant-input,
+.checkout-form .ant-picker-input > input {
+  font-size: 1rem;
+}
+
+/* ---- Tùy chỉnh Payment Radio ---- */
+.payment-radio {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  border: 1px solid #e8e8e8;
+  border-radius: 10px;
+  background-color: #fff;
+  transition: all 0.3s;
+  width: 100%;
+}
+
+.payment-radio:hover {
+  border-color: #1890ff;
+  background-color: #f0f8ff;
+}
+
+.payment-radio .ant-radio {
+  top: 0; /* Căn chỉnh lại nút radio */
+}
+
+.payment-radio span.ant-radio + * {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.payment-radio .ant-radio-checked .ant-radio-inner {
+  border-color: #1890ff !important;
+  background-color: #1890ff !important;
+}
+
+/* ---- Cột Tóm Tắt Đơn Hàng (Bên phải) ---- */
+.order-summary-card {
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e8e8e8;
+  position: sticky; /* Hiệu ứng "dính" lại khi cuộn */
+  top: 40px; /* Cách top 40px */
+  height: fit-content; /* Chiều cao vừa đủ nội dung */
+}
+
+.order-summary-card .ant-list-item-meta-title {
+  font-weight: 600;
+  color: #333;
+}
+
+.order-summary-card .ant-list-item-meta-description {
+  font-weight: 500;
+  color: #555;
+}
+
+.summary-divider {
+  margin: 12px 0;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 1rem;
+}
+
+.summary-row.discount strong {
+  color: #52c41a; /* Màu xanh cho discount */
+}
+
+.summary-row.total {
+  border-top: 2px dashed #ddd;
+  padding-top: 16px;
+  margin-top: 16px;
+}
+
+.summary-row.total .ant-typography {
+  font-weight: 700;
+}
+
+.summary-row .total-price {
+  color: #1890ff; /* Màu xanh cho tổng tiền */
+}
+
+/* ---- Nút Confirm (siêu đỉnh) ---- */
+.confirm-order-btn {
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 24px 0; /* Tăng chiều cao nút */
+  height: auto;
+  margin-top: 16px;
+  box-shadow: 0 4px 15px rgba(24, 144, 255, 0.2); /* Đổ bóng cho nút */
+  transition: all 0.3s ease;
+}
+
+/* Hiệu ứng HOVER: Nâng lên và đậm bóng */
+.confirm-order-btn:hover,
+.confirm-order-btn:focus {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(24, 144, 255, 0.35);
+}
+
+/* ---- Responsive cho Mobile ---- */
+@media (max-width: 991px) {
+  .order-summary-card {
+    position: relative; /* Bỏ sticky trên mobile */
+    top: 0;
+  }
+}
+
+@media (max-width: 576px) {
+  .checkout-page-container {
+    padding: 10px;
+    margin: 10px auto;
+  }
+  .checkout-title {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
+}
+
+/* =========================================
+   CSS CHO POPUP ĐẶT HÀNG THÀNH CÔNG
+   (Tích hợp từ checkout2.js)
+========================================= */
+
 .order-success-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.6); /* Làm tối nền */
+  background: rgba(0, 0, 0, 0.6); /* Lớp phủ mờ */
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 999; /* Nổi lên trên cùng */
+  z-index: 1000;
+  backdrop-filter: blur(5px); /* Hiệu ứng mờ nền "siêu đỉnh" */
+  animation: fadeIn 0.3s ease; /* Hiệu ứng xuất hiện */
 }
 
-/* Hộp popup */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 .order-success-div {
   background: #fff;
-  border-radius: 12px;
-  padding: 24px 30px; /* Điều chỉnh padding */
-  max-width: 520px; /* Điều chỉnh độ rộng */
+  padding: 24px 40px 40px 40px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  max-width: 550px;
   width: 90%;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
   text-align: center;
-  animation: fadeIn 0.3s ease-in-out;
+  transform: scale(0.95);
+  animation: zoomIn 0.3s ease forwards; /* Hiệu ứng zoom */
 }
 
-/* Hiệu ứng hiện dần */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* ===== CSS CẢI TIẾN CHO POPUP (VỚI HỘP XANH LÁ) ===== */
-
-/* Tinh chỉnh component Result của AntD */
-.order-success-div .ant-result {
-  padding: 16px 0;
-}
-
-.order-success-div .ant-result-icon {
-  font-size: 64px; /* Icon check nhỏ hơn một chút */
-  margin-bottom: 16px;
+@keyframes zoomIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 
 .order-success-div .ant-result-title {
-  font-size: 24px;
-  font-weight: 600;
-  color: #262626;
+  font-weight: 700;
+  font-size: 1.8rem;
 }
 
-.order-success-div .ant-result-subtitle {
-  font-size: 16px;
-  color: #595959;
-  margin-top: 8px;
+.text-success {
+  font-size: 1rem;
+  color: #555;
 }
 
-/* Style cho ID (HỘP XANH LÁ CỦA BẠN - ĐÃ CĂN GIỮA) */
 .id-order-succcess {
-  background-color: rgb(7, 172, 7);
-  width: 200px;
-  height: 40px;
-  color: white;
-  text-align: center;
-  font-weight: bold;
-  align-items: center;
-  display: flex;
-  justify-content: center;
-  font-size: 20px;
-
-  /* --- THÊM 3 DÒNG NÀY ĐỂ CĂN GIỮA VÀ TẠO KHOẢNG CÁCH --- */
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 12px;
-  /* ---------------------------------------------------- */
-}
-
-/* Căn trái phần 'extra' */
-.order-success-details {
-  text-align: left;
-  width: 100%;
-  margin: 24px auto 0;
-  background: #fafafa;
-  padding: 20px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1890ff;
+  background: #f0f8ff;
+  padding: 5px 15px;
   border-radius: 8px;
-  border: 1px solid #f0f0f0;
+  display: inline-block;
+  margin-top: 10px;
+  border: 1px dashed #baddff;
 }
 
-/* Căn chỉnh bảng Descriptions */
-.order-success-details .ant-descriptions-item-label {
-  color: #595959;
-  font-weight: 500;
+.order-success-details {
+  width: 100%;
+  margin-top: 24px;
 }
 
-.order-success-details .ant-descriptions-item-content b {
-  color: #262626;
+.order-success-details .ant-descriptions {
+  text-align: left; /* Căn trái cho dễ đọc */
+  border-radius: 8px;
 }
 
-/* Cảnh báo SPAM */
 .spam-warning {
   display: block;
   margin-top: 16px;
-  font-size: 13px;
-  color: #8c8c8c;
-  text-align: center;
+  color: #888;
+  font-size: 0.9rem;
+  font-style: italic;
 }
 
-/* Link 'Review Order' */
 .review-your-order {
-  color: #1677ff; /* Màu primary của AntD */
-  cursor: pointer;
   display: block;
-  text-align: center;
   margin-top: 16px;
+  color: #1890ff;
   font-weight: 600;
-  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s;
 }
+
 .review-your-order:hover {
+  color: #096dd9;
   text-decoration: underline;
 }
 
-/* Giữ lại class .text-success nếu bạn dùng ở chỗ khác */
-.text-success {
-  font-size: 15px !important;
+/* Tận dụng style nút confirm cho nút "Tiếp tục mua sắm" */
+.order-success-div .confirm-order-btn {
+  margin-top: 24px;
 }
-/* ========================================================= */
-/* === PHẦN CHỈNH SỬA: LOẠI BỎ ĐỔ BÓNG VÀ ĐƯỜNG VIỀN XANH KHI FOCUS/HOVER === */
-/* ========================================================= */
-
-/* Áp dụng cho Input (và TextArea) */
-.delivery-information-form .ant-input,
-.schedule-delivery-form .ant-input {
-    border-color: #d9d9d9; /* Đảm bảo border màu xám mặc định */
-}
-.delivery-information-form .ant-input:focus,
-.delivery-information-form .ant-input-focused,
-.delivery-information-form .ant-input:hover,
-.schedule-delivery-form .ant-input:focus,
-.schedule-delivery-form .ant-input-focused,
-.schedule-delivery-form .ant-input:hover,
-.schedule-delivery-form .ant-input-textarea .ant-input {
-    box-shadow: none !important;
-    border-color: #d9d9d9 !important; /* Đặt lại màu border xám mặc định */
-}
-
-/* Áp dụng cho Select */
-.delivery-information-form .ant-select-selector {
-    border-color: #d9d9d9 !important; /* Đảm bảo border màu xám mặc định */
-}
-.delivery-information-form .ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input) .ant-select-selector,
-.delivery-information-form .ant-select:not(.ant-select-disabled):hover .ant-select-selector,
-.delivery-information-form .ant-select-selector:focus,
-.delivery-information-form .ant-select-selector:active {
-    box-shadow: none !important;
-    border-color: #d9d9d9 !important;
-}
-
-/* Áp dụng cho DatePicker */
-.schedule-delivery-form .ant-picker {
-    border-color: #d9d9d9 !important; /* Đảm bảo border màu xám mặc định */
-}
-.schedule-delivery-form .ant-picker-focused,
-.schedule-delivery-form .ant-picker:hover {
-    box-shadow: none !important;
-    border-color: #d9d9d9 !important;
-}
-
-/* Fix lỗi border của TextArea */
-.schedule-delivery-form .ant-input-textarea .ant-input:focus {
-    box-shadow: none !important;
-    border-color: #d9d9d9 !important;
+.payment-form-item .ant-form-item-control-input {
+  min-height: 220px; /* Bạn có thể tăng/giảm con số này */
+  transform: translateY(-80px);
 }

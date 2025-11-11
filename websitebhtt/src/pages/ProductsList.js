@@ -24,8 +24,10 @@ import { useNavigate } from "react-router-dom";
 
 // Đảm bảo các đường dẫn này chính xác
 import "../style/ProductList.css"; 
-import { getProductCategories } from "../data/productService"; 
-import { getMergedProducts } from "../API";
+import {
+  getProductCategories,
+  getProductsByFullUrl,
+} from "../data/productService"; 
 import { useCart } from "../context/CartContext"; 
 
 const { Title } = Typography;
@@ -56,14 +58,15 @@ function Product() {
     setLoading(true);
     setSelectedCategorySlug(null);
     try {
-      const merged = await getMergedProducts();
-      setProducts(merged);
-      setFilteredProducts(merged);
+      const response = await fetch("https://dummyjson.com/products?limit=0");
+      const data = await response.json();
+      setProducts(data.products);
+      setFilteredProducts(data.products); 
 
-      if (merged && merged.length > 0) {
-        const max = Math.ceil(Math.max(...merged.map((p) => p.price || 0)));
+      if (data.products && data.products.length > 0) {
+        const max = Math.ceil(Math.max(...data.products.map((p) => p.price)));
         setMaxPrice(max);
-        setPriceRange([0, max]);
+        setPriceRange([0, max]); 
       } else {
         setMaxPrice(0);
         setPriceRange([0, 0]);
@@ -152,9 +155,11 @@ function Product() {
     setDisplayProducts([]); 
 
     try {
-      const data = await getMergedProducts({ category: categorySlug });
-      setFilteredProducts(data);
-      message.success(`Đã tải ${data.length} sản phẩm từ danh mục ${categorySlug}.`);
+      const data = await getProductsByFullUrl(categoryUrl); 
+      setFilteredProducts(data); 
+      message.success(
+        `Đã tải ${data.length} sản phẩm từ danh mục ${categorySlug}.`
+      );
     } catch (err) {
       console.error(`Lỗi khi tải sản phẩm của danh mục ${categorySlug}:`, err);
       setFilteredProducts([]);
@@ -416,21 +421,21 @@ function Product() {
           </div>
 
           <Row gutter={10} justify="center" className="flash-sale-row">
-            <Col flex="1" span={8}>
+            <Col xs={24} md={8}>
               <img
                 src="https://cdn.hstatic.net/files/1000003969/file/img_2197_c22e8ec7f8624198b610bfdd4c36654c.jpeg"
                 alt="Deal Sốc 1"
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
             </Col>
-            <Col flex="1" span={8}>
+            <Col xs={24} md={8}>
               <img
                 src="https://cdn.hstatic.net/files/1000003969/file/img_2198_9bed97b1dffd4949b7c6803fcf6e5e99.jpeg"
                 alt="Deal Sốc 2"
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
             </Col>
-            <Col flex="1" span={8}>
+            <Col xs={24} md={8}>
               <img
                 src="https://cdn.hstatic.net/files/1000003969/file/img_2199_aeb9ad30d0cf4d2c8cf765cca6798035.jpeg"
                 alt="Deal Sốc 3"

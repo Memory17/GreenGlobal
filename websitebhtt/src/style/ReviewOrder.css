@@ -1,19 +1,85 @@
-/* CSS gốc của bạn + sửa lỗi chồng chéo + sửa lỗi chiều cao + thêm CSS cho Descriptions & Image */
+/* --- BIẾN CSS GỐC VÀ CÀI ĐẶT CHUNG --- */
+:root {
+  --primary-color: #1890ff; /* AntD Blue */
+  --primary-hover: #096dd9;
+  --success-color: #52c41a; /* AntD Green */
+  --success-hover: #389e0d;
+  --danger-color: #ff4d4f;  /* AntD Red */
+  --text-dark: #262626;
+  --text-light: #595959;
+  --bg-light: #f5f5f5; /* Nền xám nhạt cho trang */
+  --border-color: #e8e8e8;
+  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --card-shadow-hover: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
 
-.ship-to-payment {
-}
+/* --- TỔNG THỂ TRANG --- */
 .review-order {
-  background-color: #ece2e2;
+  padding: 3rem 5%;
+  background-color: var(--bg-light); /* Sử dụng nền xám nhạt hiện đại */
+  max-width: 1600px;
+  margin: 0 auto;
+  animation: fadeIn 0.8s ease-out;
 }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- BANNER "ALMOST DONE" (SIÊU ĐỈNH) --- */
 .big-title {
-  color: #555;
-  font-size: 15px;
   display: block;
-  text-align: center;
+  background: #f6ffed; /* AntD green-1 */
+  border: 1px solid var(--success-color);
+  border-radius: 12px;
+  padding: 1.5rem;
+  font-size: 1.25rem !important; /* 20px */
+  font-weight: 600 !important;
+  color: #389e0d; /* AntD green-7 */
+  margin-bottom: 2rem !important;
+  text-align: left; /* Căn lề trái đẹp hơn */
 }
-.review-order {
-  padding: 30px;
+
+/* --- HÀNG 3 THẺ (SHIP TO, PAYMENT, SUMMARY) --- */
+.ship-to-payment {
+  margin-bottom: 3rem;
+  align-items: stretch; /* Đảm bảo các Col cao bằng nhau */
 }
+
+/* --- (SIÊU ĐỈNH) STYLE CHUNG CHO 3 THẺ --- */
+.ship-to-div,
+.payment-review-div,
+.summary-review-div {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border-color);
+  padding: 2rem;
+
+  transition: all 0.3s ease-in-out;
+  margin-top: -12px; /* Giữ nguyên style gốc của bạn */
+  height: fit-content;
+}
+.summary-review-div{
+margin-top: 16px!important;
+}
+.ship-to-div:hover,
+.payment-review-div:hover,
+.summary-review-div:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--card-shadow-hover);
+}
+
+/* Ghi đè các style cũ */
+.summary-review-div {
+  margin-top: -12px; /* Đồng bộ với 2 thẻ kia */
+  padding: 2rem; /* Đồng bộ padding */
+}
+.payment-review-div {
+  height: fit-content; /* Bỏ chiều cao cố định */
+}
+
 
 /* ===== SỬA LỖI CĂN LỀ TIÊU ĐỀ ===== */
 .ship-to-title {
@@ -21,263 +87,300 @@
   justify-content: space-between;
   align-items: center;
   margin-top: 10px;
+  /* (MỚI) Thêm border để tách biệt */
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 1rem;
 }
-/* Class mới để bọc Icon và Text */
 .title-content-wrapper {
   display: flex;
   align-items: center;
+  /* (MỚI) Style lại Tiêu đề */
+  font-weight: 600;
+  color: var(--text-dark);
+  font-size: 1.5rem; /* 24px */
+}
+.title-content-wrapper .anticon {
+  vertical-align: middle;
+  color: var(--success-color) !important; /* Đồng bộ màu icon */
+  margin-right: 10px !important;
 }
 /* Class cho nút "CHANGE" */
 .change-info-text {
-  color: #1890ff !important;
+  color: var(--primary-color) !important;
   cursor: pointer;
   font-size: 14px;
   display: flex;
   align-items: center;
   font-weight: 600;
+  transition: all 0.3s ease;
+}
+.change-info-text:hover {
+  color: var(--primary-hover) !important;
+  opacity: 0.8;
 }
 .change-info-text .anticon {
   margin-left: 5px;
 }
 /* ================================== */
 
-.ship-to-div {
-  background-color: white;
-  padding: 10px;
-  margin-top: -12px;
-  /* height: 182px; */ /* <-- ĐÃ XÓA CHIỀU CAO CỐ ĐỊNH */
+
+/* --- THẺ 1: SHIP TO --- */
+.delivery-descriptions {
+  margin-top: 1rem;
 }
-.location-ship {
-  color: #555;
+.delivery-descriptions .ant-descriptions-item-label {
+  width: 120px;
+  font-weight: 600;
+  color: var(--text-light);
+  background-color: transparent !important; /* Xóa nền xám */
 }
-.icon-location-ship {
-  color: green;
+.delivery-descriptions .ant-descriptions-item-label .anticon {
+  margin-right: 8px;
+  color: var(--primary-color);
 }
-.change-location-text {
-  color: rgb(45, 45, 247);
-  cursor: pointer;
-  margin-left: 5px;
-}
-.location-ship-div {
-  display: flex;
-  justify-content: space-between;
-}
-.detail-location {
-  display: block;
-  color: #999090;
-  margin-top: 20px;
-}
-.payment-review-div {
-  background-color: white;
-  padding: 10px;
-  margin-top: -12px;
-  height: 182px;
+.delivery-descriptions .ant-descriptions-item-content {
+  font-weight: 500;
+  color: var(--text-dark);
+  background-color: transparent !important;
 }
 
-.payment-review-text {
-  color: rgb(45, 45, 247);
-  cursor: pointer;
-  margin-left: 5px;
-}
-.icon-payment-review {
-  color: red;
-}
-.payment-review-parent {
-  display: flex;
-  justify-content: flex-end;
-}
-.visa-title {
-  display: flex;
-  align-items: center;
-}
+
+/* --- THẺ 2: PAYMENT --- */
 .visa-name {
-  color: #05aa44 !important;
-  font-weight: 1000 !important;
-  font-style: italic;
+  font-size: 1.5rem !important; /* 24px */
+  font-weight: 700 !important;
+  color: var(--text-dark) !important;
+  margin-bottom: 1rem !important;
+  font-style: normal !important; /* Bỏ italic */
 }
-.number-visa {
-  color: #999090;
-  margin-left: 10px;
-  transform: translateY(-4px);
+.billing-address-title {
+  color: var(--text-light) !important;
+  font-weight: 500;
 }
 .billing-address-detail {
   margin-left: 10px;
-  color: #999090;
-}
-.billing-address-title {
-  color: #555 !important;
-}
-.icon-plus {
-  font-size: 22px;
-}
-.apply-gift {
-  color: #555;
-  font-weight: bold;
-  margin-left: 10px;
-  font-size: 16px;
+  color: var(--text-dark);
+  font-weight: 500;
 }
 .add-gift {
   display: flex;
-  justify-items: center;
+  align-items: center;
+  margin-top: 1rem;
+}
+.apply-gift {
+  color: var(--text-light);
+  font-weight: 500;
+  margin-left: 10px;
+  font-size: 1rem;
+}
+/* (Ẩn các class cũ không cần thiết) */
+.payment-review-parent, .number-visa {
+  display: none;
 }
 
-.summary-review-div {
-  background-color: white;
-  padding: 20px;
-  margin-top: 16px; /* <-- Điều chỉnh lại margin-top cho Summary */
-}
-.subtotal {
+
+/* --- THẺ 3: SUMMARY --- */
+.subtotal, .shipping, .total {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
 }
-.subtotal-text {
-  font-weight: 700;
-  font-size: 15px;
+.subtotal-text, .shipping-text {
+  font-size: 1rem;
+  color: var(--text-light);
+  font-weight: 500;
 }
-.subtotal-value {
-  color: #999090;
-  font-weight: bold;
-  font-size: 15px;
+.subtotal-value, .shipping-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-dark);
 }
-.shipping {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
+/* Style lại phần giảm giá */
+.shipping-text[style*="color: red"] {
+  color: var(--danger-color) !important;
+  font-weight: 500;
 }
-.shipping-text {
-  font-weight: bold;
-  font-size: 15px;
+.shipping-value[style*="color: red"] {
+  color: var(--danger-color) !important;
+  font-weight: 600;
 }
-.shipping-value {
-  font-size: 15px;
-  color: #999090;
-  font-weight: bold;
-}
-.sales-tax {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
-}
-.sales-tax-text {
-  font-weight: bold;
-  font-size: 15px;
-}
-.sales-text-value {
-  font-size: 15px;
-  color: #999090;
-  font-weight: bold;
-}
+
 .total {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 2px dashed var(--border-color);
 }
 .total-text {
-  font-weight: bold;
-  font-size: 15px;
+  font-size: 1.25rem; /* 20px */
+  font-weight: 700;
+  color: var(--text-dark);
 }
 .total-value-review {
-  font-size: 15px;
-  color: #999090;
-  font-weight: bold;
+  font-size: 1.75rem !important; /* 28px */
+  font-weight: 700 !important;
+  color: var(--primary-color) !important;
 }
+
+/* Nút bấm trong Summary (SIÊU ĐỈNH) */
 .button-review-order {
   display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 10px;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
 }
+.save-order, .cancel-order {
+  width: 100%;
+  height: 48px !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  transition: all 0.3s ease;
+}
+/* "Back to Home" nên là nút chính */
 .save-order {
-  width: 100%;
+  background: var(--primary-color) !important;
+  border: none;
 }
+.save-order:hover {
+  background: var(--primary-hover) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+}
+/* "Contact Support" là nút phụ */
 .cancel-order {
-  width: 100%;
-  border: 1px solid #007bff;
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+}
+.cancel-order:hover {
+  background: #f0f5ff;
+  border-color: var(--primary-hover);
+}
+
+
+/* --- HÀNG 2: ORDER DETAIL (BẢNG SẢN PHẨM) --- */
+.order-detail-review {
+  text-align: center;
+  margin-top: 3rem; /* Tách biệt rõ ràng */
+  margin-bottom: 1rem;
 }
 .icon-order-detail {
-  color: orangered;
-  font-size: 25px;
+  font-size: 2rem;
+  color: var(--success-color) !important;
+}
+.order-detail-review .ant-typography {
+  font-weight: 700;
+  color: var(--text-dark);
 }
 
-/* Sửa lỗi chồng chéo */
-.order-detail-review {
-  /* transform: translateY(-45px); */ /* <-- ĐÃ XÓA */
-  margin-top: 30px; /* <-- Thay bằng margin-top */
-}
+/* (SIÊU ĐỈNH) Thẻ chứa bảng */
 .order-detail-and-method-content {
-  background-color: white;
-  /* margin-top: -20px; */ /* <-- ĐÃ XÓA */
-  display: flex;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border-color);
+  padding: 2rem;
+  display: block; /* Sửa lỗi 'display: flex' từ code cũ */
 }
-
+/* Xóa nền xám .dad4d4 */
 .order-detail-content {
   width: 100%;
-  background-color: #dad4d4;
-  padding: 20px;
+  background-color: transparent;
+  padding: 0;
+}
+
+/* "SHIPPING FROM" (Info Box) */
+.shipping-from {
+  padding: 1rem 1.5rem;
+  background: var(--bg-light); /* Dùng nền xám nhạt */
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  border: 1px solid var(--border-color);
 }
 .icon-shipping-from {
+  color: var(--primary-color);
   margin-right: 10px;
-  font-size: 25px;
-  transform: translateY(10px);
+  font-size: 1.25rem; /* 20px */
 }
 .text-shipping-from {
-  font-size: 25PX;
+  font-size: 1rem; /* 16px */
+  font-weight: 500;
+  color: var(--text-dark);
 }
 .note-text {
-  margin-left: 43px;
-  font-size: 15px;
-  color: #555;
+  margin-left: 34px; /* Căn lề với text ở trên */
+  font-size: 0.9rem;
+  color: var(--text-light);
+  display: block;
+  margin-top: 4px;
 }
 
-.product-table .ant-table-thead > tr > th {
-  background: #fafafa;
-  font-weight: bold;
-  text-transform: uppercase;
-}
-
-.product-table .ant-image-img {
-  border-radius: 8px;
-}
-
-.text-shipping-from {
-  font-size: 16px;
-  margin-left: 8px;
-}
-.product-table .ant-table,
-.product-table .ant-table-container,
-.product-table .ant-table-thead > tr > th,
-.product-table .ant-table-tbody > tr > td {
-  background: transparent !important;
-}
-
-.product-table .ant-table-tbody > tr > td,
-.product-table .ant-table-thead > tr > th {
-  border: none !important;
-}
-
+/* --- TÙY CHỈNH BẢNG (TABLE) SIÊU SẠCH SẼ --- */
 .product-table .ant-table-wrapper {
   box-shadow: none !important;
   border: none !important;
 }
+.product-table .ant-table {
+  background: transparent !important;
+}
+.product-table .ant-table-thead > tr > th {
+  background: var(--bg-light) !important;
+  color: var(--text-dark) !important;
+  font-weight: 600 !important;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  border: none !important;
+}
+/* Bo tròn cho header */
+.product-table .ant-table-thead > tr > th:first-child {
+  border-radius: 8px 0 0 8px;
+}
+.product-table .ant-table-thead > tr > th:last-child {
+  border-radius: 0 8px 8px 0;
+}
 
-/* Kích thước ảnh (100px) */
+.product-table .ant-table-tbody > tr > td {
+  vertical-align: middle;
+  border: none !important;
+  background: transparent !important;
+  padding: 1rem; /* Thêm padding cho các hàng */
+}
+/* Thêm border dưới cho mỗi hàng (trừ hàng cuối) */
+.product-table .ant-table-tbody > tr:not(:last-child) > td {
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+
 .product-image-wrapper {
-  width: 100px;
-  height: 100px;
+  width: 80px; /* Thu nhỏ 1 chút cho cân đối */
+  height: 80px;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   border-radius: 8px;
-  background-color: #f0f0f0;
+  background-color: #ffffff;
+  border: 1px solid var(--border-color);
 }
 .product-image-wrapper .ant-image-img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover; /* Dùng 'cover' đẹp hơn 'contain' */
+}
+/* Style cho text trong bảng */
+.product-table .ant-typography-strong {
+  color: var(--text-dark);
+}
+.product-table .ant-typography-secondary {
+  font-weight: 500;
+}
+.product-table .ant-typography-success,
+.product-table .ant-typography-danger {
+  font-weight: 600;
 }
 
 /* Ẩn các class không còn dùng đến */
+/* (Giữ nguyên các class display: none của bạn) */
 .detail-method,
 .tue-aug-15,
 .checkbox-expe,
@@ -294,23 +397,9 @@
 .having-trouble,
 .live-chat,
 .live-chat-phone,
-.more-help-content {
+.more-help-content,
+.location-ship, .icon-location-ship, .change-location-text, .location-ship-div, .detail-location,
+.payment-review-text, .icon-payment-review, .sales-tax
+{
   display: none;
-}
-
-/* Bảng thông tin (Descriptions) */
-.delivery-descriptions .ant-descriptions-item-label {
-  width: 120px;
-  font-weight: 600;
-  color: #595959;
-  background-color: #fafafa;
-}
-.delivery-descriptions .ant-descriptions-item-label .anticon {
-  margin-right: 8px;
-  color: #1677ff;
-}
-.delivery-descriptions .ant-descriptions-item-content {
-  font-weight: 500;
-  color: #262626;
-  background-color: #ffffff;
 }

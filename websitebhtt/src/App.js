@@ -8,7 +8,8 @@ import "antd/dist/reset.css"; // cần cho Ant Design v5
 // --- IMPORT CONTEXT ---
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
-import { OrderProvider } from "./context/OrderContext"; // <-- 1. THÊM IMPORT NÀY
+import { OrderProvider } from "./context/OrderContext"; // Context (đếm count) CÓ SẴN
+import { OrderHistoryProvider } from "./context/OrderHistoryContext"; // <-- THÊM MỚI (để lưu lịch sử)
 
 // 🏠 --- USER COMPONENTS ---
 // (import Header, Footer, ... giữ nguyên)
@@ -39,6 +40,8 @@ import ProductDetail from "./pages/ProductDetail";
 import Product from "./pages/Product";
 import ShoppingCart from "./pages/ShoppingCart";
 import ReviewOrder from "./pages/ReviewOrder";
+import Blog from "./pages/Blog";
+import OrderHistory from "./pages/OrderHistory/OrderHistory"; // <-- THÊM MỚI (trang lịch sử)
 
 const DARK_MODE_KEY = "app_dark_mode";
 
@@ -67,6 +70,8 @@ function UserLayout() {
         <Route path="/product" element={<Product />} />
         <Route path="/shoppingcart" element={<ShoppingCart />} />
         <Route path="/revieworder" element={<ReviewOrder />} />
+        <Route path="/blog" element={<Blog />} /> 
+        <Route path="/order-history" element={<OrderHistory />} /> {/* <-- THÊM MỚI (route cho trang lịch sử) */}
       </Routes>
       <ChatBubble />
       <Footer />
@@ -116,8 +121,6 @@ function AdminLayout() {
   );
 }
 
-
-
 // ========== APP CHÍNH (ĐÃ CẬP NHẬT) ==========
 function App() {
   return (
@@ -131,12 +134,14 @@ function App() {
       <BrowserRouter>
         <AuthProvider>
           <CartProvider>
-            <OrderProvider> {/* <-- 2. BỌC OrderProvider VÀO ĐÂY */}
-              <Routes>
-                <Route path="/admin/*" element={<AdminLayout />} />
-                <Route path="/*" element={<UserLayout />} />
-              </Routes>
-            </OrderProvider> {/* <-- ĐÓNG NÓ LẠI */}
+            <OrderProvider> {/* Context (đếm count) CÓ SẴN */}
+              <OrderHistoryProvider> {/* <-- THÊM MỚI (Context để lưu lịch sử) */}
+                <Routes>
+                  <Route path="/admin/*" element={<AdminLayout />} />
+                  <Route path="/*" element={<UserLayout />} />
+                </Routes>
+              </OrderHistoryProvider> {/* <-- THÊM MỚI (Đóng) */}
+            </OrderProvider>
           </CartProvider>
         </AuthProvider>
       </BrowserRouter>

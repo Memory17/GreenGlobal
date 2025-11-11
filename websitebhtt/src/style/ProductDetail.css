@@ -1,49 +1,265 @@
-/* src/style/ProductDetail.css */
+/* ========================================================= */
+/* === STYLES CHUNG (General Styles) === */
+/* ========================================================= */
 
-/* === BỘ CHỌN SỐ LƯỢNG (FIXED LẠI HOÀN TOÀN) === */
+/* Đảm bảo bố cục nền sáng, sạch sẽ và có khoảng cách hợp lý */
+.product-detail-page {
+    background-color: #f7f9fc !important; /* Nền trắng ngà/xanh nhạt */
+    min-height: calc(100vh - 64px); /* Giả định header cao 64px */
+    padding: 60px 40px !important;
+    max-width: 1400px;
+    margin: 0 auto;
+    border-radius: 12px;
+}
+
+/* Ẩn thanh cuộn dọc cho các trình duyệt WebKit (Chrome, Safari) */
+.thumbnail-images::-webkit-scrollbar {
+    display: none;
+}
+
+/* Ẩn thanh cuộn dọc cho IE và Edge */
+.thumbnail-images {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+
+
+/* ========================================================= */
+/* === CỘT HÌNH ẢNH (Image Gallery) === */
+/* ========================================================= */
+
+.product-images {
+    /* Đảm bảo rằng bố cục hình ảnh thích ứng mượt mà */
+    display: flex;
+    gap: 20px !important;
+}
+
+/* Thumbnail wrapper để có thể cuộn trên mobile/màn hình nhỏ */
+.thumbnail-images {
+    max-height: 400px; /* Chiều cao cố định bằng chiều cao ảnh chính */
+    overflow-y: auto; /* Cho phép cuộn */
+    padding-right: 5px; /* Tạo khoảng trống cho thanh cuộn (nếu có) */
+}
+
+.thumbnail-images .ant-image {
+    transition: transform 0.3s ease, border 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 8px !important;
+    overflow: hidden;
+    position: relative;
+}
+
+.thumbnail-images .ant-image:hover {
+    transform: scale(1.05); /* Hiệu ứng phóng to nhẹ khi hover */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Ảnh chính */
+.main-product-image {
+    border-radius: 12px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Shadow sâu, nổi bật */
+    transition: transform 0.5s ease;
+}
+
+/* ========================================================= */
+/* === CỘT THÔNG TIN (Product Info) === */
+/* ========================================================= */
+
+/* Tiêu đề sản phẩm */
+.ant-typography.ant-typography-level-3 {
+    font-weight: 700 !important;
+    color: #1a1a1a;
+    margin-bottom: 8px !important;
+}
+
+/* Giá sản phẩm */
+.product-price {
+    font-size: 36px !important;
+    font-weight: 800 !important;
+    color: #e53935 !important; /* Màu đỏ nổi bật */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+    display: block;
+}
+
+/* Giá cũ (gạch ngang) */
+.ant-typography-delete {
+    color: #8c8c8c !important;
+    font-size: 18px !important;
+}
+
+/* Đánh giá (Rate) */
+.ant-rate {
+    font-size: 20px !important;
+    color: #ffc107; /* Màu vàng rực rỡ */
+}
+
+/* Mô tả */
+.text-product-info {
+    line-height: 1.8;
+    color: #595959;
+    background-color: #ffffff;
+    padding: 15px;
+    border-left: 5px solid #1890ff;
+    border-radius: 0 8px 8px 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.text-product-info:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+
+/* ========================================================= */
+/* === BỘ ĐIỀU CHỈNH SỐ LƯỢNG (Quantity Selector) === */
+/* ========================================================= */
+
+.select-quantity {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin-top: 20px;
+    padding: 15px 0;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+}
+
 .quantity-product-cart {
     display: flex;
     align-items: center;
-    gap: 10px; /* Khoảng cách giữa các nút và số lượng */
-}
-
-/* Đảm bảo nút Ant Design có hình dáng đẹp */
-.quantity-product-cart .ant-btn {
-    width: 32px;
-    height: 32px;
-    padding: 0;
-    line-height: 1; /* Căn chỉnh ký hiệu "-" và "+" vào giữa */
     border: 1px solid #d9d9d9;
-    box-shadow: none;
-    font-size: 16px;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    border-radius: 6px;
+    overflow: hidden;
 }
 
-/* Định dạng số lượng */
+.quantity-product-cart .ant-btn {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background-color: #f0f0f0;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.quantity-product-cart .ant-btn:hover:not(:disabled) {
+    background-color: #e6f7ff;
+    color: #1890ff;
+}
+
+.quantity-product-cart .ant-btn:active:not(:disabled) {
+    transform: scale(0.95);
+}
+
 .quantity-product-cart .ant-typography {
+    width: 40px;
+    text-align: center;
     font-size: 16px;
     font-weight: 600;
-    min-width: 20px; /* Độ rộng tối thiểu để căn giữa */
-    text-align: center;
-    color: #000;
+    color: #333;
 }
-/* === KẾT THÚC FIX LỖI BỘ CHỌN SỐ LƯỢNG === */
 
 
-/* === ĐÃ SỬA LỖI TRÔI NÚT (Giữ nguyên phần này) === */
-.select-quantity { 
-    display: flex; 
-    align-items: center; 
-    gap: 10px; 
-   
-    margin-top: 20px;
-    transform: translateY(-5px);
+/* ========================================================= */
+/* === NÚT HÀNH ĐỘNG (Action Buttons) === */
+/* ========================================================= */
+
+.add-to-cart-button,
+.buy-now-button {
+    font-weight: 600 !important;
+    letter-spacing: 0.5px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    border-radius: 8px !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
-/* === KẾT THÚC SỬA LỖI TRÔI NÚT === */
 
-/* ... (Giữ nguyên các rule CSS khác) ...
-...
-*/
+/* Nút Thêm vào giỏ (Thứ cấp) */
+.add-to-cart-button {
+    border: 2px solid #1890ff !important;
+    color: #1890ff !important;
+    background-color: #ffffff !important;
+}
+
+.add-to-cart-button:hover:not(:disabled) {
+    background-color: #e6f7ff !important;
+    box-shadow: 0 6px 15px rgba(24, 144, 255, 0.3) !important;
+    transform: translateY(-2px);
+}
+
+.add-to-cart-button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+/* Nút Mua ngay (Chính) */
+.buy-now-button {
+    background-color: #fa541c !important; /* Màu cam/đỏ nóng */
+    border-color: #fa541c !important;
+}
+
+.buy-now-button:hover:not(:disabled) {
+    background-color: #ff7875 !important;
+    border-color: #ff7875 !important;
+    box-shadow: 0 6px 15px rgba(250, 84, 28, 0.4) !important;
+    transform: translateY(-2px);
+}
+
+.buy-now-button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.primary-buy .ant-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    box-shadow: none;
+    transform: none;
+}
+
+
+/* ========================================================= */
+/* === RESPONSIVE DESIGN (Thiết kế đáp ứng) === */
+/* ========================================================= */
+
+@media (max-width: 991px) {
+    .product-detail-page {
+        padding: 30px 20px !important;
+    }
+
+    /* Trên màn hình nhỏ, chuyển hình ảnh nhỏ nằm ngang (flex-wrap) */
+    .product-images {
+        flex-direction: column;
+        gap: 10px !important;
+    }
+
+    .thumbnail-images {
+        max-height: 120px; /* Giảm chiều cao tối đa */
+        overflow-y: hidden;
+        overflow-x: auto; /* Cho phép cuộn ngang */
+        white-space: nowrap; /* Ngăn cách dòng */
+        padding-bottom: 10px; /* Khoảng trống cho thanh cuộn ngang */
+        display: flex;
+        flex-direction: row !important; /* Đặt lại hướng thành ngang */
+    }
+    
+    .thumbnail-images .ant-image {
+        margin-right: 10px;
+        width: 70px !important;
+        height: 70px !important;
+        flex-shrink: 0;
+    }
+
+    .main-product-image {
+        height: auto !important; /* Cho phép chiều cao tự động */
+        max-height: 400px;
+    }
+
+    .select-quantity {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .ant-typography.ant-typography-level-3 {
+        font-size: 24px !important;
+    }
+
+    .product-price {
+        font-size: 30px !important;
+    }
+}

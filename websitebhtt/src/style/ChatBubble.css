@@ -1,0 +1,467 @@
+/* ChatBubble.css */
+
+/* --- 1. Định nghĩa Keyframes (Linh hồn của hiệu ứng) --- */
+
+/**
+ * Hiệu ứng cho Card (popup)
+ * Mờ dần + Trượt nhẹ lên
+ */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/**
+ * Hiệu ứng cho các mục trong danh sách
+ * Mờ dần + Trượt từ phải sang
+ */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* --- 2. Kiểu dáng và Vị trí (Như cũ) --- */
+
+.support-popup-card {
+  position: fixed;
+  /* đặt z-index cao hơn để không bị che bởi các element float khác */
+  z-index: 3000;
+  /* Hiển thị bên cạnh (bên trái) của bubble dưới */
+  bottom: 24px; /* cùng đáy với bubble */
+  right: 88px; /* đặt sát bên trái bubble (bubble có right:24 + nút ~56) */
+  width: 320px;
+  max-height: 400px;
+  overflow-y: auto;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2); /* Đổ bóng đẹp hơn */
+  display: flex;
+  flex-direction: column;
+
+  /* --- 3. Áp dụng hiệu ứng cho Card --- */
+  animation-name: fadeInUp;
+  animation-duration: 0.3s;
+  animation-timing-function: ease-out;
+
+  /* Giúp card không bị co giật khi nội dung bên trong có animation */
+  transform-origin: bottom right;
+}
+
+/* Header của Card */
+.support-popup-header {
+  padding: 16px 24px 0 24px;
+}
+
+/* --- 4. Kiểu dáng và Hiệu ứng cho các mục (List Item) --- */
+
+.support-option-item {
+  padding: 16px 0 !important;
+  border-bottom: 1px solid #f0f0f0;
+
+  /* --- 4a. Áp dụng hiệu ứng trượt (Staggered) --- */
+  opacity: 0; /* Quan trọng: Mặc định ẩn đi để animation có tác dụng */
+  animation-name: slideInRight;
+  animation-duration: 0.4s;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards; /* Giữ lại trạng thái cuối (opacity: 1) */
+  
+  /* --- 4b. Thêm hiệu ứng "mượt mà" cho hover --- */
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.support-option-item:last-child {
+  border-bottom: none;
+}
+
+/* --- 4c. Đây là phần "siêu đỉnh": tạo độ trễ cho từng mục --- */
+/* Mục thứ 1: trễ 0.1s */
+.support-option-item:nth-child(1) {
+  animation-delay: 0.1s;
+}
+/* Mục thứ 2: trễ 0.2s */
+.support-option-item:nth-child(2) {
+  animation-delay: 0.2s;
+}
+/* Mục thứ 3: trễ 0.3s */
+.support-option-item:nth-child(3) {
+  animation-delay: 0.3s;
+}
+/* (Bạn có thể thêm nth-child(4), (5) nếu có nhiều mục hơn) */
+
+
+/* --- 5. Hiệu ứng Hover "Mượt mà" --- */
+
+.support-option-item:hover {
+  background-color: #f7f7f7;
+  transform: scale(1.02); /* Phóng to nhẹ toàn bộ mục */
+}
+
+/* Kiểu dáng cho icon "Gửi" (SendOutlined) */
+.support-option-item .ant-list-item-action .anticon-send {
+  font-size: 18px;
+  color: #1890ff;
+  /* Thêm transition cho icon */
+  transition: transform 0.2s ease;
+}
+
+/* Khi hover vào MỤC, icon "Gửi" sẽ trượt sang phải */
+.support-option-item:hover .ant-list-item-action .anticon-send {
+  transform: translateX(3px) rotate(-10deg); /* Vừa trượt vừa xoay nhẹ */
+}
+
+/* Kiểu dáng tiêu đề */
+.support-option-item .ant-list-item-meta-title a {
+  color: #050505;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.support-option-item:hover .ant-list-item-meta-title a {
+  color: #1890ff; /* Đổi màu tiêu đề khi hover */
+}
+
+/* Responsive: trên màn hình nhỏ, đặt popup phía trên bubble để tránh che nội dung */
+@media (max-width: 480px) {
+  .support-popup-card {
+    right: 24px;
+    bottom: 88px; /* hiển thị phía trên bubble dưới */
+    width: calc(100% - 48px);
+    left: 24px;
+    right: 24px;
+  }
+}
+
+/* Messenger-style chat panel (giống Messenger) */
+.messenger-panel {
+  position: fixed;
+  /* đặt z-index cao hơn hẳn để không bị che bởi các element float khác trên trang */
+  z-index: 3000;
+  /* Hiển thị bên cạnh (bên trái) của bubble trên: */
+  bottom: 24px; /* căn cùng đáy với bubble dưới */
+  right: 88px; /* đặt sát bên trái bubble (bubble có right:24 + size ~56) */
+  width: 360px;
+  max-height: 460px; /* cân đối hơn */
+  /* chuyển panel thành flex column để dễ neo input xuống đáy */
+  display: flex;
+  flex-direction: column;
+  height: 460px; /* cố định chiều cao để phần input không bị đẩy ra ngoài */
+  overflow: hidden; /* ẩn phần vượt ra và cho messenger-messages cuộn bên trong */
+  border-radius: 12px;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.14);
+  background: #fff;
+  padding-bottom: 0; /* không để padding-bottom để input dính sát đáy panel */
+  animation: fadeInScale 220ms ease-out;
+  transition: box-shadow 180ms ease, transform 180ms ease;
+  box-sizing: border-box; /* ensure padding included in height */
+}
+
+.messenger-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 0 0 auto; /* header fixed size, don't grow */
+  /* add breathing room so avatar and text don't touch the panel edge */
+  padding: 12px; /* top/right/bottom/left */
+}
+
+.messenger-header-left {
+  display: flex;
+  align-items: center;
+}
+
+.messenger-header-left .ant-avatar {
+  /* ensure avatar remains crisp and slightly larger */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  margin-right: 12px; /* add breathing room to the right of the avatar */
+}
+
+.messenger-header-title {
+  /* small padding so the title block doesn't touch the avatar or icon */
+  padding: 2px 6px 2px 0;
+}
+
+.messenger-header-right {
+  display: flex;
+  align-items: center;
+  margin-left: 12px;
+}
+
+.messenger-alert-icon {
+  color: #52c41a; /* green alert color */
+  font-size: 20px;
+  margin-left: 8px; /* separate a bit from title */
+  padding: 4px; /* give the icon a touch of padding */
+  border-radius: 6px;
+}
+
+.messenger-messages {
+  padding: 12px;
+  /* chiếm không gian còn lại giữa header và input */
+  flex: 1 1 auto;
+  min-height: 140px;
+  overflow-y: auto;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfbff 100%);
+  border-radius: 8px;
+  box-sizing: border-box;
+  max-height: calc(100% - 120px); /* ensure messages area cannot push input down */
+}
+
+.message-item {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.message-item.admin {
+  justify-content: flex-start;
+}
+
+.message-item.user {
+  justify-content: flex-end;
+}
+
+.message-bubble {
+  max-width: 75%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  line-height: 1.3;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+  word-break: break-word; /* prevent very long words from expanding the panel */
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.message-item.admin .message-bubble {
+  background: #f0f0f2;
+  color: #111;
+  border-bottom-left-radius: 4px;
+}
+
+.message-item.user .message-bubble {
+  background: #1890ff;
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+
+.message-image {
+  max-width: 220px;
+  max-height: 240px;
+  display: block;
+  border-radius: 8px;
+}
+
+.message-item.user .message-bubble:hover,
+.message-item.admin .message-bubble:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(24,144,255,0.12);
+}
+
+.messenger-input {
+  padding: 12px;
+  border-top: 1px solid #f0f0f0;
+  background: transparent; /* make container transparent so textarea background controls look */
+  position: relative; /* để tăng độ ưu tiên z-index cho nút gửi */
+  z-index: 3001;
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  flex: 0 0 auto; /* keep input fixed size and anchored to bottom */
+}
+
+/* Tăng độ bo góc và nền cho vùng input để nằm hoàn toàn trong panel */
+.messenger-input .ant-input-textarea {
+  border-radius: 8px;
+}
+
+/* Đảm bảo nút Gửi và input luôn nằm trên các floating elements */
+.messenger-input .ant-btn,
+.messenger-input .ant-input,
+.messenger-input .ant-input-textarea {
+  position: relative;
+  z-index: 3002;
+}
+
+/* Send-row: hide block background and tighten spacing so the button sits on panel */
+.messenger-send-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+  background: transparent; /* remove background */
+  padding: 0;
+}
+
+.messenger-send-row .ant-btn {
+  margin-right: 4px; /* small gap from the panel edge */
+  margin-bottom: 2px; /* align with textarea */
+}
+
+/* Make textarea have a little right padding so text doesn't touch the send icon */
+.messenger-textarea .ant-input-textarea {
+  padding-right: 12px;
+}
+
+/* send icon plain button (no circular blue background) */
+.send-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: #1677ff; /* stronger blue for the icon */
+  font-size: 22px; /* larger icon */
+  padding: 8px 10px; /* larger hit area while remaining compact */
+  cursor: pointer;
+}
+
+.send-icon-button:active,
+.send-icon-button:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.send-icon-button .anticon {
+  font-size: 22px; /* ensure the Antd icon scales accordingly */
+  line-height: 1;
+}
+
+/* Hover/active micro-interaction */
+.send-icon-button:hover {
+  transform: translateY(-2px) scale(1.03);
+}
+
+.icon-action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: #555;
+  font-size: 18px;
+  padding: 6px 8px;
+  cursor: pointer;
+}
+
+.icon-action-button:hover {
+  color: #1677ff;
+  transform: translateY(-2px);
+}
+
+.icon-action-button.emoji-button {
+  color: #faad14; /* warm/orange for emoji */
+}
+.icon-action-button.emoji-button:hover {
+  color: #d48806;
+}
+
+.icon-action-button.picture-button {
+  color: #13c2c2; /* teal for images */
+}
+.icon-action-button.picture-button:hover {
+  color: #08979c;
+}
+
+.emoji-picker {
+  position: absolute;
+  bottom: 64px; /* sit above the input row */
+  right: 12px;
+  background: #fff;
+  border: 1px solid #eee;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+  padding: 8px;
+  border-radius: 8px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  z-index: 3500;
+}
+
+.emoji-btn {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  padding: 4px 6px;
+  cursor: pointer;
+}
+
+.emoji-btn:hover { transform: scale(1.15); }
+
+/* Remove any accidental default border around button in some browsers */
+.send-icon-button::-moz-focus-inner {
+  border: 0;
+}
+
+/* Textarea wrapper: make textarea fill the remaining width and remove extra white block */
+.messenger-textarea {
+  flex: 1 1 auto;
+}
+
+.messenger-textarea .ant-input-textarea {
+  width: 100%;
+  background: #ffffff; /* keep input white but confined to textarea area */
+  border-radius: 8px;
+  resize: none;
+  border: 1px solid #e6e6e6;
+  box-shadow: none;
+}
+
+/* Reduce default bottom margin so button sits aligned */
+.messenger-textarea .ant-input {
+  margin-bottom: 0;
+}
+
+/* Hover effect for panel */
+.messenger-panel:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+}
+
+/* Custom scrollbar for messages */
+.messenger-messages::-webkit-scrollbar {
+  width: 8px;
+}
+.messenger-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+.messenger-messages::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.12);
+  border-radius: 6px;
+}
+
+/* Firefox scrollbar */
+.messenger-messages {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.12) transparent;
+}
+
+/* Responsive: trên màn hình nhỏ (mobile), đặt panel lên trên bubble để tránh che nội dung chính */
+@media (max-width: 480px) {
+  .messenger-panel {
+    right: 24px;
+    bottom: 88px; /* hiển thị phía trên bubble trên */
+    width: calc(100% - 48px);
+    left: 24px;
+    right: 24px;
+  }
+}
