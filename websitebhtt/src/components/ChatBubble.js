@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { FloatButton, Card, List, Avatar, Typography, Input } from 'antd';
 import {
-  
   CloseOutlined,
   SendOutlined,
   WechatOutlined,
@@ -11,76 +11,91 @@ import {
   CustomerServiceOutlined
 } from '@ant-design/icons';
 
-// Import CSS, chúng ta sẽ dùng file này để định vị
-import '../style/ChatBubble.css'; 
+import '../style/ChatBubble.css';
 
 const { Text, Title } = Typography;
 
-/**
- * Component ChatBubble (giờ đây là một Widget Hỗ trợ đầy đủ)
- * Nó tự quản lý state của mình, không cần App.js can thiệp.
- */
+// --- Broadcast Channel for tab-to-tab communication ---
+const channel = new BroadcastChannel('chat_channel');
+
 const ChatBubble = () => {
-  // 1. State quản lý hiển thị popup, đặt BÊN TRONG component
   const [isPopupVisible, setIsPopupVisible] = useState(false);
-  // State cho messenger chat (giống Messenger)
   const [isMessengerOpen, setIsMessengerOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { id: 1, sender: 'admin', text: 'Xin chào! Tôi là hỗ trợ. Bạn cần giúp gì?' },
+    { id: 1, sender: 'admin', type: 'text', text: 'Xin chào! Tôi là hỗ trợ. Bạn cần giúp gì?' },
   ]);
   const [inputValue, setInputValue] = useState('');
   const messagesContainerRef = useRef(null);
   const fileInputRef = useRef(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
-  // Khi messages thay đổi, cuộn vùng messages xuống cuối (cuộn trong container, không cuộn toàn trang)
+  // --- Determine role based on URL ---
+  const location = useLocation();
+  const currentUserRole = location.pathname.startsWith('/admin') ? 'admin' : 'user';
+
+  // --- Effect for Broadcast Channel ---
+  useEffect(() => {
+    // Function to handle incoming messages
+    const handleNewMessage = (event) => {
+      const message = event.data;
+      // Add message to state only if it's from the other role
+      if (message.sender !== currentUserRole) {
+        setMessages((prev) => [...prev, message]);
+      }
+    };
+
+    // Add event listener
+    channel.addEventListener('message', handleNewMessage);
+
+    // Cleanup on component unmount
+    return () => {
+      channel.removeEventListener('message', handleNewMessage);
+    };
+  }, [currentUserRole]); // Re-run if role changes (e.g., admin logs out)
+
   useEffect(() => {
     const el = messagesContainerRef.current;
     if (el) {
-      // scroll to bottom smoothly
       el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
     }
   }, [messages]);
 
-  // 2. Hàm để bật/tắt popup
   const togglePopup = () => {
     setIsPopupVisible(!isPopupVisible);
-    // Khi mở support popup thì đóng messenger (tránh chồng giao diện)
     if (!isPopupVisible) setIsMessengerOpen(false);
   };
 
   const toggleMessenger = () => {
     setIsMessengerOpen((prev) => {
       const next = !prev;
-      if (next) setIsPopupVisible(false); // đóng support khi mở messenger
+      if (next) setIsPopupVisible(false);
       return next;
     });
   };
 
-  // scroll handled by messagesContainerRef effect
-
+  // --- Updated message sending function ---
   const handleSendMessage = () => {
     const text = inputValue && inputValue.trim();
     if (!text) return;
-    const newMsg = { id: Date.now(), sender: 'user', type: 'text', text };
+    const newMsg = { id: Date.now(), sender: currentUserRole, type: 'text', text };
+    
+    // Add to local state
     setMessages((prev) => [...prev, newMsg]);
+    // Broadcast to other tabs
+    channel.postMessage(newMsg);
+    
     setInputValue('');
-    // Simulate admin reply after short delay
-    setTimeout(() => {
-      const reply = { id: Date.now() + 1, sender: 'admin', type: 'text', text: 'Cảm ơn, chúng tôi sẽ phản hồi sớm.' };
-      setMessages((prev) => [...prev, reply]);
-    }, 900);
   };
 
+  // --- Updated image sending function ---
   const handleImageSend = (dataUrl) => {
     if (!dataUrl) return;
-    const imgMsg = { id: Date.now(), sender: 'user', type: 'image', content: dataUrl };
+    const imgMsg = { id: Date.now(), sender: currentUserRole, type: 'image', content: dataUrl };
+    
+    // Add to local state
     setMessages((prev) => [...prev, imgMsg]);
-    // simulated admin ack
-    setTimeout(() => {
-      const reply = { id: Date.now() + 1, sender: 'admin', type: 'text', text: 'Cảm ơn, chúng tôi đã nhận ảnh của bạn.' };
-      setMessages((prev) => [...prev, reply]);
-    }, 900);
+    // Broadcast to other tabs
+    channel.postMessage(imgMsg);
   };
 
   const handleFileChange = (e) => {
@@ -91,7 +106,6 @@ const ChatBubble = () => {
       handleImageSend(ev.target.result);
     };
     reader.readAsDataURL(file);
-    // reset input so same file can be selected later
     e.target.value = null;
   };
 
@@ -101,38 +115,44 @@ const ChatBubble = () => {
     setShowEmojiPicker(false);
   };
 
-  // 3. Dữ liệu các kênh hỗ trợ
   const supportOptions = [
     {
       id: 'zalo-247',
-      icon: 'https://cdn-icons-png.flaticon.com/512/739/739178.png', // Zalo
+      icon: 'https://cdn-icons-png.flaticon.com/512/739/739178.png',
       title: 'Hỗ trợ trực tuyến 24/7',
       description: 'Liên hệ qua Zalo để được hỗ trợ nhanh nhất',
-      link: 'https://zalo.me/your-zalo-id' // Thay link Zalo của bạn
+      link: 'https://zalo.me/your-zalo-id'
     },
     {
       id: 'zalo-group',
-      icon: 'https://cdn-icons-png.flaticon.com/512/739/739178.png', // Zalo
+      icon: 'https://cdn-icons-png.flaticon.com/512/739/739178.png',
       title: 'Nhóm Zalo',
       description: 'Cập nhật thông tin mới nhất và thảo luận',
-      link: 'https://zalo.me/g/your-zalo-group-id' // Thay link nhóm Zalo
+      link: 'https://zalo.me/g/your-zalo-group-id'
     },
     {
       id: 'telegram',
-      icon: 'https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg', // Telegram
+      icon: 'https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg',
       title: 'Hỗ trợ qua Telegram',
       description: 'Tư vấn qua kênh Telegram',
-      link: 'https://t.me/your-telegram-username' // Thay link Telegram
+      link: 'https://t.me/your-telegram-username'
     },
   ];
 
-  // Component trả về một Fragment chứa cả Popup và Nút bấm
+  // 👈 Hàm để xác định class cho tin nhắn dựa trên role hiện tại
+  const getMessageClass = (senderRole) => {
+    if (senderRole === currentUserRole) {
+      return 'message-item current-user'; // Tin nhắn của người hiện tại (xanh)
+    } else {
+      return 'message-item other-user'; // Tin nhắn của người khác (xám)
+    }
+  };
+
   return (
     <>
-      {/* 4. Popup Hỗ trợ (Chỉ hiện khi isPopupVisible = true) */}
       {isPopupVisible && (
         <Card
-          className="support-popup-card" // Class CSS để định vị
+          className="support-popup-card"
           bordered={false}
           bodyStyle={{ padding: '0 24px 24px 24px' }}
           title={
@@ -164,20 +184,16 @@ const ChatBubble = () => {
         </Card>
       )}
 
-      {/* Messenger-like chat panel (open when isMessengerOpen) */}
       {isMessengerOpen && (
-        /* Use a plain div as the panel root so flex children are exactly header/messages/input
-           (AntD Card can add extra wrapper elements which interferes with our flex math). */
         <div className="messenger-panel">
           <div className="messenger-header">
             <div className="messenger-header-left">
-              <Avatar src="https://i.pravatar.cc/150?img=11" size={48} />
+              <Avatar src="https://i.imgur.com/W0ESUyO.jpeg" size={48} />
               <div className="messenger-header-title" style={{ marginLeft: 12 }}>
                 <div style={{ fontWeight: 600 }}>Hỗ trợ trực tiếp</div>
-                <div style={{ fontSize: 12, color: '#888' }}>Trực tuyến • Trả lời trong vài phút</div>
+                <div style={{ fontSize: 12, color: '#888' }}>Trực tuyến</div>
               </div>
             </div>
-
             <div className="messenger-header-right">
               <ExclamationCircleOutlined className="messenger-alert-icon" />
             </div>
@@ -185,7 +201,7 @@ const ChatBubble = () => {
 
           <div className="messenger-messages" ref={messagesContainerRef}>
             {messages.map((m) => (
-              <div key={m.id} className={`message-item ${m.sender === 'user' ? 'user' : 'admin'}`}>
+              <div key={m.id} className={getMessageClass(m.sender)}>
                 {m.type === 'image' ? (
                   <div className="message-bubble">
                     <img src={m.content} alt="uploaded" className="message-image" />
@@ -217,7 +233,7 @@ const ChatBubble = () => {
                     handleSendMessage();
                   }
                 }}
-                placeholder="Gửi tin nhắn cho hỗ trợ..."
+                placeholder="Gửi tin nhắn..."
               />
             </div>
 
@@ -258,13 +274,12 @@ const ChatBubble = () => {
         </div>
       )}
 
-      {/* 5. Nút tròn (Live Messenger) */}
       <FloatButton
         icon={isMessengerOpen ? <CloseOutlined /> : <WechatOutlined />}
         type="primary"
         style={{
           right: 24,
-          bottom: 88, /* đặt sát trên support bubble (24 + ~56 button + 8 gap) */
+          bottom: 88,
           zIndex: 1001,
           transform: 'scale(1.5)'
         }}
@@ -272,14 +287,13 @@ const ChatBubble = () => {
         tooltip={<div>{isMessengerOpen ? 'Đóng Messenger' : 'Mở Messenger'}</div>}
       />
 
-      {/* 6. Nút tròn (Hỗ trợ nhanh - giữ như cũ) */}
       <FloatButton
         icon={isPopupVisible ? <CloseOutlined /> : <CustomerServiceOutlined />}
         type="primary"
         style={{
           right: 24,
           bottom: 24,
-          zIndex: 1001, // Đảm bảo nút này LUÔN nổi trên popup
+          zIndex: 1001,
           transform: 'scale(1.5)',
         }}
         onClick={togglePopup}

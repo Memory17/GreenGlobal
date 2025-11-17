@@ -100,35 +100,20 @@ function AdminLayout() {
   const toggleSideMenu = () => setIsSideMenuOpen((prev) => !prev);
 
   return (
-    <div className={`App ${isDarkMode ? "dark-mode" : "light-mode"}`} style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+    <div className={`App ${isDarkMode ? "dark-mode" : "light-mode"}`}>
       <AppHeader
         toggleSideMenu={toggleSideMenu}
         isDarkMode={isDarkMode}
         onToggleDarkMode={handleToggleDarkMode}
       />
-      <div 
-        className="SideMenuAndPageContent"
-        style={{
-          display: "flex",
-          flex: 1,
-          overflow: "hidden"
-        }}
-      >
+      <div className="SideMenuAndPageContent">
         <SideMenu
           isSideMenuOpen={isSideMenuOpen}
           toggleSideMenu={toggleSideMenu}
         />
-        <div
-          style={{
-            flex: 1,
-            overflow: "auto",
-            display: "flex",
-            flexDirection: "column"
-          }}
-        >
-          <PageContent />
-        </div>
+        <PageContent />
       </div>
+      <ChatBubble />
       <AppFooter />
       {isSideMenuOpen && (
         <div className="menu-overlay" onClick={toggleSideMenu} />

@@ -16,10 +16,11 @@ import Banner from "./components/Banner";
 import Product from "./pages/Product";
 import ShoppingCart from "./pages/ShoppingCart";
 import ReviewOrder from "./pages/ReviewOrder";
-import AdminDashboard from "./admin/AdminDashboard";
-import AdminProducts from "./admin/AdminProducts";
-import AdminHeader from "./admin/AdminHeader";
-import AdminFooter from "./admin/AdminFooter";
+import Dashboard from "./pages/Dashbaord";
+import Inventory from "./pages/Inventory";
+import Messages from "./pages/Messages";
+import AdminHeader from "./components/AppHeader";
+import AdminFooter from "./components/AdminFooter";
 
 // ============ Layout người dùng ============
 function UserLayout({ children }) {
@@ -86,8 +87,9 @@ function AppRoutes() {
           element={
             <AdminLayout>
               <Routes>
-                <Route path="/admin" element={<AdminDashboard />} />
-                <Route path="/admin/products" element={<AdminProducts />} />
+                <Route path="/" element={<Dashboard />} />
+                <Route path="products" element={<Inventory />} />
+                <Route path="messages" element={<Messages />} />
               </Routes>
             </AdminLayout>
           }
