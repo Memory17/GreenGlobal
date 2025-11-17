@@ -422,7 +422,6 @@ function Customers() {
             title: t("cus_col_customer"), 
             dataIndex: "firstName",
             key: "name",
-            // Giảm chiều rộng từ 28% xuống 24%
             width: '24%', 
             render: (text, record) => (
                 <Space size={12}>
@@ -465,7 +464,6 @@ function Customers() {
             title: t("cus_col_contact_info"), 
             dataIndex: "phone",
             key: "contact",
-            // Giảm chiều rộng từ 18% xuống 16%
             width: '16%', 
             render: (phone, record) => (
                 <Space direction="vertical" size={4}>
@@ -490,7 +488,6 @@ function Customers() {
             dataIndex: "avgOrderValue", 
             key: "avgOrderValue",
             align: 'center',
-            // Giảm chiều rộng từ 15% xuống 12%
             width: '12%', 
             render: () => {
                 const value = getAvgOrderValue();
@@ -512,7 +509,6 @@ function Customers() {
             dataIndex: "totalOrders",
             key: "orders",
             align: 'center',
-            // Giảm chiều rộng từ 12% xuống 10%
             width: '10%', 
             render: (orders) => (
                 <Text strong style={{ color: orders > 15 ? '#27ae60' : '#333', fontSize: 16 }}>{orders}</Text>
@@ -522,7 +518,6 @@ function Customers() {
             title: t("cus_col_join_date"), 
             dataIndex: "joinDate",
             key: "joinDate",
-            // Giảm chiều rộng từ 15% xuống 14%
             width: '14%', 
             render: (date) => (
                 <Text type="secondary" style={{ fontSize: 13 }}>{date}</Text>
@@ -532,10 +527,7 @@ function Customers() {
             title: t("cus_col_actions"), 
             key: "action",
             align: 'center',
-            // Giảm chiều rộng từ 12% xuống 8%
             width: '8%', 
-            // Cần tổng chiều rộng các cột là 24 + 16 + 12 + 10 + 14 + 8 = 84%. 
-            // Phần còn lại sẽ được phân bổ tự động, đảm bảo cột action không bị khuất.
             render: (record) => (
                 <Space size="small">
                     <Tooltip title={t("cus_tip_edit_profile")}> 
@@ -603,23 +595,116 @@ function Customers() {
                 }}
             >
                 
-                <Card bordered={false} style={{ borderRadius: 12, boxShadow: "0 4px 12px rgba(0,0,0,0.06)" }}>
-                    <Flex justify="space-between" align="center">
-                        <Title
-                            level={3}
-                            // Đã thay đổi: Giảm gap từ 12px xuống 8px và font-size từ 19 xuống 18
-                            style={{ display: "flex", alignItems: "center", gap: "8px", color: "#262626", margin: 0 }}
-                        >
-                            <UserOutlined style={{ color: "#fff", backgroundColor: "#f7bc0cff", borderRadius: "50%", padding: 8, fontSize: 20, boxShadow: "0 3px 6px rgba(52, 152, 219, 0.4)" }} />
-                            <span style={{ fontWeight: 700, fontSize: 23, whiteSpace: 'nowrap' }}>
-                                {t("cus_title_customer_management")} 
-                            </span>
-                        </Title>
-                        
-                        <Space size="small"> {/* Đã thay đổi: Giảm size Space từ "middle" xuống "small" */}
+                <Card bordered={false} style={{ borderRadius: 12, boxShadow: "0 4px 12px rgba(0,0,0,0.06)", padding: "0" }}>
+                    <div style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "16px",
+                        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                        padding: "20px 24px",
+                        borderRadius: "12px",
+                        boxShadow: "0 8px 24px rgba(102, 126, 234, 0.25)",
+                        position: "relative",
+                        overflow: "hidden"
+                    }}>
+                        {/* Background decoration */}
+                        <div style={{
+                            position: "absolute",
+                            top: -40,
+                            right: -40,
+                            width: 120,
+                            height: 120,
+                            background: "rgba(255, 255, 255, 0.1)",
+                            borderRadius: "50%",
+                            backdropFilter: "blur(10px)"
+                        }}></div>
+                        <div style={{
+                            position: "absolute",
+                            bottom: -20,
+                            left: 50,
+                            width: 80,
+                            height: 80,
+                            background: "rgba(255, 255, 255, 0.05)",
+                            borderRadius: "50%",
+                            backdropFilter: "blur(10px)"
+                        }}></div>
+
+                        {/* Icon container */}
+                        <div style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            width: 56,
+                            height: 56,
+                            background: "rgba(255, 255, 255, 0.2)",
+                            borderRadius: "12px",
+                            backdropFilter: "blur(20px)",
+                            border: "1px solid rgba(255, 255, 255, 0.3)",
+                            boxShadow: "0 8px 32px rgba(31, 38, 135, 0.37)",
+                            position: "relative",
+                            zIndex: 2,
+                            fontSize: 24,
+                        }}>
+                            <UserOutlined style={{ color: "#fff" }} />
+                        </div>
+
+                        {/* Text container */}
+                        <div style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "4px",
+                            position: "relative",
+                            zIndex: 2
+                        }}>
+                            <div style={{
+                                fontSize: "28px",
+                                fontWeight: 800,
+                                color: "#fff",
+                                background: "linear-gradient(90deg, #fff 0%, #f0f0f0 100%)",
+                                WebkitBackgroundClip: "text",
+                                WebkitTextFillColor: "transparent",
+                                backgroundClip: "text",
+                                letterSpacing: "-0.5px"
+                            }}>
+                                {t("cus_title_customer_management")}
+                            </div>
+                        </div>
+
+                        {/* Badge */}
+                        <div style={{
+                            marginLeft: "auto",
+                            background: "rgba(255, 255, 255, 0.2)",
+                            border: "1px solid rgba(255, 255, 255, 0.3)",
+                            borderRadius: "8px",
+                            padding: "8px 16px",
+                            backdropFilter: "blur(10px)",
+                            position: "relative",
+                            zIndex: 2
+                        }}>
+                            <div style={{
+                                fontSize: "12px",
+                                color: "rgba(255, 255, 255, 0.9)",
+                                fontWeight: 600,
+                                textAlign: "center"
+                            }}>
+                                👥
+                            </div>
+                            <div style={{
+                                fontSize: "18px",
+                                fontWeight: 700,
+                                color: "#fff",
+                                marginTop: "2px"
+                            }}>
+                                {filteredData.length}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style={{ padding: "20px 24px" }}>
+                        <Flex justify="space-between" align="center" gap={12} style={{ width: "100%" }}>
                             <Search
                                 placeholder={t("cus_placeholder_search")} 
-                                style={{ width: 220 }} // Đã thay đổi: Giảm width từ 250 xuống 220
+                                style={{ flex: "1", minWidth: "200px" }}
                                 value={searchValue}
                                 onChange={(e) => setSearchValue(e.target.value)}
                                 enterButton={<SearchOutlined />}
@@ -628,7 +713,7 @@ function Customers() {
                             <Select
                                 value={selectedCity}
                                 onChange={(value) => setSelectedCity(value)}
-                                style={{ width: 120 }} // Đã thay đổi: Giảm width từ 140 xuống 120
+                                style={{ flex: "1", minWidth: "150px" }}
                                 placeholder={t("cus_placeholder_filter_city")} 
                             >
                                 {cities.map((city) => (
@@ -641,7 +726,7 @@ function Customers() {
                             <Button 
                                 type="default" 
                                 icon={<HistoryOutlined />} 
-                                style={{ fontWeight: 600 }}
+                                style={{ fontWeight: 600, flex: "1" }}
                                 onClick={() => message.info(t('cus_msg_open_activity_page'))} 
                             >
                                 {t("cus_button_activity")} 
@@ -649,13 +734,13 @@ function Customers() {
                             <Button 
                                 type="primary" 
                                 icon={<CloudDownloadOutlined />} 
-                                style={{ fontWeight: 600, backgroundColor: '#2ecc71' }} 
+                                style={{ fontWeight: 600, backgroundColor: '#2ecc71', flex: "1" }} 
                                 onClick={handleExportCSV}
                             >
                                 {t("cus_button_export_report")} 
                             </Button>
-                        </Space>
-                    </Flex>
+                        </Flex>
+                    </div>
                 </Card>
                 
                 <Card
@@ -677,8 +762,6 @@ function Customers() {
                             pageSize: 8,
                             showSizeChanger: false, 
                         }}
-                        // Đã bỏ thuộc tính scroll={{ x: 'max-content' }}
-                        // để Ant Design tự tính toán cho vừa màn hình
                     />
                 </Card>
             </Space>

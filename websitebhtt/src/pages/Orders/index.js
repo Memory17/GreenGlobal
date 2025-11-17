@@ -19,7 +19,6 @@ import {
     Badge,
 } from "antd";
 import { useEffect, useState, useCallback } from "react";
-// Đảm bảo bạn có file API này
 import { getStoredOrders } from '../../API'; 
 
 import {
@@ -32,15 +31,15 @@ import {
     EyeOutlined,
     EditOutlined,
     SaveOutlined,
-    CarOutlined, // Thêm icon
-    StarOutlined, // Thêm icon
+    CarOutlined,
+    StarOutlined,
 } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
 
-// ... (Các hàm getOrders, fetchCustomers, generateRandomDate giữ nguyên) ...
+// ... (Toàn bộ các hàm getOrders, fetchCustomers, generateRandomDate, formatCurrencyOrders giữ nguyên) ...
 const getOrders = async () => {
     try {
         const productsRes = await fetch("https://dummyjson.com/products");
@@ -63,6 +62,7 @@ const getOrders = async () => {
         return { products: [] };
     }
 };
+
 const fetchCustomers = async () => {
     try {
         const response = await fetch("https://dummyjson.com/users");
@@ -81,11 +81,13 @@ const fetchCustomers = async () => {
         return [];
     }
 };
+
 const generateRandomDate = (i18n) => {
     const daysAgo = Math.floor(Math.random() * 30);
     const date = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000);
     return date.toLocaleDateString(i18n.language); 
 };
+
 const formatCurrencyOrders = (amount, i18n) => {
     if (isNaN(amount) || amount === null || amount === undefined) {
       const fallbackAmount = 0;
@@ -108,7 +110,6 @@ const formatCurrencyOrders = (amount, i18n) => {
     const displayAmount = isVietnamese ? amount : amount / 23500;
     return formatter.format(displayAmount);
 };
-// ... (Kết thúc các hàm helper) ...
 
 
 function Orders() {
@@ -127,6 +128,7 @@ function Orders() {
     const [inlineForm] = Form.useForm();
     const [screenSize, setScreenSize] = useState('lg');
 
+    // ... (Toàn bộ state, hooks, và các hàm logic (loadOrders, useEffects, handles...) giữ nguyên) ...
     useEffect(() => {
         const handleResize = () => {
             if (window.innerWidth < 576) setScreenSize('xs');
@@ -139,101 +141,90 @@ function Orders() {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    // Load orders (bao gồm cả local storage)
     const loadOrders = useCallback(async () => {
-        setLoading(true);
-        try {
-            const [ordersRes, customers] = await Promise.all([getOrders(), fetchCustomers()]);
-            setCustomerOptions(customers.map(c => ({ value: c.fullName, label: c.fullName, detail: c })));
-            const customerCount = customers.length;
-  
-            // Dữ liệu giả (dummy)
-            const ordersWithCustomers = (ordersRes.products || []).map((item, index) => {
-                const total = item.price * item.quantity;
-                let status;
-  
-                // Sử dụng tên chuẩn (viết hoa chữ cái đầu)
-                if (item.id % 3 === 0) status = "Delivered";
-                else if (item.id % 3 === 1) status = "Processing";
-                else status = "Cancelled";
-  
-                const customerIndex = customerCount > 0 ? index % customerCount : -1;
-                const customerInfo = customerIndex !== -1 ? customers[customerIndex] : {
-                    fullName: "Khách Lẻ",
-                    email: "guest@example.com",
-                    phone: "N/A"
-                };
-  
-                return {
-                    ...item,
-                   total: total,
-                    status: status,
-                    date: generateRandomDate(i18n),
-                    customer: customerInfo.fullName,
-                    customerDetail: customerInfo,
-                    key: item.id.toString(),
+        setLoading(true);
+        try {
+            const [ordersRes, customers] = await Promise.all([getOrders(), fetchCustomers()]);
+            setCustomerOptions(customers.map(c => ({ value: c.fullName, label: c.fullName, detail: c })));
+            const customerCount = customers.length;
+ 
+            const ordersWithCustomers = (ordersRes.products || []).map((item, index) => {
+                const total = item.price * item.quantity;
+                let status;
+ 
+                if (item.id % 3 === 0) status = "Delivered";
+                else if (item.id % 3 === 1) status = "Processing";
+                else status = "Cancelled";
+ 
+                const customerIndex = customerCount > 0 ? index % customerCount : -1;
+                const customerInfo = customerIndex !== -1 ? customers[customerIndex] : {
+                    fullName: "Khách Lẻ",
+                    email: "guest@example.com",
+                    phone: "N/A"
+                };
+ 
+                return {
+                    ...item,
+                   total: total,
+                    status: status,
+                    date: generateRandomDate(i18n),
+                    customer: customerInfo.fullName,
+                    customerDetail: customerInfo,
+                    key: item.id.toString(),
                     items: [ { ...item } ], 
-                };
-            });
-  
-            // Dữ liệu thật (từ localStorage)
-            const stored = (getStoredOrders && getStoredOrders()) || [];
+                };
+            });
+ 
+            const stored = (getStoredOrders && getStoredOrders()) || [];
             
-            const storedMapped = (stored || []).map((s, idx) => ({
-                id: s.id || `stored-${idx}`,
-                title: s.items && s.items[0] ? s.items[0].title : 'Đơn hàng mới',
-                title_vi: s.items && s.items[0] ? s.items[0].title : 'Đơn hàng mới',
+            const storedMapped = (stored || []).map((s, idx) => ({
+                id: s.id || `stored-${idx}`,
+                title: s.items && s.items[0] ? s.items[0].title : 'Đơn hàng mới',
+                title_vi: s.items && s.items[0] ? s.items[0].title : 'Đơn hàng mới',
                 price: s.items && s.items[0] ? s.items[0].price : 0,
-                quantity: s.items ? s.items.reduce((a,b)=>a + (b.quantity || 1), 0) : 1,
-                thumbnail: s.items && s.items[0] ? s.items[0].thumbnail || 'https://via.placeholder.com/60' : 'https://via.placeholder.com/60',
-                total: s.totals ? s.totals.total : 0, 
-                status: s.status || 'Processing', // Mặc định là 'Processing'
-                date: new Date(s.createdAt || Date.now()).toLocaleDateString(i18n.language),
-                customer: s.customer ? s.customer.name : 'Khách Lẻ', 
-                customerDetail: s.customer || {},
-                key: s.key || s.id || (`stored-${idx}`),
+                quantity: s.items ? s.items.reduce((a,b)=>a + (b.quantity || 1), 0) : 1,
+                thumbnail: s.items && s.items[0] ? s.items[0].thumbnail || 'https://via.placeholder.com/60' : 'https://via.placeholder.com/60',
+                total: s.totals ? s.totals.total : 0, 
+                status: s.status || 'Processing',
+                date: new Date(s.createdAt || Date.now()).toLocaleDateString(i18n.language),
+                customer: s.customer ? s.customer.name : 'Khách Lẻ', 
+                customerDetail: s.customer || {},
+                key: s.key || s.id || (`stored-${idx}`),
                 items: s.items || [], 
-            }));
-  
-            // Gộp cả thật và giả
-            const merged = [...storedMapped, ...ordersWithCustomers];
-  
-            setDataSource(merged);
-            setFilteredData(merged); 
-        } catch (err) {
-            console.error('Failed to load orders', err);
-        } finally {
-            setLoading(false);
-        }
-    }, [i18n]); 
+            }));
+ 
+            const merged = [...storedMapped, ...ordersWithCustomers];
+ 
+            setDataSource(merged);
+            setFilteredData(merged); 
+        } catch (err) {
+            console.error('Failed to load orders', err);
+        } finally {
+            setLoading(false);
+        }
+    }, [i18n]); 
 
-    useEffect(() => {
-        loadOrders();
-    }, [loadOrders]); 
-
-    // Lắng nghe sự kiện
     useEffect(() => {
-        const onOrdersUpdated = () => {
-            loadOrders(); 
-        };
-        const onStorage = (e) => {
-            if (!e) return;
-            if (e.key === 'app_orders_v1') { 
+        loadOrders();
+    }, [loadOrders]); 
+
+    useEffect(() => {
+        const onOrdersUpdated = () => {
+            loadOrders(); 
+        };
+        const onStorage = (e) => {
+            if (!e) return;
+            if (e.key === 'app_orders_v1') { 
               loadOrders();
-          }
-       };
-        window.addEventListener('orders_updated', onOrdersUpdated);
-        window.addEventListener('storage', onStorage);
-        return () => {
-            window.removeEventListener('orders_updated', onOrdersUpdated);
-            window.removeEventListener('storage', onStorage);
-        };
-    }, [loadOrders]); 
-    
-    // Hàm này lấy bản dịch, nếu không có, trả về key (ví dụ: "Shipping")
-    // const getTranslatedStatus = (statusKey) => {
-    //     return t(`orders_tag_${statusKey}`, statusKey); // Dùng statusKey làm giá trị dự phòng
-    // };
+            }
+       };
+        window.addEventListener('orders_updated', onOrdersUpdated);
+        window.addEventListener('storage', onStorage);
+        return () => {
+            window.removeEventListener('orders_updated', onOrdersUpdated);
+            window.removeEventListener('storage', onStorage);
+        };
+    }, [loadOrders]); 
 
     useEffect(() => {
         const q = (searchValue || '').toString().toLowerCase();
@@ -243,17 +234,14 @@ function Orders() {
             const customerStr = (item?.customer || '').toString().toLowerCase();
             const keyStr = (item?.key || item?.id || '').toString(); 
             const matchName = titleStr.includes(q) || 
-                              customerStr.includes(q) || 
-                              keyStr.includes(searchValue || ''); 
+                                customerStr.includes(q) || 
+                                keyStr.includes(searchValue || ''); 
             const matchStatus = filterStatus === "all" || item?.status === filterStatus;
             return matchName && matchStatus;
         });
         setFilteredData(filtered);
     }, [searchValue, filterStatus, dataSource, i18n.language]);
 
-    // =======================================================
-    // === CẬP NHẬT 1: CHUẨN HÓA MÀU SẮC ===
-    // =======================================================
     const getStatusColor = (status) => {
         switch (status) {
             case "Processing": return "gold";
@@ -262,7 +250,6 @@ function Orders() {
             case "Delivered": return "green";
             case "AwaitingReview": return "purple";
             case "Cancelled": return "volcano";
-            // Hỗ trợ tên cũ (nếu có)
             case "delivered": return "green";
             case "processing": return "gold";
             case "cancelled": return "volcano";
@@ -270,9 +257,6 @@ function Orders() {
         }
     };
 
-    // =======================================================
-    // === CẬP NHẬT 2: CHUẨN HÓA ICON ===
-    // =======================================================
     const getStatusIcon = (status) => {
         switch (status) {
             case "Processing": return <ClockCircleOutlined />;
@@ -281,7 +265,6 @@ function Orders() {
             case "Delivered": return <CheckCircleOutlined />;
             case "AwaitingReview": return <StarOutlined />;
             case "Cancelled": return <CloseCircleOutlined />;
-            // Hỗ trợ tên cũ (nếu có)
             case "delivered": return <CheckCircleOutlined />;
             case "processing": return <ClockCircleOutlined />;
             case "cancelled": return <CloseCircleOutlined />;
@@ -296,7 +279,6 @@ function Orders() {
     };
     
     const handleAddOrder = async (values) => {
-        // ... (Hàm này giữ nguyên) ...
         const customerOption = customerOptions.find(c => c.value === values.customer);
         const customerDetail = customerOption?.detail || {
             fullName: values.customer,
@@ -313,7 +295,7 @@ function Orders() {
             customerDetail: customerDetail,
             quantity: values.quantity,
             total,
-            status: values.status, // Lấy status từ form (đã được chuẩn hóa)
+            status: values.status,
             date: new Date().toLocaleDateString(i18n.language),
             key: `manual-${dataSource.length + 100}`,
             thumbnail: "https://via.placeholder.com/60?text=Product",
@@ -331,57 +313,52 @@ function Orders() {
 
     const isEditing = (record) => (record.key || record.id) === editingKey;
 
-    // Gỡ bỏ check để cho phép sửa mọi trạng thái
     const edit = (record) => {
-        // Không cho phép admin chỉnh sửa khi đơn đã ở trạng thái Đã Giao/Completed
         const nonEditableStatuses = ["Delivered", "Completed"];
         if (nonEditableStatuses.includes(record.status)) {
             message.warning(t('orders_msg_cannot_edit_delivered', 'Không thể cập nhật trạng thái đã giao.'));
             return;
         }
         inlineForm.setFieldsValue({ status: record.status, ...record });
-        setEditingKey(record.key || record.id); // Dùng key hoặc id
+        setEditingKey(record.key || record.id);
     };
 
-    // Hàm save - phát tín hiệu (Đã đúng, giữ nguyên)
     const save = async (key) => {
-        try {
-            const row = await inlineForm.validateFields();
-            const newData = [...dataSource];
-            const index = newData.findIndex((item) => (item.key || item.id) === key); 
+        try {
+            const row = await inlineForm.validateFields();
+            const newData = [...dataSource];
+            const index = newData.findIndex((item) => (item.key || item.id) === key); 
 
-            if (index > -1) {
-                const item = newData[index];
-                newData.splice(index, 1, { ...item, ...row });
-                setDataSource(newData);
-                setEditingKey('');
-                message.success(t('orders_msg_update_success', { key: key }));
+            if (index > -1) {
+                const item = newData[index];
+                newData.splice(index, 1, { ...item, ...row });
+                setDataSource(newData);
+                setEditingKey('');
+                message.success(t('orders_msg_update_success', { key: key }));
 
-                // LOGIC LƯU VÀO LOCALSTORAGE (cho Admin)
-                try {
-                    const stored = (getStoredOrders && getStoredOrders()) || [];
+                try {
+                    const stored = (getStoredOrders && getStoredOrders()) || [];
                     const matchedKey = (s) => {
                         const sKey = s && (s.key || s.id);
                         return sKey && sKey.toString() === key.toString();
                     };
-                    let orderFound = false;
-                    let updatedStored = stored.map((s) => {
+                    let orderFound = false;
+                    let updatedStored = stored.map((s) => {
                         if (matchedKey(s)) {
                             orderFound = true;
-                            return { ...s, status: row.status }; // row.status giờ đã chuẩn
+                            return { ...s, status: row.status };
                         }
                         return s;
                     });
                     
-                    if (orderFound) {
-                        try {
-                            localStorage.setItem('app_orders_v1', JSON.stringify(updatedStored || []));
-    
-                            // === PHÁT TÍN HIỆU CHO USER ===
+                    if (orderFound) {
+                        try {
+                            localStorage.setItem('app_orders_v1', JSON.stringify(updatedStored || []));
+
                             try {
                                 const eventData = {
                                     orderId: key, 
-                                    newStatus: row.status // Gửi đi tên trạng thái đã chuẩn hóa
+                                    newStatus: row.status
                                 };
                                 const statusUpdateEvent = new CustomEvent('admin_order_status_updated', {
                                     detail: eventData
@@ -390,26 +367,22 @@ function Orders() {
                             } catch (eventError) {
                                 console.error("Lỗi khi phát sự kiện cập nhật trạng thái:", eventError);
                             }
-                            // === KẾT THÚC PHÁT TÍN HIỆU ===
 
-                        } catch (e) {
-                            console.error('Failed to persist order status', e); 
-                        }
+                        } catch (e) {
+                            console.error('Failed to persist order status', e); 
+                        }
                     }
-                } catch (e) {
-                    console.error('Error while saving status to stored orders', e);
-                }
-            } else {
-                setEditingKey('');
-            }
-        } catch (errInfo) {
-            console.log('Validate Failed:', errInfo);
-        }
-    };
+                } catch (e) {
+                    console.error('Error while saving status to stored orders', e);
+                }
+            } else {
+                setEditingKey('');
+            }
+        } catch (errInfo) {
+            console.log('Validate Failed:', errInfo);
+        }
+    };
     
-    // =======================================================
-    // === CẬP NHẬT 3: CHUẨN HÓA DROPDOWN CỦA ADMIN ===
-    // =======================================================
     const EditableStatusColumn = ({ record }) => {
         const editable = isEditing(record);
         
@@ -420,7 +393,6 @@ function Orders() {
                     style={{ margin: 0 }}
                     rules={[{ required: true, message: t('orders_msg_status_required') }]}
                 >
-                    {/* Sử dụng tên chuẩn hóa (value) khớp với STATUS_MAP của CartProducts.js */}
                     <Select size="small" placeholder={t('orders_col_status')}>
                         <Option value="Processing">{t('orders_tag_Processing', 'Đang Xác nhận')}</Option>
                         <Option value="Confirmed">{t('orders_tag_Confirmed', 'Đã Xác nhận')}</Option> 
@@ -439,14 +411,13 @@ function Orders() {
                 icon={getStatusIcon(record.status)}
                 style={{ fontWeight: 600, borderRadius: 4, fontSize: 13, padding: "4px 10px", marginRight: 0 }}
             >
-                {/* Dùng key làm giá trị dự phòng nếu không có bản dịch */}
                 {t(`orders_tag_${record.status}`, record.status)} 
             </Tag>
         );
     };
 
-    // ... (Hàm getColumns giữ nguyên) ...
     const getColumns = () => {
+        // ... (getColumns giữ nguyên) ...
         const baseColumns = [
             {
                 title: "STT",
@@ -590,95 +561,158 @@ function Orders() {
     };
 
     const columns = getColumns();
+    
     return (
         <Space
-            size={16}
+            size={24}
             direction="vertical"
             style={{
                 width: "100%",
-                padding: screenSize === 'xs' ? "12px" : "20px",
+                padding: "24px",
                 background: "#f5f7fa",
                 borderRadius: "12px",
             }}
         >
-           <Flex 
-               justify="space-between" 
-               align={screenSize === 'xs' ? 'flex-start' : 'center'} 
-               gap={16} 
-               style={{ width: "100%" }}
-               wrap={screenSize === 'xs' ? 'wrap' : 'nowrap'}
-           >
-                <Title
-                    level={3}
-                    style={{
-                        display: "flex", 
-                        alignItems: "center", 
-                        gap: "10px", 
-                        color: "#262626",
-                        marginBottom: 0, 
-                        fontWeight: 600, 
-                        fontSize: screenSize === 'xs' ? 18 : 25, 
-                        flexShrink: 0
-                    }}
-                >
-                    <ShoppingCartOutlined
-                        style={{
-                            color: "#fff", 
-                            backgroundColor: "#e74c3c", 
-                            borderRadius: "50%", 
-                            padding: screenSize === 'xs' ? 6 : 8,
-                            fontSize: screenSize === 'xs' ? 16 : 20, 
-                            boxShadow: "0 2px 4px rgba(231, 76, 60, 0.3)",
-                        }}
-                    />
-                    <span>{t("orders_title")}</span> 
-                </Title>
+            <Card bordered={false} style={{ borderRadius: 12, boxShadow: "0 4px 12px rgba(0,0,0,0.06)", padding: "0" }}>
+                {/* Header Section (Phần này giữ nguyên) */}
+                <div style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "16px",
+                    background: "linear-gradient(135deg, #fa6c2b 0%, #ff6b9d 100%)",
+                    padding: "20px 24px",
+                    borderRadius: "12px",
+                    boxShadow: "0 8px 24px rgba(255, 107, 157, 0.25)",
+                    position: "relative",
+                    overflow: "hidden"
+                }}>
+                    {/* ... (Nội dung header giữ nguyên) ... */}
+                    <div style={{
+                        position: "absolute",
+                        top: -40,
+                        right: -40,
+                        width: 120,
+                        height: 120,
+                        background: "rgba(255, 255, 255, 0.1)",
+                        borderRadius: "50%",
+                        backdropFilter: "blur(10px)"
+                    }}></div>
+                    <div style={{
+                        position: "absolute",
+                        bottom: -20,
+                        left: 50,
+                        width: 80,
+                        height: 80,
+                        background: "rgba(255, 255, 255, 0.05)",
+                        borderRadius: "50%",
+                        backdropFilter: "blur(10px)"
+                    }}></div>
+                    <div style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        width: 56,
+                        height: 56,
+                        background: "rgba(255, 255, 255, 0.2)",
+                        borderRadius: "12px",
+                        backdropFilter: "blur(20px)",
+                        border: "1px solid rgba(255, 255, 255, 0.3)",
+                        boxShadow: "0 8px 32px rgba(255, 107, 157, 0.37)",
+                        position: "relative",
+                        zIndex: 2,
+                        fontSize: 24,
+                    }}>
+                        <ShoppingCartOutlined style={{ color: "#fff" }} />
+                    </div>
+                    <div style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "4px",
+                        position: "relative",
+                        zIndex: 2
+                    }}>
+                        <div style={{
+                            fontSize: "28px",
+                            fontWeight: 800,
+                            color: "#fff",
+                            background: "linear-gradient(90deg, #fff 0%, #f0f0f0 100%)",
+                            WebkitBackgroundClip: "text",
+                            WebkitTextFillColor: "transparent",
+                            backgroundClip: "text",
+                            letterSpacing: "-0.5px"
+                        }}>
+                            {t("orders_title")}
+                        </div>
+                    </div>
+                    <div style={{
+                        marginLeft: "auto",
+                        background: "rgba(255, 255, 255, 0.2)",
+                        border: "1px solid rgba(255, 255, 255, 0.3)",
+                        borderRadius: "8px",
+                        padding: "8px 16px",
+                        backdropFilter: "blur(10px)",
+                        position: "relative",
+                        zIndex: 2
+                    }}>
+                        <div style={{
+                            fontSize: "12px",
+                            color: "rgba(255, 255, 255, 0.9)",
+                            fontWeight: 600,
+                            textAlign: "center"
+                        }}>
+                            📦
+                        </div>
+                        <div style={{
+                            fontSize: "18px",
+                            fontWeight: 700,
+                            color: "#fff",
+                            marginTop: "2px"
+                        }}>
+                            {filteredData.length}
+                        </div>
+                    </div>
+                </div>
 
-                <Flex 
-                    gap={10} 
-                    align="center"
-                    style={{ width: screenSize === 'xs' ? '100%' : 'auto' }}
-                    wrap={screenSize === 'xs' ? 'wrap' : 'nowrap'}
-                >
-                    <Input
-                        prefix={<SearchOutlined />}
-                        placeholder={t("orders_search_placeholder")} 
-                        style={{ borderRadius: 6, width: screenSize === 'xs' ? '100%' : 280 }}
-                        size={screenSize === 'xs' ? 'small' : 'middle'}
-                        value={searchValue}
-                        onChange={(e) => setSearchValue(e.target.value)}
-                    />
-                    {/* Cập nhật bộ lọc của Admin để dùng tên chuẩn */}
-                    <Select
-                        value={filterStatus}
-                        style={{ width: screenSize === 'xs' ? '48%' : 120, borderRadius: 6 }}
-                        size={screenSize === 'xs' ? 'small' : 'middle'}
-                        onChange={(value) => setFilterStatus(value)}
-                    >
-                        <Option value="all">{t("orders_filter_all")}</Option> 
-                        <Option value="Delivered">{t("orders_filter_delivered")}</Option> 
-                        <Option value="Processing">{t("orders_filter_processing")}</Option> 
-                        <Option value="Cancelled">{t("orders_filter_cancelled")}</Option> 
-                        <Option value="Shipping">{t('orders_tag_Shipping', 'Đang Giao')}</Option> 
-                    </Select>
-                    
-                    <Button
-                        type="primary"
-                        icon={<PlusOutlined />}
-                        onClick={showModal}
-                        size={screenSize === 'xs' ? 'small' : 'middle'}
-                        style={{
-                            borderRadius: 6,
-                            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                            fontWeight: 500,
-                            flexShrink: 0,
-                            width: screenSize === 'xs' ? '48%' : 'auto'
-                        }}
-                    >
-                        {screenSize === 'xs' ? '+' : t("orders_btn_create")} 
-                    </Button>
-                </Flex>
-            </Flex>
+                {/* Search & Filter Section */}
+                {/* 🔥 THAY ĐỔI 1: Tăng padding top từ 20px lên 28px */}
+                <div style={{ padding: "28px 24px 20px 24px" }}>
+                    <Flex justify="flex-start" align="center" gap={12} style={{ width: "100%" }} wrap="wrap">
+                        <Input
+                            className="order-search-input"
+                            prefix={<SearchOutlined style={{ color: "#8c8c8c" }} />}
+                            placeholder={t("orders_search_placeholder")}
+                            size="middle"
+                            value={searchValue}
+                            onChange={(e) => setSearchValue(e.target.value)}
+                            allowClear
+                        />
+
+                        <Select
+                            className="order-status-select"
+                            value={filterStatus}
+                            onChange={(value) => setFilterStatus(value)}
+                            size="middle"
+                            popupClassName="order-status-select-dropdown"
+                        >
+                            <Option value="all">{t("orders_filter_all")}</Option> 
+                            <Option value="Delivered">{t("orders_filter_delivered")}</Option> 
+                            <Option value="Processing">{t("orders_filter_processing")}</Option> 
+                            <Option value="Cancelled">{t("orders_filter_cancelled")}</Option> 
+                            <Option value="Shipping">{t('orders_tag_Shipping', 'Đang Giao')}</Option> 
+                        </Select>
+
+                        <Button
+                            className="order-add-button"
+                            type="primary"
+                            icon={<PlusOutlined />}
+                            onClick={showModal}
+                            size="middle"
+                        >
+                            {screenSize === 'xs' || screenSize === 'sm' ? null : t("orders_btn_create")}
+                        </Button>
+                    </Flex>
+                </div>
+            </Card>
 
             <Card
                 variant="borderless"
@@ -705,6 +739,7 @@ function Orders() {
                 </Form>
             </Card>
 
+            {/* ... (Modal và Drawer giữ nguyên) ... */}
             <Modal
                 title={t("orders_modal_title")} 
                 open={isModalOpen}
@@ -738,7 +773,6 @@ function Orders() {
                     <Form.Item name="quantity" label={t("orders_col_qty")} rules={[{ required: true }]}>
                         <InputNumber min={1} style={{ width: "100%" }} placeholder={t("orders_placeholder_qty")} />
                     </Form.Item>
-                    {/* Cập nhật cả modal tạo mới */}
                     <Form.Item name="status" label={t("orders_col_status")} rules={[{ required: true, message: t('orders_msg_status_required') }]}>
                         <Select placeholder={t("orders_placeholder_select_status")}>
                             <Option value="Processing">{t('orders_tag_Processing', 'Đang Xác nhận')}</Option>
@@ -754,7 +788,7 @@ function Orders() {
                             type="primary"
                             htmlType="submit"
                             block
-                            style={{ backgroundColor: "#8e44ad", borderRadius: 6, fontWeight: 500 }}
+                            style={{ backgroundColor: "#667eea", borderRadius: 6, fontWeight: 500 }}
                         >
                             {t("orders_modal_btn_confirm")} 
                         </Button>
@@ -807,7 +841,7 @@ function Orders() {
                             rowKey={(record) => record.id || record.title} 
                         />
 
-                        <Card bordered={true} style={{ borderLeft: '5px solid #1677ff' }}>
+                        <Card bordered={true} style={{ borderLeft: '5px solid #fa6c2b' }}>
                             <Title level={4} style={{ margin: 0, fontSize: screenSize === 'xs' ? 16 : 18 }}>
                                 {t("orders_payment_total")}: {formatCurrencyOrders(quickViewOrder.total, i18n)}
                             </Title>
@@ -816,15 +850,100 @@ function Orders() {
                 )}
             </Drawer>
 
+            {/* 🔥 THAY ĐỔI 2: Giảm chiều cao của các thanh xuống 36px */}
             <style>{`
                 .product-name-hover:hover {
-                    color: #1677ff;
+                    color: #fa6c2b;
                 }
                 .order-row:hover {
                     background-color: #fafafa;
                 }
                 @media (max-width: 768px) { .ant-table { font-size: 12px; } }
                 @media (max-width: 576px) { .ant-table { font-size: 11px; } .ant-btn { padding: 4px 8px; } }
+
+                /* 🔥 CSS MỚI CHO THANH TÌM KIẾM / LỌC */
+
+                /* Style chung cho Input và Select */
+                .order-search-input,
+                .order-status-select .ant-select-selector {
+                    flex: 1 !important;
+                    min-width: 150px !important;
+                    border-radius: 12px !important; 
+                    border: 1px solid #f0f0f0 !important; 
+                    background: #fafbfe !important; 
+                    box-shadow: none !important; 
+                    transition: all 0.3s ease !important;
+                    height: 36px !important; /* 🔥 ĐÃ GIẢM (từ 40px) */
+                    padding: 0 11px !important;
+                }
+                
+                .order-search-input .ant-input {
+                     background: #fafbfe !important;
+                }
+                
+                .order-status-select .ant-select-selector {
+                    align-items: center; 
+                }
+
+                .order-search-input {
+                    min-width: 200px !important;
+                }
+                
+                .order-status-select {
+                     flex: 1 !important;
+                     min-width: 150px !important;
+                     border-radius: 12px !important;
+                     height: 36px !important; /* 🔥 ĐÃ GIẢM (từ 40px) */
+                }
+
+                .order-search-input .ant-input,
+                .order-status-select .ant-select-selection-item,
+                .order-status-select .ant-select-selection-placeholder {
+                    color: #595959; 
+                    font-size: 14px;
+                }
+
+                /* Hiệu ứng khi Focus/Hover */
+                .order-search-input:focus-within,
+                .order-search-input:hover,
+                .order-status-select.ant-select-focused .ant-select-selector,
+                .order-status-select:hover .ant-select-selector {
+                    border-color: #764ba2 !important; 
+                    background: #fff !important;
+                    box-shadow: 0 0 0 2px rgba(118, 75, 162, 0.1) !important;
+                }
+                
+                .order-search-input:focus-within .ant-input,
+                .order-search-input:hover .ant-input {
+                    background: #fff !important;
+                }
+
+                /* Style cho Nút "Tạo đơn hàng" */
+                .order-add-button {
+                    border-radius: 12px !important; 
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; 
+                    border: none !important;
+                    font-weight: 600 !important;
+                    box-shadow: 0 4px 15px rgba(118, 75, 162, 0.2) !important; 
+                    transition: all 0.3s ease !important;
+                    height: 36px !important; /* 🔥 ĐÃ GIẢM (từ 40px) */
+                }
+
+                .order-add-button:hover {
+                    transform: translateY(-2px); 
+                    box-shadow: 0 6px 20px rgba(118, 75, 162, 0.3) !important; 
+                }
+
+                /* Style cho dropdown của Select */
+                .order-status-select-dropdown .ant-select-item {
+                    border-radius: 8px !important;
+                    margin: 0 4px;
+                }
+                .order-status-select-dropdown .ant-select-item-option-selected {
+                    background-color: #f0f5ff !important;
+                    font-weight: 600;
+                    color: #667eea;
+                }
             `}</style>
         </Space>
     );

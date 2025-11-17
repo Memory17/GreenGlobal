@@ -16,9 +16,9 @@ import {
     Switch,
     message,
     Tooltip,
-    Row,
-    Col,
+    
     notification,
+    Flex,
 } from "antd";
 import {
     SearchOutlined,
@@ -34,11 +34,13 @@ import {
 } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
 
-const { Title, Text } = Typography;
+// 🔥 THAY ĐỔI: Đã xoá 'Title' vì nó không được sử dụng
+const { Text } = Typography;
 const { Option } = Select;
 
 const STORAGE_KEY = "app_staffs_v1";
 
+// ... (seedStaffs, uid, readStorage, writeStorage giữ nguyên) ...
 const seedStaffs = [
     {
         id: "u1",
@@ -141,14 +143,13 @@ export default function Staffs() {
 
     useEffect(() => {
         loadStaffs();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
         applyFilter();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [q, roleFilter, staffs]);
 
+    // ... (Tất cả các hàm handle... của bạn giữ nguyên) ...
     const loadStaffs = () => {
         setLoading(true);
         setTimeout(() => {
@@ -278,6 +279,7 @@ export default function Staffs() {
     };
 
     const columns = [
+        // ... (Định nghĩa columns của bạn giữ nguyên) ...
         {
             title: t("staffs_col_staff"),
             dataIndex: "fullName",
@@ -423,71 +425,134 @@ export default function Staffs() {
 
     return (
         <Space
-            size={20}
+            size={24}
             direction="vertical"
             style={{
                 width: "100%",
-                padding: 24,
+                padding: "24px",
                 background: "#f5f7fa",
-                borderRadius: 12,
+                borderRadius: "12px",
             }}
         >
-            <Row 
-                justify="space-between" 
-                align="middle"
-                gutter={[16, 16]}
-            >
-                <Col xs={24} sm={24} md={6}>
-                    <Title
-                        level={2}
-                        style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 16,
-                            marginBottom: 0,
-                            color: "#262626ff",
+            <Card bordered={false} style={{ borderRadius: 12, boxShadow: "0 4px 12px rgba(0,0,0,0.06)", padding: "0" }}>
+                {/* Header Section (Phần này giữ nguyên) */}
+                <div style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "16px",
+                    background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+                    padding: "20px 24px",
+                    borderRadius: "12px",
+                    boxShadow: "0 8px 24px rgba(245, 87, 108, 0.25)",
+                    position: "relative",
+                    overflow: "hidden"
+                }}>
+                    {/* ... (Toàn bộ nội dung Header) ... */}
+                    <div style={{
+                        position: "absolute",
+                        top: -40,
+                        right: -40,
+                        width: 120,
+                        height: 120,
+                        background: "rgba(255, 255, 255, 0.1)",
+                        borderRadius: "50%",
+                        backdropFilter: "blur(10px)"
+                    }}></div>
+                    <div style={{
+                        position: "absolute",
+                        bottom: -20,
+                        left: 50,
+                        width: 80,
+                        height: 80,
+                        background: "rgba(255, 255, 255, 0.05)",
+                        borderRadius: "50%",
+                        backdropFilter: "blur(10px)"
+                    }}></div>
+                    <div style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        width: 56,
+                        height: 56,
+                        background: "rgba(255, 255, 255, 0.2)",
+                        borderRadius: "12px",
+                        backdropFilter: "blur(20px)",
+                        border: "1px solid rgba(255, 255, 255, 0.3)",
+                        boxShadow: "0 8px 32px rgba(245, 87, 108, 0.37)",
+                        position: "relative",
+                        zIndex: 2,
+                        fontSize: 24,
+                    }}>
+                        <TeamOutlined style={{ color: "#fff" }} />
+                    </div>
+                    <div style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "4px",
+                        position: "relative",
+                        zIndex: 2
+                    }}>
+                        <div style={{
+                            fontSize: "28px",
                             fontWeight: 800,
-                            whiteSpace: "nowrap"
-                        }}
-                    >
-                        <TeamOutlined
-                            style={{
-                                color: "#fff",
-                                backgroundColor: "Teal",
-                                borderRadius: "50%",
-                                padding: 10,
-                                fontSize: 20,
-                                boxShadow: "0 4px 10px rgba(114,46,209,0.2)",
-                                flexShrink: 0
-                            }}
-                        />
-                        <span style={{ fontWeight: 700 }}>{t("staffs_title")}</span>
-                    </Title>
-                </Col>
+                            color: "#fff",
+                            background: "linear-gradient(90deg, #fff 0%, #f0f0f0 100%)",
+                            WebkitBackgroundClip: "text",
+                            WebkitTextFillColor: "transparent",
+                            backgroundClip: "text",
+                            letterSpacing: "-0.5px"
+                        }}>
+                            {t("staffs_title")}
+                        </div>
+                    </div>
+                    <div style={{
+                        marginLeft: "auto",
+                        background: "rgba(255, 255, 255, 0.2)",
+                        border: "1px solid rgba(255, 255, 255, 0.3)",
+                        borderRadius: "8px",
+                        padding: "8px 16px",
+                        backdropFilter: "blur(10px)",
+                        position: "relative",
+                        zIndex: 2
+                    }}>
+                        <div style={{
+                            fontSize: "12px",
+                            color: "rgba(255, 255, 255, 0.9)",
+                            fontWeight: 600,
+                            textAlign: "center"
+                        }}>
+                            👔
+                        </div>
+                        <div style={{
+                            fontSize: "18px",
+                            fontWeight: 700,
+                            color: "#fff",
+                            marginTop: "2px"
+                        }}>
+                            {filtered.length}
+                        </div>
+                    </div>
+                </div>
 
-                <Col xs={24} sm={24} md={18} style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                    <Space
-                        direction={screenSize === 'xs' ? 'vertical' : 'horizontal'}
-                        style={{ width: screenSize === 'xs' ? '100%' : 'auto' }}
-                    >
+                {/* Search & Filter Section (Đã áp dụng className) */}
+                <div style={{ padding: "20px 24px" }}>
+                    <Flex justify="flex-start" align="center" gap={12} style={{ width: "100%" }} wrap="wrap">
                         <Input
-                            prefix={<SearchOutlined />}
+                            className="staff-search-input"
+                            prefix={<SearchOutlined style={{ color: "#8c8c8c" }} />}
                             placeholder={t("staffs_search_placeholder")}
-                            style={{ 
-                                width: screenSize === 'xs' ? '100%' : 280, 
-                                borderRadius: 8 
-                            }}
-                            size={screenSize === 'xs' ? 'small' : 'middle'}
+                            size="middle"
                             value={q}
                             onChange={(e) => setQ(e.target.value)}
                             allowClear
                         />
 
                         <Select
+                            className="staff-role-select"
                             value={roleFilter}
                             onChange={(val) => setRoleFilter(val)}
-                            style={{ width: screenSize === 'xs' ? '100%' : 140, borderRadius: 8 }}
-                            size={screenSize === 'xs' ? 'small' : 'middle'}
+                            size="middle"
+                            popupClassName="staff-role-select-dropdown"
                         >
                             {roles.map((r) => (
                                 <Option key={r} value={r}>
@@ -497,23 +562,17 @@ export default function Staffs() {
                         </Select>
 
                         <Button
+                            className="staff-add-button"
                             type="primary"
                             icon={<PlusOutlined />}
                             onClick={handleAdd}
-                            style={{
-                                borderRadius: 8,
-                                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                                border: "none",
-                                fontWeight: 600,
-                                width: screenSize === 'xs' ? '100%' : 'auto'
-                            }}
-                            size={screenSize === 'xs' ? 'small' : 'middle'}
+                            size="middle"
                         >
-                            {screenSize === 'xs' ? '+' : t("staffs_btn_add")}
+                            {screenSize === 'xs' || screenSize === 'sm' ? null : t("staffs_btn_add")}
                         </Button>
-                    </Space>
-                </Col>
-            </Row>
+                    </Flex>
+                </div>
+            </Card>
 
             <Card
                 style={{
@@ -525,6 +584,8 @@ export default function Staffs() {
                 bodyStyle={{ padding: 16 }}
             >
                 <Table
+                    // ClassName cho hiệu ứng hover (giữ nguyên)
+                    className="staff-table"
                     loading={loading}
                     columns={columns}
                     dataSource={filtered}
@@ -540,6 +601,7 @@ export default function Staffs() {
             </Card>
 
             <Modal
+                // ... (Modal giữ nguyên) ...
                 title={editing ? t("staffs_modal_edit") : t("staffs_modal_add")}
                 open={modalVisible}
                 onCancel={() => {
@@ -556,6 +618,7 @@ export default function Staffs() {
                 style={{ top: screenSize === 'xs' ? 20 : undefined }}
             >
                 <Form form={form} layout="vertical" preserve={false}>
+                    {/* ... (Các Form.Item giữ nguyên) ... */}
                     <Form.Item
                         label={t("staffs_label_name")}
                         name="fullName"
@@ -563,7 +626,6 @@ export default function Staffs() {
                     >
                         <Input placeholder={t("staffs_label_name")} />
                     </Form.Item>
-
                     <Form.Item
                         label="Email"
                         name="email"
@@ -574,11 +636,9 @@ export default function Staffs() {
                     >
                         <Input placeholder="email@domain.com" />
                     </Form.Item>
-
                     <Form.Item label={t("staffs_col_phone")} name="phone">
                         <Input placeholder={t("staffs_placeholder_phone")} />
                     </Form.Item>
-
                     <Form.Item
                         label={t("staffs_col_role")}
                         name="role"
@@ -589,14 +649,15 @@ export default function Staffs() {
                             <Option value="admin">{t("staffs_filter_admin")}</Option>
                         </Select>
                     </Form.Item>
-
                     <Form.Item label={t("staffs_col_status")} name="status" valuePropName="checked">
                         <Switch />
                     </Form.Item>
                 </Form>
             </Modal>
 
+            {/* CSS với chiều cao 36px đã được áp dụng */}
             <style>{`
+                /* CSS responsive cũ */
                 @media (max-width: 768px) {
                     .ant-table {
                         font-size: 12px;
@@ -616,6 +677,111 @@ export default function Staffs() {
                     .ant-btn {
                         padding: 4px 8px;
                     }
+                }
+
+                /* CSS cho hiệu ứng hover table (giữ nguyên) */
+                .staff-table .ant-table-thead > tr > th {
+                    background: #fafbfe !important;
+                    color: #595959;
+                    font-weight: 600;
+                }
+                .staff-table .ant-table-tbody > tr {
+                    transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+                    background: #fff;
+                }
+                .staff-table .ant-table-tbody > tr:hover {
+                    transform: scale(1.01);
+                    box-shadow: 0 6px 16px rgba(118, 75, 162, 0.15);
+                    z-index: 2;
+                    position: relative;
+                }
+                .staff-table .ant-table-tbody > tr:hover > td {
+                    background: #fff !important; 
+                }
+
+                /* CSS CHO THANH TÌM KIẾM / LỌC */
+
+                /* Style chung cho Input và Select */
+                .staff-search-input,
+                .staff-role-select .ant-select-selector {
+                    flex: 1 !important;
+                    min-width: 150px !important;
+                    border-radius: 12px !important; 
+                    border: 1px solid #f0f0f0 !important; 
+                    background: #fafbfe !important; 
+                    box-shadow: none !important; 
+                    transition: all 0.3s ease !important;
+                    height: 36px !important; /* Đã giảm (từ 40px) */
+                    padding: 0 11px !important;
+                }
+                
+                .staff-search-input .ant-input {
+                     background: #fafbfe !important;
+                }
+                
+                .staff-role-select .ant-select-selector {
+                    align-items: center; /* Căn giữa text cho Select */
+                }
+
+                .staff-search-input {
+                    min-width: 200px !important;
+                }
+                
+                .staff-role-select {
+                     flex: 1 !important;
+                     min-width: 150px !important;
+                     border-radius: 12px !important;
+                     height: 36px !important; /* Đã giảm (từ 40px) */
+                }
+
+                .staff-search-input .ant-input,
+                .staff-role-select .ant-select-selection-item,
+                .staff-role-select .ant-select-selection-placeholder {
+                    color: #595959; /* Màu chữ */
+                    font-size: 14px;
+                }
+
+                /* Hiệu ứng khi Focus/Hover */
+                .staff-search-input:focus-within,
+                .staff-search-input:hover,
+                .staff-role-select.ant-select-focused .ant-select-selector,
+                .staff-role-select:hover .ant-select-selector {
+                    border-color: #764ba2 !important; /* Màu border (từ nút bấm) */
+                    background: #fff !important;
+                    /* Đổ bóng nhẹ */
+                    box-shadow: 0 0 0 2px rgba(118, 75, 162, 0.1) !important;
+                }
+                
+                .staff-search-input:focus-within .ant-input,
+                .staff-search-input:hover .ant-input {
+                    background: #fff !important;
+                }
+
+                /* Style cho Nút "Thêm nhân viên" */
+                .staff-add-button {
+                    border-radius: 12px !important; /* Đồng bộ bo góc 12px */
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+                    border: none !important;
+                    font-weight: 600 !important;
+                    box-shadow: 0 4px 15px rgba(118, 75, 162, 0.2) !important; /* Đổ bóng */
+                    transition: all 0.3s ease !important;
+                    height: 36px !important; /* Đã giảm (từ 40px) */
+                }
+
+                .staff-add-button:hover {
+                    transform: translateY(-2px); /* Hiệu ứng "nâng" */
+                    box-shadow: 0 6px 20px rgba(118, 75, 162, 0.3) !important; /* Shadow đậm hơn */
+                }
+
+                /* Style cho dropdown của Select */
+                .staff-role-select-dropdown .ant-select-item {
+                    border-radius: 8px !important;
+                    margin: 0 4px;
+                }
+                .staff-role-select-dropdown .ant-select-item-option-selected {
+                    background-color: #f0f5ff !important;
+                    font-weight: 600;
+                    color: #667eea;
                 }
             `}</style>
         </Space>
