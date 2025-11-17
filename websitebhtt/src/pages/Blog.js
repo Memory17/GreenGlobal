@@ -1,27 +1,25 @@
-import React, { useState, useMemo } from 'react';
-// Thêm List, Form, và cập nhật import
-import { 
-  Card, Input, Tag, Button, Pagination, Avatar, Space, Select, Badge, Tooltip, Empty, Modal, List, Form 
+import React, { useState, useMemo, useEffect } from 'react';
+import {
+  Card, Input, Tag, Button, Pagination, Avatar, Space, Select, Badge, Tooltip, Empty, Modal, List, Form
 } from 'antd';
-import { 
-  SearchOutlined, 
-  HeartOutlined, 
-  HeartFilled, 
-  CommentOutlined, 
-  EyeOutlined, 
-  ClockCircleOutlined, 
+import {
+  SearchOutlined,
+  HeartOutlined,
+  HeartFilled,
+  CommentOutlined,
+  EyeOutlined,
+  ClockCircleOutlined,
   FilterOutlined,
-  SendOutlined // Icon cho nút gửi bình luận
+  SendOutlined
 } from '@ant-design/icons';
-import '../style/Blog.css'; 
+import '../style/Blog.css';
 
 
 const { Search } = Input;
 const { Option } = Select;
 const { TextArea } = Input;
 
-// --- MOCK DATA HOÀN CHỈNH (ĐÃ SỬA LỖI CÚ PHÁP) ---
-const mockBlogPosts = [
+const initialMockPosts = [
   {
     id: 1,
     title: 'Săn Sale 11.11: Tổng Hợp Voucher Khủng & Quà Tặng Độc Quyền!',
@@ -34,7 +32,7 @@ const mockBlogPosts = [
     date: '2025-11-05',
     views: 12800,
     likes: 950,
-    comments: 2, // Số lượng bình luận
+    comments: 2,
     readTime: '3 phút đọc',
     content: (
         <div className="post-content-detail">
@@ -51,7 +49,7 @@ const mockBlogPosts = [
           <p>Bí kíp là hãy thêm sản phẩm vào giỏ hàng ngay từ bây giờ. Khi đồng hồ điểm 0h, bạn chỉ cần áp mã và thanh toán. Đừng quên rủ bạn bè cùng săn sale để tăng thêm niềm vui! Chúc bạn có một mùa mua sắm bội thu!</p>
         </div>
     ),
-    commentsData: [ // Mảng chứa các bình luận
+    commentsData: [
       {
         author: 'User123',
         avatar: 'https://i.pravatar.cc/150?img=11',
@@ -78,7 +76,7 @@ const mockBlogPosts = [
     date: '2025-11-04',
     views: 4500,
     likes: 310,
-    comments: 1, // Số lượng
+    comments: 1,
     readTime: '7 phút đọc',
     content: (
       <div className="post-content-detail">
@@ -128,7 +126,7 @@ const mockBlogPosts = [
         <p>Hãy lên lịch cùng bạn bè và gia đình đến chung vui cùng chúng tôi!</p>
       </div>
     ),
-    commentsData: [] // Bài này chưa có bình luận
+    commentsData: []
   },
   {
     id: 4,
@@ -160,7 +158,7 @@ const mockBlogPosts = [
             avatar: 'https://i.pravatar.cc/150?img=15',
             content: 'Chúc mừng 5 năm của shop! Luôn tin tưởng sản phẩm bên mình.',
             date: '2025-10-30 09:00',
-          }
+        }
     ]
   },
   {
@@ -323,14 +321,75 @@ const mockBlogPosts = [
 ];
 
 
-const Blog = () => {
-  // --- STATE MỚI ---
-  // 'allPosts' là nguồn dữ liệu ("database") của chúng ta
-  const [allPosts, setAllPosts] = useState(mockBlogPosts); 
-  const [newComment, setNewComment] = useState(""); // State cho nội dung bình luận mới
-  const [form] = Form.useForm(); // Hook để kiểm soát Form của AntD
+export const BLOG_STORAGE_KEY = 'app_blog_posts_v1';
 
-  // Các state cũ
+export const getStoredBlogPosts = () => {
+  try {
+    const stored = localStorage.getItem(BLOG_STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      
+       return parsed.map(post => {
+        const mockOrigin = initialMockPosts.find(p => p.id === post.id);
+        return {
+          ...post,
+          content: mockOrigin ? mockOrigin.content : post.content,
+        };
+      });
+      
+    }
+  } catch (e) {
+    console.warn("Could not parse blog posts from localStorage, falling back to mock.", e);
+    localStorage.removeItem(BLOG_STORAGE_KEY);
+  }
+
+  const storablePosts = initialMockPosts.map(post => {
+    const { content, ...rest } = post;
+    return { ...rest, content: (typeof post.content === 'string' ? post.content : post.description) };
+  });
+
+  localStorage.setItem(BLOG_STORAGE_KEY, JSON.stringify(storablePosts));
+  return initialMockPosts;
+};
+
+export const saveStoredBlogPosts = (posts) => {
+  try {
+    const storablePosts = posts.map(post => {
+        const safeContent = (typeof post.content === 'string' || !post.content) ? post.content : post.description;
+        
+        return {
+            id: post.id,
+            title: post.title,
+            description: post.description,
+            image: post.image,
+            category: post.category,
+            tags: post.tags,
+            author: post.author,
+            avatar: post.avatar,
+            date: post.date,
+            views: post.views,
+            likes: post.likes,
+            comments: post.comments,
+            readTime: post.readTime,
+            commentsData: post.commentsData,
+            content: safeContent,
+        };
+    });
+
+    localStorage.setItem(BLOG_STORAGE_KEY, JSON.stringify(storablePosts));
+    window.dispatchEvent(new CustomEvent('storage', { detail: { key: BLOG_STORAGE_KEY } }));
+    window.dispatchEvent(new Event('blog_posts_updated'));
+  } catch (e) {
+    console.error("Failed to save blog posts", e);
+  }
+};
+
+
+const Blog = () => {
+  const [allPosts, setAllPosts] = useState(() => getStoredBlogPosts());
+  const [newComment, setNewComment] = useState("");
+  const [form] = Form.useForm();
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
@@ -340,114 +399,120 @@ const Blog = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
 
-  // --- LOGIC CẬP NHẬT (DÙNG 'allPosts' thay vì 'mockBlogPosts') ---
+  useEffect(() => {
+    const refetchPosts = () => {
+      console.log("Blog.js: Nhận được cập nhật, đang tải lại bài viết...");
+      setAllPosts(getStoredBlogPosts());
+    };
+    window.addEventListener('blog_posts_updated', refetchPosts);
+    const onStorage = (ev) => {
+      if ((ev.key === BLOG_STORAGE_KEY) || (ev.detail && ev.detail.key === BLOG_STORAGE_KEY)) {
+        refetchPosts();
+      }
+    };
+    window.addEventListener('storage', onStorage);
+
+    return () => {
+      window.removeEventListener('blog_posts_updated', refetchPosts);
+      window.removeEventListener('storage', onStorage);
+    };
+  }, []);
+
   const categories = useMemo(() => {
     return ['all', ...new Set(allPosts.map(post => post.category))];
-  }, [allPosts]); // Phụ thuộc vào allPosts
+  }, [allPosts]);
 
   const filteredPosts = useMemo(() => {
-    return allPosts.filter(post => { // Lọc từ allPosts
+    return allPosts.filter(post => {
       const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         post.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        post.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+        (post.tags || []).some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
       const matchesCategory = selectedCategory === 'all' || post.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });
-  }, [allPosts, searchTerm, selectedCategory]); // Phụ thuộc vào allPosts
+  }, [allPosts, searchTerm, selectedCategory]);
 
   const paginatedPosts = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize;
     return filteredPosts.slice(startIndex, startIndex + pageSize);
   }, [filteredPosts, currentPage]);
 
-  // Xử lý Thích/Bỏ thích (Cập nhật 'allPosts')
   const handleLike = (postId) => {
     const isLiked = likedPosts.includes(postId);
-    
+
     setLikedPosts(prev =>
       isLiked
         ? prev.filter(id => id !== postId)
         : [...prev, postId]
     );
 
-    // Cập nhật số like trong 'allPosts' (để nó lưu lại)
     const updatedPosts = allPosts.map(post => {
       if (post.id === postId) {
-        // Cập nhật số like thực tế trong "database"
         return {
           ...post,
-          // Số like này sẽ được dùng để hiển thị ở Card ngoài
-          likes: isLiked ? post.likes - 1 : post.likes + 1 
+          likes: isLiked ? post.likes - 1 : post.likes + 1
         };
       }
       return post;
     });
     setAllPosts(updatedPosts);
+    saveStoredBlogPosts(updatedPosts);
 
-    // Cập nhật cả 'selectedPost' nếu đang mở
     if (selectedPost && selectedPost.id === postId) {
       setSelectedPost(prev => ({
         ...prev,
-        // Cập nhật số like trong Modal đang mở
         likes: isLiked ? prev.likes - 1 : prev.likes + 1
       }));
     }
   };
 
-  // Xử lý thay đổi trang
   const handlePageChange = (page) => {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Hàm mở Modal
   const handleReadMore = (post) => {
-    // Khi mở, ta lấy dữ liệu "mới nhất" từ 'allPosts'
     const freshPost = allPosts.find(p => p.id === post.id);
     setSelectedPost(freshPost);
     setIsModalVisible(true);
   };
 
-  // Hàm đóng Modal
   const handleModalClose = () => {
     setIsModalVisible(false);
     setSelectedPost(null);
-    form.resetFields(); // Reset form bình luận khi đóng
+    form.resetFields();
     setNewComment("");
   };
 
-  // --- HÀM MỚI: GỬI BÌNH LUẬN ---
   const handleCommentSubmit = () => {
-    if (!newComment.trim()) return; // Không gửi bình luận trống
+    if (!newComment.trim()) return;
 
     const newCommentObj = {
-      author: 'Bạn', // Tên người dùng (có thể lấy từ context/auth)
-      avatar: 'https://i.pravatar.cc/150?img=10', // Avatar người dùng
+      author: 'Bạn',
+      avatar: 'https://i.pravatar.cc/150?img=10',
       content: newComment,
       date: new Date().toLocaleString('vi-VN'),
     };
 
-    // 1. Cập nhật 'allPosts' (nguồn "database")
     const updatedPosts = allPosts.map(post => {
       if (post.id === selectedPost.id) {
         return {
           ...post,
-          comments: post.comments + 1, // Tăng số đếm
-          commentsData: [...post.commentsData, newCommentObj] // Thêm vào mảng
+          comments: post.comments + 1,
+          commentsData: [...(post.commentsData || []), newCommentObj]
         };
       }
       return post;
     });
     setAllPosts(updatedPosts);
+    saveStoredBlogPosts(updatedPosts);
 
-    // 2. Cập nhật 'selectedPost' (để re-render modal ngay lập tức)
     setSelectedPost(prevPost => ({
       ...prevPost,
       comments: prevPost.comments + 1,
-      commentsData: [...prevPost.commentsData, newCommentObj]
+      commentsData: [...(prevPost.commentsData || []), newCommentObj]
     }));
 
-    // 3. Dọn dẹp input
     setNewComment("");
     form.resetFields();
   };
@@ -455,14 +520,12 @@ const Blog = () => {
 
   return (
     <div className="blog-container">
-      {/* Nền Động (Animated Background) */}
       <div className="blog-background">
         <div className="gradient-orb orb-1"></div>
         <div className="gradient-orb orb-2"></div>
         <div className="gradient-orb orb-3"></div>
       </div>
 
-      {/* Phần Tiêu đề (Header Section) */}
       <div className="blog-header">
         <div className="header-content">
           <h1 className="blog-title">
@@ -474,7 +537,6 @@ const Blog = () => {
         </div>
       </div>
 
-      {/* Phần Lọc (Filter Section) */}
       <div className="filter-section">
         <div className="filter-content">
           <div className="search-wrapper">
@@ -490,7 +552,7 @@ const Blog = () => {
               className="blog-search"
             />
           </div>
-          
+
           <div className="category-filter">
             <FilterOutlined className="filter-icon" />
             <Select
@@ -511,25 +573,22 @@ const Blog = () => {
             </Select>
           </div>
         </div>
-        
+
         <div className="results-count">
-          <Badge 
-            count={filteredPosts.length} 
-            showZero 
+          <Badge
+            count={filteredPosts.length}
+            showZero
             style={{ backgroundColor: '#10b981' }}
           />
           <span className="count-text">bài viết</span>
         </div>
       </div>
 
-      {/* Lưới Blog (Blog Grid) */}
       <div className="blog-grid">
         {paginatedPosts.length > 0 ? (
           paginatedPosts.map((post) => {
             const isLiked = likedPosts.includes(post.id);
-            // Lấy số like MỚI NHẤT từ 'allPosts' (hoặc 'post' đã được lọc)
-            // Đây là số liệu đã được cập nhật bởi handleLike
-            const displayLikes = post.likes; 
+            const displayLikes = post.likes;
 
             return (
               <Card
@@ -554,9 +613,9 @@ const Blog = () => {
                 <div className="card-content">
                   <h3 className="card-title">{post.title}</h3>
                   <p className="card-description">{post.description}</p>
-                  
+
                   <div className="card-tags">
-                    {post.tags.map((tag, index) => (
+                    {(post.tags || []).map((tag, index) => (
                       <Tag key={index} className="post-tag">
                         {tag}
                       </Tag>
@@ -580,42 +639,40 @@ const Blog = () => {
                       <Tooltip title="Lượt xem">
                         <span className="action-item">
                           <EyeOutlined />
-                          <span className="action-count">{post.views.toLocaleString()}</span>
+                          <span className="action-count">{(post.views || 0).toLocaleString()}</span>
                         </span>
                       </Tooltip>
-                      
+
                       <Tooltip title={isLiked ? 'Bỏ thích' : 'Thích'}>
                         <Button
                           type="text"
                           className={`action-button ${isLiked ? 'liked' : ''}`}
                           icon={isLiked ? <HeartFilled /> : <HeartOutlined />}
                           onClick={(e) => {
-                            e.stopPropagation(); // Ngăn modal mở khi nhấn like
+                            e.stopPropagation();
                             handleLike(post.id);
                           }}
                         >
-                          {/* Hiển thị số like đã cập nhật */}
-                          <span className="action-count">{displayLikes.toLocaleString()}</span>
+                          <span className="action-count">{(displayLikes || 0).toLocaleString()}</span>
                         </Button>
                       </Tooltip>
-                      
+
                       <Tooltip title="Bình luận">
                         <Button
                           type="text"
                           className="action-button"
                           icon={<CommentOutlined />}
-                          onClick={() => handleReadMore(post)} // Nhấn bình luận cũng mở chi tiết
+                          onClick={() => handleReadMore(post)}
                         >
-                          {/* Hiển thị số bình luận đã cập nhật */}
-                          <span className="action-count">{post.comments.toLocaleString()}</span>
+                          <span className="action-count">{(post.comments || 0).toLocaleString()}</span>
                         </Button>
                       </Tooltip>
                     </Space>
 
-                    <Button 
-                      type="primary" 
+                    <Button
+                      type="primary"
                       className="read-more-btn"
-                      onClick={() => handleReadMore(post)} // Gọi hàm khi nhấp
+                      onClick={() => handleReadMore(post)}
                     >
                       Đọc thêm
                     </Button>
@@ -634,7 +691,6 @@ const Blog = () => {
         )}
       </div>
 
-      {/* Phân Trang (Pagination) */}
       {filteredPosts.length > pageSize && (
         <div className="pagination-wrapper">
           <Pagination
@@ -648,18 +704,16 @@ const Blog = () => {
         </div>
       )}
 
-      {/* --- MODAL (CẬP NHẬT LỚN) --- */}
       {selectedPost && (
         <Modal
           title={<h2 style={{ margin: 0, paddingRight: '40px' }}>{selectedPost.title}</h2>}
-          open={isModalVisible} 
+          open={isModalVisible}
           onCancel={handleModalClose}
-          width={800} 
+          width={800}
           className="blog-detail-modal"
-          // --- FOOTER (CHÂN MODAL) MỚI ---
           footer={[
-            <Tooltip 
-              title={likedPosts.includes(selectedPost.id) ? 'Bỏ thích' : 'Thích'} 
+            <Tooltip
+              title={likedPosts.includes(selectedPost.id) ? 'Bỏ thích' : 'Thích'}
               key="like"
             >
               <Button
@@ -668,8 +722,7 @@ const Blog = () => {
                 onClick={() => handleLike(selectedPost.id)}
                 size="large"
               >
-                {/* Hiển thị số like đã cập nhật */}
-                {selectedPost.likes.toLocaleString()}
+                {(selectedPost.likes || 0).toLocaleString()}
               </Button>
             </Tooltip>,
             <Button key="close" type="primary" size="large" onClick={handleModalClose}>
@@ -677,17 +730,15 @@ const Blog = () => {
             </Button>,
           ]}
         >
-          {/* Phần Meta (Tác giả, Lượt xem...) */}
-          <div 
-            className="modal-post-meta" 
-            style={{ 
-              margin: '16px 0', 
-              borderTop: '1px solid #f0f0f0', 
-              borderBottom: '1px solid #f0f0f0', 
+          <div
+            className="modal-post-meta"
+            style={{
+              margin: '16px 0',
+              borderTop: '1px solid #f0f0f0',
+              borderBottom: '1px solid #f0f0f0',
               padding: '16px 0'
             }}
           >
-            {/* Hàng 1: Tác giả và Thời gian */}
             <Space style={{ marginBottom: 16 }}>
               <Avatar src={selectedPost.avatar} />
               <strong>{selectedPost.author}</strong>
@@ -698,45 +749,41 @@ const Blog = () => {
               <span>{selectedPost.readTime}</span>
             </Space>
 
-            {/* Hàng 2: Các chỉ số (Lượt xem, Thích, Bình luận) */}
             <Space size="large" style={{ display: 'flex' }}>
               <span className="action-item" style={{ fontSize: 15, color: '#555' }}>
                 <EyeOutlined />
                 <span className="action-count" style={{ marginLeft: 8 }}>
-                  {selectedPost.views.toLocaleString()} Lượt xem
+                  {(selectedPost.views || 0).toLocaleString()} Lượt xem
                 </span>
               </span>
-              {/* Số thích đã chuyển xuống footer */}
               <span className="action-item" style={{ fontSize: 15, color: '#555' }}>
                 <CommentOutlined />
                 <span className="action-count" style={{ marginLeft: 8 }}>
-                  {selectedPost.comments.toLocaleString()} Bình luận
+                  {(selectedPost.comments || 0).toLocaleString()} Bình luận
                 </span>
               </span>
             </Space>
           </div>
-          {/* --- KẾT THÚC PHẦN META --- */}
 
-
-          {/* Phần Nội dung (Bài viết + Bình luận) */}
           <div className="modal-post-content">
-            <img 
-              src={selectedPost.image} 
-              alt={selectedPost.title} 
-              style={{ width: '100%', borderRadius: '8px', marginBottom: '20px' }} 
+            <img
+              src={selectedPost.image}
+              alt={selectedPost.title}
+              style={{ width: '100%', borderRadius: '8px', marginBottom: '20px' }}
             />
-            {/* Nội dung bài viết */}
-            {selectedPost.content}
+            {typeof selectedPost.content === 'string' ? (
+                <div className="post-content-detail" dangerouslySetInnerHTML={{ __html: selectedPost.content.replace(/\n/g, '<br />') }} />
+            ) : (
+                selectedPost.content
+            )}
 
-            {/* --- PHẦN BÌNH LUẬN MỚI --- */}
             <div className="comment-section">
               <h3 className="comment-title">Bình luận ({selectedPost.comments})</h3>
-              
-              {/* Danh sách bình luận */}
+
               <List
                 className="comment-list"
                 itemLayout="horizontal"
-                dataSource={selectedPost.commentsData}
+                dataSource={selectedPost.commentsData || []}
                 renderItem={item => (
                   <List.Item>
                     <List.Item.Meta
@@ -754,15 +801,14 @@ const Blog = () => {
                 locale={{ emptyText: 'Chưa có bình luận nào. Hãy là người đầu tiên!' }}
               />
 
-              {/* Form gửi bình luận */}
               <div className="comment-form-wrapper">
-                <Avatar 
-                  src="https://i.pravatar.cc/150?img=10" 
-                  className="comment-form-avatar" 
+                <Avatar
+                  src="https://i.pravatar.cc/150?img=10"
+                  className="comment-form-avatar"
                 />
                 <Form
                   form={form}
-                  onFinish={handleCommentSubmit} 
+                  onFinish={handleCommentSubmit}
                   className="comment-form"
                 >
                   <Form.Item
@@ -777,17 +823,16 @@ const Blog = () => {
                       className="comment-input"
                     />
                   </Form.Item>
-                  <Button 
-                    type="primary" 
-                    htmlType="submit" 
-                    icon={<SendOutlined />} 
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    icon={<SendOutlined />}
                     className="comment-submit-btn"
                     disabled={!newComment.trim()}
                   />
                 </Form>
               </div>
             </div>
-            {/* --- KẾT THÚC PHẦN BÌNH LUẬN --- */}
 
           </div>
         </Modal>
