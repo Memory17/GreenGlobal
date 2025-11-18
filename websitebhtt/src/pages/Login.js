@@ -11,7 +11,21 @@ import {
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../data/authService";
 import "../style/Login.css"; 
-import { useAuth } from "../context/AuthContext"; 
+import { useAuth } from "../context/AuthContext";
+
+// --- HELPER ĐỂ ĐỌC PROFILE TÙY CHỈNH ---
+// Logic này được sao chép từ Profile.js để đảm bảo tính nhất quán
+const PROFILES_STORAGE_KEY = 'user_profiles';
+const getProfileByUsername = (username) => {
+  if (!username) return null;
+  try {
+    const profiles = localStorage.getItem(PROFILES_STORAGE_KEY);
+    const allProfiles = profiles ? JSON.parse(profiles) : {};
+    return allProfiles[username] || null;
+  } catch {
+    return null;
+  }
+};
 
 const { Title, Text, Link } = Typography;
 
@@ -29,34 +43,23 @@ const Login = () => {
       const userData = await loginUser(username, password);
       console.log('📝 Login response:', userData);
       
+      // ⭐ BƯỚC 1: KIỂM TRA AVATAR TÙY CHỈNH ĐÃ LƯU
+      // Sau khi có userData từ API, kiểm tra xem có profile tùy chỉnh trong localStorage không.
+      const localProfile = getProfileByUsername(userData.username);
+      if (localProfile && localProfile.avatar) {
+        // Nếu có, hợp nhất avatar đó vào userData.
+        // AuthContext dùng key 'image', nên ta gán vào 'image'.
+        userData.image = localProfile.avatar;
+        console.log('🎨 Found and merged custom avatar from local profile.');
+      }
+
       message.success(`Chào mừng trở lại, ${userData.firstName || userData.username}!`);
       
-      // ✅ LƯU CURRENTUSER VÀO LOCALSTORAGE
-      const currentUserInfo = {
-        id: userData.id || Date.now(),
-        name: userData.firstName || userData.fullName || userData.username || 'User',
-        email: userData.email || `${userData.username}@example.com`,
-        phone: userData.phone || 'N/A',
-        username: userData.username,
-        role: userData.role || 'user',
-      };
-
-      console.log('🔍 About to save user info:', currentUserInfo);
-      localStorage.setItem('currentUser', JSON.stringify(currentUserInfo));
-      localStorage.setItem('authToken', userData.token);
-
-      // Verify saved
-      const checkSaved = localStorage.getItem('currentUser');
-      console.log('✅ Verified saved in localStorage:', checkSaved);
-
       // Dispatch event để các component khác biết user đã login
       window.dispatchEvent(new Event('user_logged_in'));
 
-      console.log('✅ Saved User Info:', currentUserInfo);
-      console.log('📦 All localStorage:', Object.keys(localStorage).map(k => `${k}: ${localStorage.getItem(k)}`));
-      // =======================================
-
       // Gửi cả token và userData vào hàm login của Context
+      // userData lúc này đã chứa avatar tùy chỉnh (nếu có)
       login(userData.token, userData); 
 
       if (userData.role === 'admin') {

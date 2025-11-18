@@ -76,7 +76,7 @@ const CartProducts = () => {
     const [selectAll, setSelectAll] = useState(false);
     const { cartItems, removeFromCart, updateQuantity, clearCart } = useCart();
     // Thêm 'addReview' từ context (Giả định context của bạn cung cấp hàm này)
-    const { orderHistory, cancelOrder, addReview } = useOrderHistory();
+    const { orderHistory, cancelOrder, addReview, removeProductFromOrder } = useOrderHistory();
 
     const [isCouponModalVisible, setIsCouponModalVisible] = useState(false);
     const [activeProductCoupons, setActiveProductCoupons] = useState([]);
@@ -424,6 +424,41 @@ const CartProducts = () => {
     };
     // ------------------------------------
 
+    // --- HÀM MỚI: XỬ LÝ XÓA SẢN PHẨM KHỎI LỊCH SỬ ---
+    const handleRemoveProduct = (orderId, product) => {
+        Modal.confirm({
+            title: 'Xác nhận xóa sản phẩm',
+            content: `Bạn có chắc muốn xóa sản phẩm "${product.title}" khỏi lịch sử đơn hàng này không? Hành động này chỉ để dọn dẹp và không thể hoàn tác.`,
+            okText: 'Xóa',
+            okType: 'danger',
+            cancelText: 'Hủy',
+            onOk: async () => {
+                if (removeProductFromOrder) {
+                    const success = await removeProductFromOrder(orderId, product.id);
+                    if (success) {
+                        message.success('Đã xóa sản phẩm khỏi lịch sử.');
+                        // Tải lại danh sách trong modal đang mở
+                        openStatusModal(statusModalKey);
+                    } else {
+                        message.error('Không thể xóa sản phẩm.');
+                    }
+                }
+            },
+        });
+    };
+
+    // ⭐️ HÀM MỚI: Đếm số sản phẩm chưa được đánh giá trong các đơn hàng
+    const countUnreviewedProducts = (orders) => {
+        if (!Array.isArray(orders)) return 0;
+
+        return orders.reduce((total, order) => {
+            const unreviewedItems = Array.isArray(order.items)
+                ? order.items.filter(item => !item.review).length
+                : 0;
+            return total + unreviewedItems;
+        }, 0);
+    };
+
     return (
         <div className="shopping-card-page">
             <div className="cart-gif-container">
@@ -471,7 +506,13 @@ const CartProducts = () => {
                     </Col>
                     <Col className="order-confirm" span={3}>
                         <div className="checkpoint-col" onClick={() => openStatusModal('delivered')} style={{ cursor: 'pointer' }}>
-                            <Badge count={Array.isArray(orderHistory) ? orderHistory.filter(o => STATUS_MAP.delivered.match(o.status)).length : 0} color="purple" offset={[-2, 5]} showZero>
+                            {/* ⭐️ THAY ĐỔI: Quay lại logic đếm số ĐƠN HÀNG cho trạng thái "Đã Giao" */}
+                            <Badge 
+                                count={
+                                    Array.isArray(orderHistory) 
+                                    ? orderHistory.filter(o => STATUS_MAP.delivered.match(o.status)).length 
+                                    : 0} 
+                                color="purple" offset={[-2, 5]} showZero>
                                 <SmileOutlined style={{ fontSize: 24 }} />
                             </Badge>
                             <Text>Đã Giao</Text>
@@ -480,7 +521,10 @@ const CartProducts = () => {
                     </Col>
                     <Col className="order-confirm" span={3}>
                         <div className="checkpoint-col" onClick={() => openStatusModal('review')} style={{ cursor: 'pointer' }}>
-                            <Badge count={Array.isArray(orderHistory) ? orderHistory.filter(o => STATUS_MAP.review.match(o.status)).length : 0} color="gold" offset={[-2, 5]} showZero>
+                            {/* Giữ nguyên logic đếm SẢN PHẨM cho trạng thái "Chờ Đánh giá" */}
+                            <Badge 
+                                count={countUnreviewedProducts(orderHistory.filter(o => STATUS_MAP.review.match(o.status)))} 
+                                color="gold" offset={[-2, 5]} showZero>
                                 <StarOutlined style={{ fontSize: 24 }} />
                             </Badge>
                             <Text>Chờ Đánh giá</Text>
@@ -656,11 +700,18 @@ const CartProducts = () => {
                     itemLayout="vertical" // Thay đổi layout để hiển thị sản phẩm bên dưới
                     dataSource={statusModalOrders}
                     locale={{ emptyText: "Không có đơn hàng." }}
-                    renderItem={(order) => {
-                        // Kiểm tra xem đây có phải là modal "Đã Giao" hoặc "Chờ Đánh giá" không
-                        const isReviewableModal = (statusModalKey === 'delivered' || statusModalKey === 'review');
-
-                        if (isReviewableModal && Array.isArray(order.items)) {
+                    renderItem={(order) => {                        
+                        // ⭐️ THAY ĐỔI: Tách biệt logic cho từng modal
+                        const isReviewModal = (statusModalKey === 'review');
+                        const isDeliveredModal = (statusModalKey === 'delivered');
+                        const isCancelledModal = (statusModalKey === 'cancelled');
+                        
+                        // Lọc sản phẩm cho modal "Chờ đánh giá"
+                        const itemsToReview = (isReviewModal && Array.isArray(order.items))
+                            ? order.items.filter(item => !item.review)
+                            : [];
+                        
+                        if (isReviewModal && itemsToReview.length > 0) {
                             // --- GIAO DIỆN MỚI CHO MODAL "ĐÃ GIAO" / "CHỜ ĐÁNH GIÁ" ---
                             return (
                                 <List.Item key={order.id} style={{ background: '#f9f9f9', padding: '16px', borderRadius: '8px', marginBottom: '16px' }}>
@@ -677,7 +728,8 @@ const CartProducts = () => {
                                     />
                                     <Text strong style={{display: 'block', marginTop: '12px'}}>Sản phẩm trong đơn:</Text>
                                     <List
-                                        dataSource={order.items}
+                                        // ⭐️ SỬ DỤNG DATASOURCE ĐÃ LỌC
+                                        dataSource={itemsToReview}
                                         renderItem={(item) => {
                                             // 'item' là { product: {...}, quantity: X, review: {...} }
                                             const reviewData = item.review; // Giả định cấu trúc này
@@ -713,6 +765,92 @@ const CartProducts = () => {
                                                     )}
                                                 </List.Item>
                                             )
+                                        }}
+                                    />
+                                </List.Item>
+                            );
+                        } else if (isReviewModal) {
+                            // Nếu là modal đánh giá nhưng không còn sản phẩm nào, ẩn luôn đơn hàng
+                            return null;
+                        }
+
+                        // ⭐️ LOGIC MỚI CHO MODAL "ĐÃ GIAO"
+                        if (isDeliveredModal && Array.isArray(order.items)) {
+                            return (
+                                <List.Item key={order.id} style={{ background: '#f9f9f9', padding: '16px', borderRadius: '8px', marginBottom: '16px' }}>
+                                    <List.Item.Meta
+                                        title={<Text strong>Mã đơn hàng: {order.id}</Text>}
+                                        description={
+                                            <>
+                                                <Text>Đặt lúc: {formatDate(order.orderDate)} | Giao tới: {order.delivery?.name || "-"} | </Text>
+                                                <Text strong>Tổng: {formatCurrency(order.totals?.total || order.totals)}</Text>
+                                                <br/>
+                                                <Tag color="green">{order.status}</Tag>
+                                            </>
+                                        }
+                                    />
+                                    <Text strong style={{display: 'block', marginTop: '12px'}}>Sản phẩm trong đơn:</Text>
+                                    <List
+                                        // Hiển thị TẤT CẢ sản phẩm
+                                        dataSource={order.items}
+                                        renderItem={(item) => {
+                                            const hasReviewed = !!item.review;
+                                            return (
+                                                <List.Item
+                                                    key={item.product.id} 
+                                                    actions={[ // ⭐️ THÊM THÙNG RÁC
+                                                        <Button type="primary" onClick={() => handleOpenReviewModal(order.id, item.product)} disabled={hasReviewed}>
+                                                            {hasReviewed ? "Đã đánh giá" : "Viết đánh giá"}
+                                                        </Button>,
+                                                        <Button danger type="text" icon={<DeleteOutlined />} onClick={() => handleRemoveProduct(order.id, item.product)} />
+                                                    ]}
+                                                >
+                                                    <List.Item.Meta
+                                                        avatar={<Avatar src={item.product.thumbnail} />}
+                                                        title={item.product.title}
+                                                        description={`Số lượng: ${item.quantity}`}
+                                                    />
+                                                </List.Item>
+                                            );
+                                        }}
+                                    />
+                                </List.Item>
+                            );
+                        }
+
+                        // ⭐️ LOGIC MỚI CHO MODAL "ĐÃ HỦY"
+                        if (isCancelledModal && Array.isArray(order.items) && order.items.length > 0) {
+                            return (
+                                <List.Item key={order.id} style={{ background: '#f9f9f9', padding: '16px', borderRadius: '8px', marginBottom: '16px' }}>
+                                    <List.Item.Meta
+                                        title={<Text strong>Mã đơn hàng: {order.id}</Text>}
+                                        description={
+                                            <>
+                                                <Text>Đặt lúc: {formatDate(order.orderDate)} | </Text>
+                                                <Text strong>Tổng: {formatCurrency(order.totals?.total || order.totals)}</Text>
+                                                <br/>
+                                                <Tag color="gray">{order.status}</Tag>
+                                            </>
+                                        }
+                                    />
+                                    <Text strong style={{display: 'block', marginTop: '12px'}}>Sản phẩm trong đơn:</Text>
+                                    <List
+                                        dataSource={order.items}
+                                        renderItem={(item) => {
+                                            return (
+                                                <List.Item
+                                                    key={item.product.id}
+                                                    actions={[ // ⭐️ THÊM THÙNG RÁC
+                                                        <Button danger type="text" icon={<DeleteOutlined />} onClick={() => handleRemoveProduct(order.id, item.product)} />
+                                                    ]}
+                                                >
+                                                    <List.Item.Meta
+                                                        avatar={<Avatar src={item.product.thumbnail} />}
+                                                        title={item.product.title}
+                                                        description={`Số lượng: ${item.quantity}`}
+                                                    />
+                                                </List.Item>
+                                            );
                                         }}
                                     />
                                 </List.Item>

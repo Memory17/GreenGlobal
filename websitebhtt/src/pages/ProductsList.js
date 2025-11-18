@@ -26,8 +26,10 @@ import { useNavigate } from "react-router-dom";
 import "../style/ProductList.css"; 
 import {
   getProductCategories,
-  getProductsByFullUrl,
-} from "../data/productService"; 
+  // getProductsByFullUrl, // Không cần dùng hàm này nữa nếu lọc trên client
+} from "../data/productService";
+// ⭐ BƯỚC 1: Import hàm getMergedProducts
+import { getMergedProducts } from "../API";
 import { useCart } from "../context/CartContext"; 
 
 const { Title } = Typography;
@@ -58,19 +60,20 @@ function Product() {
     setLoading(true);
     setSelectedCategorySlug(null);
     try {
-      const response = await fetch("https://dummyjson.com/products?limit=0");
-      const data = await response.json();
-      setProducts(data.products);
-      setFilteredProducts(data.products); 
+      // ⭐ BƯỚC 2: Sử dụng getMergedProducts thay vì fetch API
+      const mergedProducts = await getMergedProducts();
+      setProducts(mergedProducts);
+      setFilteredProducts(mergedProducts);
 
-      if (data.products && data.products.length > 0) {
-        const max = Math.ceil(Math.max(...data.products.map((p) => p.price)));
+      if (mergedProducts && mergedProducts.length > 0) {
+        const max = Math.ceil(Math.max(...mergedProducts.map((p) => p.price)));
         setMaxPrice(max);
         setPriceRange([0, max]); 
       } else {
         setMaxPrice(0);
         setPriceRange([0, 0]);
       }
+
     } catch (err) {
       console.error("Lỗi khi tải tất cả sản phẩm:", err);
       message.error("Không thể tải danh sách sản phẩm.");
@@ -136,7 +139,9 @@ function Product() {
     return `${h}:${m}:${s}`;
   };
 
-  const handleCategoryClick = async (categorySlug, categoryUrl) => {
+  // ⭐ BƯỚC 3: Tối ưu hóa việc lọc danh mục trên client-side
+  //    Hàm này sẽ không gọi API nữa mà lọc trực tiếp từ state `products` đã được gộp.
+  const handleCategoryClick = (categorySlug) => {
     if (categorySlug === null) {
       if (selectedCategorySlug !== null) {
         message.info("Đang hiển thị tất cả sản phẩm.");
@@ -149,23 +154,10 @@ function Product() {
       return;
     }
 
-    setLoading(true);
     setSelectedCategorySlug(categorySlug);
-    setFilteredProducts([]); 
-    setDisplayProducts([]); 
-
-    try {
-      const data = await getProductsByFullUrl(categoryUrl); 
-      setFilteredProducts(data); 
-      message.success(
-        `Đã tải ${data.length} sản phẩm từ danh mục ${categorySlug}.`
-      );
-    } catch (err) {
-      console.error(`Lỗi khi tải sản phẩm của danh mục ${categorySlug}:`, err);
-      setFilteredProducts([]);
-    } finally {
-      setLoading(false);
-    }
+    const categoryProducts = products.filter(p => p.category === categorySlug);
+    setFilteredProducts(categoryProducts);
+    message.success(`Đang hiển thị sản phẩm từ danh mục ${categorySlug}.`);
   };
 
   const handleProductClick = (product) => {
@@ -219,12 +211,7 @@ function Product() {
           <Col xs={24} sm={12} md={8}>
             <div
               className="category-overlay-card"
-              onClick={() =>
-                handleCategoryClick(
-                  "smartphones",
-                  "https://dummyjson.com/products/category/smartphones"
-                )
-              }
+              onClick={() => handleCategoryClick("smartphones")}
             >
               <img
                 alt="Điện Thoại"
@@ -242,12 +229,7 @@ function Product() {
           <Col xs={24} sm={12} md={8}>
             <div
               className="category-overlay-card"
-              onClick={() =>
-                handleCategoryClick(
-                  "laptops",
-                  "https://dummyjson.com/products/category/laptops"
-                )
-              }
+              onClick={() => handleCategoryClick("laptops")}
             >
               <img
                 alt="Laptop"
@@ -265,12 +247,7 @@ function Product() {
           <Col xs={24} sm={12} md={8}>
             <div
               className="category-overlay-card"
-              onClick={() =>
-                handleCategoryClick(
-                  "skincare",
-                  "https://dummyjson.com/products/category/skincare"
-                )
-              }
+              onClick={() => handleCategoryClick("skincare")}
             >
               <img
                 alt="Chăm Sóc Da"
@@ -291,12 +268,7 @@ function Product() {
           <Col xs={24} sm={12} md={8}>
             <div
               className="category-overlay-card"
-              onClick={() =>
-                handleCategoryClick(
-                  "groceries",
-                  "https://dummyjson.com/products/category/groceries"
-                )
-              }
+              onClick={() => handleCategoryClick("groceries")}
             >
               <img
                 alt="Hàng Tạp Hóa"
@@ -314,12 +286,7 @@ function Product() {
           <Col xs={24} sm={12} md={8}>
             <div
               className="category-overlay-card"
-              onClick={() =>
-                handleCategoryClick(
-                  "home-decoration",
-                  "https://dummyjson.com/products/category/home-decoration"
-                )
-              }
+              onClick={() => handleCategoryClick("home-decoration")}
             >
               <img
                 alt="Trang Trí Nhà Cửa"
@@ -337,12 +304,7 @@ function Product() {
           <Col xs={24} sm={12} md={8}>
             <div
               className="category-overlay-card"
-              onClick={() =>
-                handleCategoryClick(
-                  "fragrances",
-                  "https://dummyjson.com/products/category/fragrances"
-                )
-              }
+              onClick={() => handleCategoryClick("fragrances")}
             >
               <img
                 alt="Nước Hoa"
@@ -371,7 +333,7 @@ function Product() {
           <Button
             key="all"
             type={selectedCategorySlug === null ? "primary" : "default"}
-            onClick={() => handleCategoryClick(null, null)}
+            onClick={() => handleCategoryClick(null)}
             style={{ textTransform: "capitalize", minWidth: "150px" }}
           >
             Tất Cả Sản Phẩm
@@ -383,7 +345,7 @@ function Product() {
               type={
                 selectedCategorySlug === category.slug ? "primary" : "default"
               }
-              onClick={() => handleCategoryClick(category.slug, category.url)}
+              onClick={() => handleCategoryClick(category.slug)}
               style={{
                 textTransform: "capitalize",
                 minWidth: "150px",

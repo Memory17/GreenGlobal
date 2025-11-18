@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
     Avatar,
     Space,
@@ -145,22 +145,18 @@ export default function Staffs() {
         loadStaffs();
     }, []);
 
-    useEffect(() => {
-        applyFilter();
-    }, [q, roleFilter, staffs]);
-
-    // ... (Tất cả các hàm handle... của bạn giữ nguyên) ...
     const loadStaffs = () => {
         setLoading(true);
         setTimeout(() => {
             const list = readStorage().filter((u) => u.status !== "deleted");
-            list.sort((a, b) => b.createdAt - a.createdAt);
+            // Sắp xếp các bản ghi mới nhất lên đầu
+            list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
             setStaffs(list);
             setLoading(false);
         }, 250);
     };
 
-    const applyFilter = () => {
+    const applyFilter = useCallback(() => {
         const term = q.trim().toLowerCase();
         let list = [...staffs];
         if (term) {
@@ -175,8 +171,13 @@ export default function Staffs() {
             list = list.filter((u) => u.role === roleFilter);
         }
         setFiltered(list);
-    };
+    }, [q, roleFilter, staffs]);
 
+    useEffect(() => {
+        applyFilter();
+    }, [q, roleFilter, staffs, applyFilter]);
+
+    // ... (Tất cả các hàm handle... của bạn giữ nguyên) ...
     const handleAdd = () => {
         setEditing(null);
         form.resetFields();

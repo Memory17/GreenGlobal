@@ -37,6 +37,9 @@ import {
 import { useTranslation } from "react-i18next";
 import { getMergedProducts, saveLocalProduct, updateLocalProduct, removeLocalProduct } from "../../API";
 
+// ⭐ BƯỚC 1: SỬA LỖI - Import hàm getProductCategories
+import { getProductCategories } from "../../data/productService";
+
 const formatInventoryPrice = (value, i18n) => {
     if (value === undefined || value === null) return '-';
     const isVietnamese = i18n.language === 'vi';
@@ -71,6 +74,9 @@ function Inventory() {
     const [thumbnailPreview, setThumbnailPreview] = useState("");
     const [hoveredRow, setHoveredRow] = useState(null);
 
+    // ⭐ BƯỚC 2: Thêm state để lưu danh mục
+    const [categories, setCategories] = useState([]);
+
     useEffect(() => {
         fetchData();
     }, []);
@@ -83,7 +89,15 @@ function Inventory() {
         setLoading(true);
         try {
             const merged = await getMergedProducts();
+            // ⭐ BƯỚC 3: Lấy danh sách danh mục và cập nhật state
+            const categoryData = await getProductCategories();
+
             setDataSource(merged);
+            setCategories(categoryData.map(cat => ({
+                value: cat.slug,
+                // Dùng name nếu có, không thì dùng slug
+                label: cat.name || cat.slug.replace(/-/g, ' ')
+            })));
         } catch (e) {
             console.error("Error loading merged products", e);
             setDataSource([]);
@@ -102,10 +116,6 @@ function Inventory() {
 
     const handleSort = (value) => {
         setSortOption(value);
-    };
-
-    const filterLowStock = () => {
-        setFilterCategory("low_stock");
     };
 
     const processedData = useMemo(() => {
@@ -648,16 +658,8 @@ function Inventory() {
                         <Input placeholder="Nhập thương hiệu" />
                     </Form.Item>
                     <Form.Item name="category" label="Danh mục">
-                        <Select
-                            placeholder="Chọn danh mục"
-                            options={[
-                                { value: "electronics", label: "Điện tử" },
-                                { value: "clothing", label: "Quần áo" },
-                                { value: "footwear", label: "Giày dép" },
-                                { value: "furniture", label: "Nội thất" },
-                                { value: "accessories", label: "Phụ kiện" },
-                            ]}
-                        />
+                        {/* ⭐ SỬA LỖI: Dùng danh mục động từ state 'categories' */}
+                        <Select placeholder="Chọn danh mục" options={categories} />
                     </Form.Item>
                     <Form.Item name="thumbnail" label="Link ảnh">
                         <Input placeholder="Dán link ảnh sản phẩm" />

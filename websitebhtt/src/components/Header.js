@@ -13,6 +13,8 @@ import {
   Drawer,
   Divider,
   AutoComplete, // MỚI: Thêm AutoComplete
+  List,
+  Typography,
 } from "antd";
 import {
   UserOutlined,
@@ -21,11 +23,12 @@ import {
   ShoppingCartOutlined,
   LogoutOutlined,
   MenuOutlined,
+  BellOutlined, // ⭐️ THÊM: Icon chuông
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/images/logo2.jpg";
 import "../App.css";
-import React, { useState, useEffect } from "react"; // MỚI: Thêm useEffect
+import React, { useState, useEffect, useCallback } from "react"; // MỚI: Thêm useEffect
 import Categories from "../pages/Categories";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
@@ -33,6 +36,7 @@ import { searchProducts } from "../data/productService"; // MỚI: Import hàm s
 import "../style/Header.css";
 
 const { Header } = Layout;
+const { Text } = Typography;
 
 const AppHeader = () => {
   const navigate = useNavigate();
@@ -41,6 +45,12 @@ const AppHeader = () => {
   const [searchValue, setSearchValue] = useState("");
 
   // MỚI: State cho gợi ý và giá trị debounce
+  // ⭐️ BẮT ĐẦU: State cho thông báo
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  // ⭐️ KẾT THÚC: State cho thông báo
+
   const [options, setOptions] = useState([]);
   const [debouncedSearchValue, setDebouncedSearchValue] = useState(searchValue);
 
@@ -48,6 +58,62 @@ const AppHeader = () => {
   const { isLoggedIn, logout, currentUser } = useAuth();
 
   const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
+
+  // ⭐️ BẮT ĐẦU: Logic tải và quản lý thông báo
+  const loadUserNotifications = useCallback(() => {
+      if (!currentUser) {
+        setNotifications([]);
+        setUnreadCount(0);
+        return;
+      }
+  
+      const GLOBAL_REVIEWS_KEY = 'app_reviews_v1';
+      const NOTIFICATION_READ_KEY = `user_notifications_read_${currentUser.username || currentUser.email}`;
+  
+      const storedReviews = localStorage.getItem(GLOBAL_REVIEWS_KEY);
+      const allReviews = storedReviews ? JSON.parse(storedReviews) : [];
+  
+      const lastReadTimestamp = localStorage.getItem(NOTIFICATION_READ_KEY) || 0;
+  
+      const userNotifications = allReviews
+        .filter(review => (review.user === currentUser.username || review.user === currentUser.email) && Array.isArray(review.adminReplies))
+        .flatMap(review => 
+          review.adminReplies.map(reply => ({
+            ...reply,
+            productTitle: review.productTitle,
+            productImage: review.productImage,
+            productId: review.productId,
+            reviewId: review.id,
+            isNew: new Date(reply.date).getTime() > lastReadTimestamp,
+          }))
+        )
+        .sort((a, b) => new Date(b.date) - new Date(a.date)); // Sắp xếp mới nhất lên đầu
+  
+      setNotifications(userNotifications);
+      setUnreadCount(userNotifications.filter(n => n.isNew).length);
+    }, [currentUser]);
+
+  useEffect(() => {
+    loadUserNotifications();
+
+    const handleReviewUpdate = () => {
+      loadUserNotifications();
+    };
+
+    window.addEventListener('reviews_updated', handleReviewUpdate);
+    return () => window.removeEventListener('reviews_updated', handleReviewUpdate);
+  }, [currentUser, loadUserNotifications]);
+
+  const handleOpenNotifications = () => {
+    setIsNotificationsOpen(true);
+    setUnreadCount(0);
+    // Chỉ cập nhật nếu có currentUser
+    if (currentUser) {
+      const NOTIFICATION_READ_KEY = `user_notifications_read_${currentUser.username || currentUser.email}`;
+      localStorage.setItem(NOTIFICATION_READ_KEY, new Date().getTime());
+    }
+  };
+  // ⭐️ KẾT THÚC: Logic tải và quản lý thông báo
 
   // MỚI: Effect (1) để debounce giá trị tìm kiếm
   // Chỉ cập nhật giá trị debounce sau 300ms người dùng ngừng gõ
@@ -219,6 +285,17 @@ const AppHeader = () => {
             />
           </AutoComplete>
           
+          {/* ⭐️ THÊM: Icon chuông thông báo */}
+          {isLoggedIn && (
+            <Badge count={unreadCount} style={{ cursor: "pointer" }} onClick={handleOpenNotifications}>
+              <BellOutlined
+                style={{ fontSize: "24px", color: "black", cursor: "pointer" }}
+                onClick={handleOpenNotifications}
+                className="header-notification-icon"
+              />
+            </Badge>
+          )}
+
           <Badge
             count={totalItems}
             showZero
@@ -279,6 +356,55 @@ const AppHeader = () => {
           onClick={showDrawer}
         />
       </Header>
+
+      {/* ⭐️ THÊM: Drawer hiển thị thông báo */}
+      <Drawer
+        title={`Thông báo (${notifications.length})`}
+        placement="right"
+        onClose={() => setIsNotificationsOpen(false)}
+        open={isNotificationsOpen}
+        width={400}
+      >
+        <List
+          itemLayout="horizontal"
+          dataSource={notifications}
+          locale={{ emptyText: "Bạn chưa có thông báo nào." }}
+          renderItem={(item) => (
+            <List.Item
+              style={{
+                backgroundColor: item.isNew ? '#e6f7ff' : 'transparent',
+                borderLeft: item.isNew ? '3px solid #1890ff' : 'none',
+                padding: '12px 16px',
+                transition: 'background-color 0.3s'
+              }}
+              onClick={() => {
+                navigate(`/product/${item.productId}`, { state: { reviewToFocus: item.reviewId } });
+                setIsNotificationsOpen(false);
+              }}
+            >
+              <List.Item.Meta
+                avatar={<Avatar src="https://api.dicebear.com/7.x/adventurer/svg?seed=Admin" />}
+                title={
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Text strong>Admin đã trả lời bạn</Text>
+                    <Text type="secondary" style={{ fontSize: 12 }}>
+                      {new Date(item.date).toLocaleDateString('vi-VN')}
+                    </Text>
+                  </div>
+                }
+                description={
+                  <>
+                    <Text>về đánh giá cho sản phẩm <b>{item.productTitle}</b></Text>
+                    <p style={{ fontStyle: 'italic', marginTop: 4, color: '#555' }}>
+                      "{item.comment}"
+                    </p>
+                  </>
+                }
+              />
+            </List.Item>
+          )}
+        />
+      </Drawer>
 
       {/* --- DRAWER CHO MOBILE --- */}
       {/* Lưu ý: Chức năng gợi ý chưa được thêm cho thanh search trong Drawer */}
