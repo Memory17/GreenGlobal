@@ -8,57 +8,76 @@ import {
   ExclamationCircleOutlined,
   SmileOutlined,
   PictureOutlined,
-  CustomerServiceOutlined
+  CustomerServiceOutlined,
+  
 } from '@ant-design/icons';
 
 import '../style/ChatBubble.css';
 
 const { Text, Title } = Typography;
 
-// --- Broadcast Channel for tab-to-tab communication ---
 const channel = new BroadcastChannel('chat_channel');
 
 const ChatBubble = () => {
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [isMessengerOpen, setIsMessengerOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { id: 1, sender: 'admin', type: 'text', text: 'Xin chào! Tôi là hỗ trợ. Bạn cần giúp gì?' },
+    { 
+      id: 1, 
+      sender: 'admin', 
+      type: 'text', 
+      text: 'Xin chào! Tôi là hỗ trợ. Bạn cần giúp gì?',
+      timestamp: new Date(Date.now() - 300000),
+      isRead: true
+    },
   ]);
   const [inputValue, setInputValue] = useState('');
+  const [isAdminTyping, setIsAdminTyping] = useState(false);
   const messagesContainerRef = useRef(null);
   const fileInputRef = useRef(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
-  // --- Determine role based on URL ---
   const location = useLocation();
   const currentUserRole = location.pathname.startsWith('/admin') ? 'admin' : 'user';
 
-  // --- Effect for Broadcast Channel ---
+  // Typing indicator simulation
   useEffect(() => {
-    // Function to handle incoming messages
-    const handleNewMessage = (event) => {
-      const message = event.data;
-      // Add message to state only if it's from the other role
-      if (message.sender !== currentUserRole) {
-        setMessages((prev) => [...prev, message]);
+    const handleTypingMessage = (event) => {
+      if (event.data.type === 'typing') {
+        setIsAdminTyping(event.data.isTyping);
+      } else if (event.data.sender !== currentUserRole) {
+        setMessages((prev) => [...prev, event.data]);
+        setIsAdminTyping(false);
       }
     };
 
-    // Add event listener
-    channel.addEventListener('message', handleNewMessage);
-
-    // Cleanup on component unmount
+    channel.addEventListener('message', handleTypingMessage);
     return () => {
-      channel.removeEventListener('message', handleNewMessage);
+      channel.removeEventListener('message', handleTypingMessage);
     };
-  }, [currentUserRole]); // Re-run if role changes (e.g., admin logs out)
+  }, [currentUserRole]);
+
+  // Handle user typing - broadcast typing status
+  const handleInputChange = (e) => {
+    const newValue = e.target.value;
+    setInputValue(newValue);
+    
+    // Broadcast typing indicator
+    if (newValue.trim().length > 0 && !inputValue.trim().length) {
+      // User started typing
+      channel.postMessage({ type: 'typing', isTyping: true, sender: currentUserRole });
+    } else if (newValue.trim().length === 0 && inputValue.trim().length > 0) {
+      // User stopped typing
+      channel.postMessage({ type: 'typing', isTyping: false, sender: currentUserRole });
+    }
+  };
 
   useEffect(() => {
     const el = messagesContainerRef.current;
     if (el) {
       el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
     }
-  }, [messages]);
+  }, [messages, isAdminTyping]);
 
   const togglePopup = () => {
     setIsPopupVisible(!isPopupVisible);
@@ -73,28 +92,55 @@ const ChatBubble = () => {
     });
   };
 
-  // --- Updated message sending function ---
+  const formatTime = (date) => {
+    const now = new Date();
+    const diff = now - date;
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+
+    if (minutes < 1) return 'Vừa xong';
+    if (minutes < 60) return `${minutes}m`;
+    if (hours < 24) return `${hours}h`;
+    if (days < 7) return `${days}d`;
+    
+    return date.toLocaleDateString('vi-VN');
+  };
+
   const handleSendMessage = () => {
     const text = inputValue && inputValue.trim();
     if (!text) return;
-    const newMsg = { id: Date.now(), sender: currentUserRole, type: 'text', text };
+
+    const newMsg = { 
+      id: Date.now(), 
+      sender: currentUserRole, 
+      type: 'text', 
+      text,
+      timestamp: new Date(),
+      isRead: currentUserRole === 'admin' ? true : false
+    };
     
-    // Add to local state
     setMessages((prev) => [...prev, newMsg]);
-    // Broadcast to other tabs
     channel.postMessage(newMsg);
+    
+    // Stop typing indicator when message sent
+    channel.postMessage({ type: 'typing', isTyping: false, sender: currentUserRole });
     
     setInputValue('');
   };
 
-  // --- Updated image sending function ---
   const handleImageSend = (dataUrl) => {
     if (!dataUrl) return;
-    const imgMsg = { id: Date.now(), sender: currentUserRole, type: 'image', content: dataUrl };
+    const imgMsg = { 
+      id: Date.now(), 
+      sender: currentUserRole, 
+      type: 'image', 
+      content: dataUrl,
+      timestamp: new Date(),
+      isRead: currentUserRole === 'admin' ? true : false
+    };
     
-    // Add to local state
     setMessages((prev) => [...prev, imgMsg]);
-    // Broadcast to other tabs
     channel.postMessage(imgMsg);
   };
 
@@ -113,6 +159,50 @@ const ChatBubble = () => {
   const insertEmoji = (emoji) => {
     setInputValue((prev) => (prev ? prev + emoji : emoji));
     setShowEmojiPicker(false);
+  };
+
+  const quickReplies = [
+    "Tôi muốn hỏi về đơn hàng",
+    "Giúp tôi hoàn trả sản phẩm",
+    "Vấn đề giao hàng"
+  ];
+
+  const handleQuickReply = (reply) => {
+    setInputValue(reply);
+  };
+
+  const getMessageClass = (senderRole) => {
+    return senderRole === currentUserRole 
+      ? 'message-item current-user' 
+      : 'message-item other-user';
+  };
+
+  const renderMessage = (m) => {
+    if (m.type === 'image') {
+      return (
+        <div className="message-bubble">
+          <img src={m.content} alt="uploaded" className="message-image" />
+        </div>
+      );
+    }
+    
+    if (m.type === 'product') {
+      return (
+        <div className="message-bubble product-card">
+          <img src={m.product.image} alt={m.product.name} className="product-image" />
+          <div className="product-info">
+            <div className="product-name">{m.product.name}</div>
+            <div className="product-price">{m.product.price}</div>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="message-bubble">
+        {m.text}
+      </div>
+    );
   };
 
   const supportOptions = [
@@ -138,15 +228,6 @@ const ChatBubble = () => {
       link: 'https://t.me/your-telegram-username'
     },
   ];
-
-  // 👈 Hàm để xác định class cho tin nhắn dựa trên role hiện tại
-  const getMessageClass = (senderRole) => {
-    if (senderRole === currentUserRole) {
-      return 'message-item current-user'; // Tin nhắn của người hiện tại (xanh)
-    } else {
-      return 'message-item other-user'; // Tin nhắn của người khác (xám)
-    }
-  };
 
   return (
     <>
@@ -191,7 +272,9 @@ const ChatBubble = () => {
               <Avatar src="https://i.imgur.com/W0ESUyO.jpeg" size={48} />
               <div className="messenger-header-title" style={{ marginLeft: 12 }}>
                 <div style={{ fontWeight: 600 }}>Hỗ trợ trực tiếp</div>
-                <div style={{ fontSize: 12, color: '#888' }}>Trực tuyến</div>
+                <div style={{ fontSize: 12, color: '#fff' }}>
+                  {isAdminTyping ? '🟢 Đang gõ...' : '🟢 Trực tuyến'}
+                </div>
               </div>
             </div>
             <div className="messenger-header-right">
@@ -202,16 +285,42 @@ const ChatBubble = () => {
           <div className="messenger-messages" ref={messagesContainerRef}>
             {messages.map((m) => (
               <div key={m.id} className={getMessageClass(m.sender)}>
-                {m.type === 'image' ? (
-                  <div className="message-bubble">
-                    <img src={m.content} alt="uploaded" className="message-image" />
-                  </div>
-                ) : (
-                  <div className="message-bubble">{m.text}</div>
-                )}
+                {renderMessage(m)}
+                <div className="message-footer">
+                  <span className="message-time">{formatTime(m.timestamp)}</span>
+                  {m.sender === currentUserRole && currentUserRole === 'user' && (
+                    <span className="read-status">
+                      {m.isRead ? '✓✓' : '✓'}
+                    </span>
+                  )}
+                </div>
               </div>
             ))}
+
+            {isAdminTyping && (
+              <div className="message-item other-user">
+                <div className="typing-indicator">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+              </div>
+            )}
           </div>
+
+          {currentUserRole === 'user' && messages.length === 1 && (
+            <div className="quick-replies">
+              {quickReplies.map((reply, idx) => (
+                <button 
+                  key={idx}
+                  className="quick-reply-btn"
+                  onClick={() => handleQuickReply(reply)}
+                >
+                  {reply}
+                </button>
+              ))}
+            </div>
+          )}
 
           <div className="messenger-input">
             <input
@@ -226,7 +335,7 @@ const ChatBubble = () => {
               <Input.TextArea
                 rows={2}
                 value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
+                onChange={handleInputChange}
                 onPressEnter={(e) => {
                   if (!e.shiftKey) {
                     e.preventDefault();
