@@ -95,18 +95,27 @@ export const OrderHistoryProvider = ({ children }) => {
   }, [loadOrderHistory]); // Tải khi hàm load thay đổi (tức là khi user thay đổi)
 
   // 2. Thêm đơn hàng mới
-// Thay thế hàm addOrderToHistory cũ bằng hàm mới này
+  const addOrderToHistory = (itemsToOrder, totals, delivery) => { // ⭐ SỬA LỖI: Nhận 3 tham số
+    let activeUser = null;
+    try {
+        const storedUser = localStorage.getItem("userData");
+        activeUser = storedUser ? JSON.parse(storedUser) : null;
+    } catch (e) {
+        console.error("Lỗi khi đọc user từ localStorage trong addOrderToHistory", e);
+    }
 
-  const addOrderToHistory = (newOrderData) => {
-    const userKey = getUserKey(currentUser);
-    if (!userKey) {
+    const userKey = getUserKey(activeUser); // Dùng activeUser thay vì currentUser
+
+    if (!userKey || !activeUser) {
       console.error('Không thể lưu đơn hàng: Người dùng không hợp lệ hoặc thiếu key (email/username/id).');
       return;
     }
 
     // Tạo một đối tượng đơn hàng hoàn chỉnh cho user
     const newOrder = {
-      ...newOrderData,
+      items: itemsToOrder, // Dữ liệu sản phẩm từ Checkout
+      totals: totals, // Dữ liệu tổng tiền từ Checkout
+      delivery: delivery, // Dữ liệu giao hàng từ Checkout
       id: `ORDER-${new Date().getTime()}`,
       orderDate: new Date().toISOString(),
       status: 'Processing',
@@ -142,9 +151,9 @@ export const OrderHistoryProvider = ({ children }) => {
 
         // 2. Lấy tên khách hàng từ form (newOrder.delivery.name)
         //    Nếu không có, mới lấy email/username người dùng
-        const customerName = 
-            newOrder.delivery?.name || 
-            (currentUser?.email || currentUser?.username) || 
+        const customerName =
+            newOrder.delivery?.name ||
+            (activeUser?.email || activeUser?.username) || // ⭐ SỬA: Dùng activeUser
             'Khách Lẻ';
 
         // 3. Tạo đối tượng đơn hàng chuẩn cho Admin
@@ -190,6 +199,57 @@ export const OrderHistoryProvider = ({ children }) => {
 
         // 6. Phát tín hiệu để trang Admin tự cập nhật
         window.dispatchEvent(new Event('orders_updated'));
+        // 7. ⭐ THÊM MỚI: Tạo thông báo cho Admin
+        try {
+            const NOTIFICATIONS_KEY = 'app_order_notifications_v1';
+            const storedNotifications = localStorage.getItem(NOTIFICATIONS_KEY);
+            const notifications = storedNotifications ? JSON.parse(storedNotifications) : [];
+            
+            // --- LOGIC AN TOÀN: Lấy sản phẩm đầu tiên ---
+            // Kiểm tra xem items có tồn tại và có phần tử không
+            const hasItems = newOrder.items && newOrder.items.length > 0;
+            const firstItem = hasItems ? newOrder.items[0] : {};
+
+            // ⭐ SỬA LỖI: Truy cập vào `firstItem.product` để lấy thông tin sản phẩm
+            const productDetails = firstItem.product || {};
+
+            // --- LOGIC AN TOÀN: Tìm ảnh sản phẩm ---
+            const safeProductImage = productDetails.thumbnail || productDetails.image || null;
+
+            // --- LOGIC AN TOÀN: Tìm tên sản phẩm ---
+            const safeProductName = productDetails.title || productDetails.name || 'Sản phẩm';
+
+            // --- LOGIC AN TOÀN: Avatar người dùng ---
+            // Lấy avatar từ người dùng hiện tại, HOẶC từ user trong đơn hàng, HOẶC tạo tự động
+            const safeUserAvatar = activeUser?.image || newOrder.user?.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${customerName}&backgroundColor=1890ff`; // ⭐ SỬA: Dùng activeUser
+
+            const newNotification = {
+                id: `noti_${newOrder.id}_${Date.now()}`,
+                orderId: newOrder.id,
+                customerName: customerName,
+                total: newOrder.totals?.total || 0,
+                date: newOrder.orderDate || new Date().toISOString(),
+                read: false,
+                // ⭐ LƯU CHI TIẾT ĐÃ ĐƯỢC XỬ LÝ AN TOÀN ⭐
+                details: {
+                    userAvatar: safeUserAvatar,
+                    productImage: safeProductImage,
+                    productName: safeProductName,
+                    otherItemsCount: hasItems ? newOrder.items.length - 1 : 0
+                }
+            };
+
+            // Debug: Kiểm tra xem dữ liệu có lấy được không (bạn có thể xem trong Console trình duyệt F12)
+            console.log("Đang tạo thông báo mới:", newNotification);
+
+            notifications.unshift(newNotification);
+            localStorage.setItem(NOTIFICATIONS_KEY, JSON.stringify(notifications));
+            
+            window.dispatchEvent(new Event('orders_updated'));
+
+        } catch (notificationError) {
+            console.error("Lỗi khi tạo thông báo đơn hàng:", notificationError);
+        }
 
       } catch (adminError) {
         console.error("Lỗi khi đồng bộ đơn hàng sang cho Admin:", adminError, "Dữ liệu đơn hàng:", newOrder);

@@ -4,7 +4,8 @@ import {
     UserOutlined,
     EditOutlined,
     LogoutOutlined,
-    SearchOutlined,
+    SearchOutlined,    ShoppingCartOutlined,
+
     BulbOutlined,
     SettingOutlined,    CloseOutlined,
     
@@ -29,7 +30,8 @@ import {
     Select,
     Rate, 
     Empty, 
-    Descriptions, 
+    Descriptions,
+    Tooltip,
 } from "antd";
 // ✅ SỬA LỖI WARNING: Xóa 'useContext' vì không dùng
 import { useEffect, useState, useMemo, useCallback } from "react";
@@ -44,13 +46,8 @@ import { useOrderHistory } from "../../context/OrderHistoryContext";
 // --- MOCK API DATA (Giữ lại getOrders) ---
 // =================================================================
 
-// ✅ Key mới để đọc đánh giá thật
 const GLOBAL_REVIEWS_KEY = 'app_reviews_v1';
-
-const getOrders = () =>
-    Promise.resolve({
-        products: [{ title: "Tai nghe X" }, { title: "Chuột không dây Y" }],
-    });
+const NOTIFICATIONS_KEY = 'app_order_notifications_v1';
 
 const mockSearchData = [
     // Thêm trường dịch cho dữ liệu mock
@@ -95,7 +92,7 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
     const navigate = useNavigate();
 
     const [comments, setComments] = useState([]); // 👈 State này bây giờ sẽ chứa ĐÁNH GIÁ
-    const [orders, setOrders] = useState([]);
+    const [orderNotifications, setOrderNotifications] = useState([]); // ⭐ STATE MỚI CHO THÔNG BÁO ĐƠN HÀNG
     const [commentsOpen, setCommentsOpen] = useState(false);
     const [notificationsOpen, setNotifications] = useState(false); // Đổi tên để tránh conflict
     const [adminOpen, setAdminOpen] = useState(false);
@@ -127,6 +124,36 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
         }
     }, []); // Không có dependency, chỉ định nghĩa hàm
 
+    // ⭐ HÀM MỚI: Tải thông báo đơn hàng từ localStorage
+    const loadOrderNotifications = useCallback(() => {
+        try {
+            const stored = localStorage.getItem(NOTIFICATIONS_KEY);
+            const notifications = stored ? JSON.parse(stored) : [];
+            // Chỉ lấy 20 thông báo gần nhất để tránh quá tải
+            setOrderNotifications(notifications.slice(0, 20));
+        } catch (e) {
+            console.error("Lỗi khi tải thông báo đơn hàng:", e);
+            setOrderNotifications([]);
+        }
+    }, []);
+
+    // ⭐ HÀM MỚI: Xóa một thông báo khỏi danh sách chuông
+    const handleDeleteNotification = (notificationId, event) => {
+        event.stopPropagation(); // Ngăn không cho sự kiện click vào List.Item chạy
+
+        try {
+            const stored = localStorage.getItem(NOTIFICATIONS_KEY);
+            const notifications = stored ? JSON.parse(stored) : [];
+            const updatedNotifications = notifications.filter(n => n.id !== notificationId);
+
+            localStorage.setItem(NOTIFICATIONS_KEY, JSON.stringify(updatedNotifications));
+            setOrderNotifications(updatedNotifications); // Cập nhật UI ngay lập tức
+            message.info("Đã ẩn thông báo.");
+        } catch (e) {
+            console.error("Lỗi khi xóa thông báo:", e);
+            message.error("Không thể ẩn thông báo.");
+        }
+    };
     // ✅ (QUAN TRỌNG) Lấy hàm trả lời và currentUser từ context
     const { addAdminReply, deleteReview } = useOrderHistory();
     const { currentUser } = useAuth(); // <--- ĐẢM BẢO DÒNG NÀY ĐÚNG
@@ -135,10 +162,8 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
     useEffect(() => {
         // ✅ (MỚI) Tải đánh giá thật khi component mount
         loadAdminReviews(); 
-        
-        // ✅ (GIỮ LẠI) Logic cho icon Chuông
-        getOrders().then((res) => setOrders(res.products || []));
-    }, [i18n.language, loadAdminReviews]); // Thêm loadAdminReviews
+        loadOrderNotifications(); // ⭐ Tải thông báo đơn hàng
+    }, [i18n.language, loadAdminReviews, loadOrderNotifications]); // Thêm loadAdminReviews
 
 // ✅ THÊM ĐOẠN MỚI NÀY (Đồng bộ 2 tab)
     useEffect(() => {
@@ -148,16 +173,23 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
                 console.log("Admin Header: Nhận được tín hiệu 'storage' (cross-tab), tải lại đánh giá...");
                 loadAdminReviews();
             }
+            // ⭐ THÊM: Lắng nghe sự kiện cập nhật đơn hàng
+            if (event.key === NOTIFICATIONS_KEY || event.type === 'orders_updated') {
+                console.log("Admin Header: Nhận được tín hiệu 'orders_updated', tải lại thông báo...");
+                loadOrderNotifications();
+            }
         };
 
         // Lắng nghe sự kiện 'storage' (hoạt động cross-tab)
         window.addEventListener('storage', handleStorageUpdate);
+        window.addEventListener('orders_updated', handleStorageUpdate); // ⭐ Lắng nghe sự kiện tùy chỉnh
 
         // Dọn dẹp
         return () => {
             window.removeEventListener('storage', handleStorageUpdate);
+            window.removeEventListener('orders_updated', handleStorageUpdate);
         };
-    }, [loadAdminReviews]); // Phụ thuộc vào hàm loadAdminReviews
+    }, [loadAdminReviews, loadOrderNotifications]); // Phụ thuộc vào hàm loadAdminReviews
 
     const handleChangeLanguage = useCallback(
         (newLang) => {
@@ -538,7 +570,7 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
                     />
                 </Badge>
 
-                <Badge count={orders.length}>
+                <Badge count={orderNotifications.length}>
                     <Button
                         type="default"
                         shape="circle"
@@ -664,19 +696,65 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
             </Drawer>
             
             {/* DRAWER NOTIFICATIONS (Không thay đổi) */}
+            {/* ⭐ DRAWER THÔNG BÁO ĐƠN HÀNG (BELL) - ĐÃ THIẾT KẾ LẠI HOÀN TOÀN ⭐ */}
             <Drawer
-                title={t("order_notification")}
+                title={`${t("order_notification")} (${orderNotifications.length})`}
                 open={notificationsOpen}
                 onClose={() => setNotifications(false)}
                 maskClosable
-                style={{ backgroundColor: isDarkMode ? '#1e1e1e' : '#fff' }} 
+                width={450}
+                style={{ backgroundColor: isDarkMode ? '#1e1e1e' : '#fff' }}
+                bodyStyle={{ padding: 0 }}
             >
                 <List
-                    dataSource={orders}
+                    dataSource={orderNotifications}
                     renderItem={(item) => (
-                        <List.Item>
-                            <Typography.Text strong style={{ color: isDarkMode ? '#fff' : '#000' }}>{item.title}</Typography.Text>{" "}
-                            <Typography.Text style={{ color: isDarkMode ? '#ccc' : '#000' }}>{t("order_placed")}</Typography.Text>
+                        <List.Item
+                            style={{
+                                padding: '16px 24px',
+                                borderBottom: `1px solid ${isDarkMode ? '#333' : '#f0f0f0'}`,
+                                cursor: 'pointer',
+                                transition: 'background-color 0.2s',
+                            }}
+                            // ⭐ THÊM: Nút xóa (action)
+                            actions={[
+                                <Tooltip title="Ẩn thông báo này">
+                                    <Button 
+                                        type="text" 
+                                        shape="circle" 
+                                        icon={<CloseOutlined style={{ fontSize: 14 }} />} 
+                                        onClick={(e) => handleDeleteNotification(item.id, e)} />
+                                </Tooltip>
+                            ]}
+                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = isDarkMode ? '#2a2a2a' : '#f9f9f9'}
+                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                            onClick={() => navigate(`/admin/orders`)} // Chuyển đến trang quản lý đơn hàng
+                        >
+                            <List.Item.Meta
+                                avatar={<Avatar src={item.details?.userAvatar} icon={<UserOutlined />} size={48} />}
+                                title={
+                                    <Flex justify="space-between" align="center">
+                                        <Text strong style={{ color: isDarkMode ? '#fff' : '#000' }}>
+                                            {item.customerName} <Text type="secondary">vừa đặt hàng</Text>
+                                        </Text>
+                                        <Text type="secondary" style={{ fontSize: 12 }}>
+                                            {new Date(item.date).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                                        </Text>
+                                    </Flex>
+                                }
+                                description={
+                                    <div style={{ marginTop: 8 }}>
+                                        <Flex gap={12} align="center">
+                                            <Avatar shape="square" size={48} src={item.details?.productImage} icon={<ShoppingCartOutlined />} />
+                                            <div>
+                                                <Text style={{ color: isDarkMode ? '#ccc' : '#555' }}>{item.details?.productName}</Text>
+                                                {item.details?.otherItemsCount > 0 && <Text type="secondary"> và {item.details.otherItemsCount} sản phẩm khác</Text>}
+                                                <Text strong style={{ display: 'block', color: '#1677ff', fontSize: 16, marginTop: 4 }}>${item.total?.toFixed(2)}</Text>
+                                            </div>
+                                        </Flex>
+                                    </div>
+                                }
+                            />
                         </List.Item>
                     )}
                 />
