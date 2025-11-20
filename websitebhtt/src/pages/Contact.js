@@ -59,9 +59,9 @@ const Contact = () => {
 
   // Contact info and social links for the redesigned UI
   const contactInfo = [
-    { icon: MailOutlined, label: 'Email', value: 'hello@company.com', href: 'mailto:hello@company.com' },
-    { icon: PhoneOutlined, label: 'Điện thoại', value: '+1 (555) 123-4567', href: 'tel:+15551234567' },
-    { icon: EnvironmentOutlined, label: 'Địa chỉ', value: '279 Mai Dang Chon, Hoa Quy, Da Nang City', href: null }
+    { icon: MailOutlined, label: 'Email:', value: 'hello@company.com', href: 'mailto:hello@company.com' },
+    { icon: PhoneOutlined, label: 'Điện thoại:', value: '+1 (555) 123-4567', href: 'tel:+15551234567' },
+    { icon: EnvironmentOutlined, label: 'Địa chỉ:', value: '279 Mai Dang Chon, Hoa Quy, Da Nang City', href: null }
   ];
 
   const socialLinks = [

@@ -103,7 +103,7 @@ function Inventory() {
     const handleSort = (value) => {
         setSortOption(value);
     };
-
+   
     const filterLowStock = () => {
         setFilterCategory("low_stock");
     };
@@ -474,7 +474,7 @@ function Inventory() {
                             backgroundClip: "text",
                             letterSpacing: "-0.5px"
                         }}>
-                            {t("inventory") || "Quản lý kho"}
+                            {t("inventory1") || "Quản lý kho"}
                         </div>
                     </div>
 

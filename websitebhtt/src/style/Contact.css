@@ -40,16 +40,15 @@
   font-weight: 800;
   margin-bottom: 1rem;
   letter-spacing: -0.025em;
-  /* Hiệu ứng Gradient cho văn bản */
   background: linear-gradient(135deg, var(--primary-color), var(--text-light));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  text-fill-color: transparent;
+  
 }
 
 .contact-header p {
-  font-size: 1.125rem; /* 18px */
+  font-size: 1.125rem;
   color: var(--text-light);
   max-width: 60rem;
   margin: 0 auto;
@@ -71,7 +70,7 @@
 /* --- Thẻ (Card) Chung --- */
 .contact-card {
   background: var(--card-bg);
-  border-radius: 1.5rem; /* 24px */
+  border-radius: 1.5rem;
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
   border: 1px solid var(--border-color);
   padding: 3rem;
@@ -85,7 +84,7 @@
 }
 
 .contact-card h2 {
-  font-size: 1.5rem; /* 24px */
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--text-dark);
   margin-bottom: 2rem;
@@ -109,11 +108,11 @@
 .contact-form .ant-input-affix-wrapper-lg,
 .contact-form .ant-input-textarea-lg textarea {
   font-size: 1rem;
-  border-radius: 0.5rem !important; /* 8px */
+  border-radius: 0.5rem !important;
   border: 1px solid #cbd5e1;
 }
 
-/* Hiệu ứng Focus siêu đỉnh */
+/* Hiệu ứng Focus */
 .contact-form .ant-input-affix-wrapper:focus-within,
 .contact-form .ant-input-affix-wrapper-focused,
 .contact-form .ant-input:focus,
@@ -122,11 +121,11 @@
   box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.2) !important;
 }
 
-/* Nút Gửi (Submit) */
+/* Nút gửi */
 .contact-submit-btn {
   background: var(--primary-color) !important;
   border: none !important;
-  padding: 26px 0 !important; /* Làm nút cao hơn */
+  padding: 26px 0 !important;
   height: auto !important;
   font-size: 1.1rem !important;
   font-weight: 600 !important;
@@ -148,22 +147,23 @@
 
 /* --- Thông tin (Bên Phải) --- */
 .contact-info-column > * + * {
-  margin-top: 2rem;
+  margin-top: 2.5rem; /* FIX SPACING */
 }
 
-/* Thẻ Thông tin liên hệ */
 .contact-info-item {
   display: flex;
   align-items: flex-start;
-  gap: 1rem;
+  gap: 1.25rem; /* FIX SPACING */
+  padding: 0.25rem 0;
 }
 
+/* Icon chỉnh lại cho thoáng */
 .contact-info-item-icon-wrapper {
   flex-shrink: 0;
-  width: 3rem;  /* 48px */
-  height: 3rem; /* 48px */
-  background-color: #f1f5f9; /* slate-100 */
-  border-radius: 0.75rem; /* 12px */
+  width: 3.5rem;  /* FIX: to hơn */
+  height: 3.5rem; /* FIX: to hơn */
+  background-color: #f1f5f9;
+  border-radius: 1rem; /* FIX radius */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -171,7 +171,7 @@
 }
 
 .contact-info-item-icon-wrapper .anticon {
-  font-size: 1.25rem; /* 20px */
+  font-size: 1.25rem;
   color: var(--text-light);
   transition: all 0.3s ease;
 }
@@ -186,18 +186,19 @@
 }
 
 .contact-info-item-content h3 {
-  font-size: 0.875rem; /* 14px */
+  font-size: 0.875rem;
   font-weight: 600;
-  color: #64748b; /* slate-500 */
+  color: #64748b;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem !important; /* FIX spacing */
 }
 
 .contact-info-item-content p,
 .contact-info-item-content a {
   color: var(--text-dark);
   font-size: 1rem;
+  line-height: 1.6 !important; /* FIX */
   white-space: pre-line;
   transition: color 0.3s ease;
 }
@@ -218,7 +219,7 @@
 }
 
 .contact-social-card p {
-  color: #cbd5e1; /* slate-300 */
+  color: #cbd5e1;
   margin-bottom: 2rem;
 }
 
@@ -230,7 +231,7 @@
 .contact-social-links a {
   width: 3rem;
   height: 3rem;
-  background-color: #334155; /* slate-700 */
+  background-color: #334155;
   border-radius: 0.75rem;
   display: flex;
   align-items: center;
@@ -244,14 +245,14 @@
 }
 
 .contact-social-links a:hover {
-  background-color: #475569; /* slate-600 */
+  background-color: #475569;
   transform: translateY(-5px) scale(1.1);
   box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
 }
 
 /* Thẻ Giờ Làm Việc */
 .contact-hours-card {
-  background: linear-gradient(135deg, #f1f5f9, #e2e8f0); /* slate-100 to slate-200 */
+  background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
 }
 
 .contact-hours-card h3 {
@@ -260,20 +261,22 @@
   color: var(--text-dark);
   margin-bottom: 1rem;
 }
+
 .contact-hours-card .space-y-2 > * + * {
   margin-top: 0.75rem;
 }
+
 .contact-hours-card p {
   display: flex;
   justify-content: space-between;
   color: var(--text-light);
 }
+
 .contact-hours-card p span:first-child {
   font-weight: 500;
 }
 
-
-/* Hiệu ứng Animation (Fade In) */
+/* Hiệu ứng Animation */
 @keyframes fadeInDown {
   from {
     opacity: 0;

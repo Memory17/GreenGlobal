@@ -38,6 +38,43 @@ function SideMenu() {
         >
             <style>
                 {`
+                /* Neon Glow Animation */
+                @keyframes neonPulse {
+                    0%, 100% {
+                        text-shadow: 
+                            0 0 10px rgba(255, 77, 79, 0.8),
+                            0 0 20px rgba(255, 77, 79, 0.6),
+                            0 0 30px rgba(255, 77, 79, 0.4),
+                            0 0 40px rgba(118, 75, 162, 0.3);
+                        filter: brightness(1);
+                    }
+                    50% {
+                        text-shadow: 
+                            0 0 20px rgba(255, 77, 79, 1),
+                            0 0 30px rgba(255, 77, 79, 0.8),
+                            0 0 40px rgba(255, 77, 79, 0.6),
+                            0 0 50px rgba(118, 75, 162, 0.5);
+                        filter: brightness(1.2);
+                    }
+                }
+
+                @keyframes neonGlow {
+                    0%, 100% {
+                        box-shadow: 
+                            0 0 10px rgba(255, 77, 79, 0.5),
+                            0 0 20px rgba(255, 77, 79, 0.3),
+                            0 0 30px rgba(118, 75, 162, 0.2),
+                            inset 0 0 10px rgba(255, 77, 79, 0.1);
+                    }
+                    50% {
+                        box-shadow: 
+                            0 0 20px rgba(255, 77, 79, 0.8),
+                            0 0 30px rgba(255, 77, 79, 0.6),
+                            0 0 40px rgba(118, 75, 162, 0.4),
+                            inset 0 0 15px rgba(255, 77, 79, 0.2);
+                    }
+                }
+
                 .ant-menu.SideMenuVertical {
                     padding: 0 0 8px 0;
                 }
@@ -61,21 +98,55 @@ function SideMenu() {
                     box-shadow: none !important;
                 }
 
+                /* Selected Item - Neon Glow Effect */
                 .ant-menu-dark .ant-menu-item-selected {
-                    background-color: transparent !important;
-                    border-radius: 0 !important;
+                    background: linear-gradient(135deg, rgba(255, 77, 79, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%) !important;
+                    border-radius: 8px !important;
+                    border: 1px solid rgba(255, 77, 79, 0.4) !important;
+                    box-shadow: 
+                        0 0 15px rgba(255, 77, 79, 0.6),
+                        0 0 25px rgba(255, 77, 79, 0.4),
+                        0 0 35px rgba(118, 75, 162, 0.3),
+                        inset 0 0 15px rgba(255, 77, 79, 0.1) !important;
+                    animation: neonGlow 2s ease-in-out infinite;
                 }
 
                 .ant-menu-dark .ant-menu-item-selected .ant-menu-title-content,
                 .ant-menu-dark .ant-menu-item-selected .anticon {
                     color: white !important;
+                    text-shadow: 
+                        0 0 10px rgba(255, 77, 79, 0.8),
+                        0 0 20px rgba(255, 77, 79, 0.6),
+                        0 0 30px rgba(118, 75, 162, 0.4);
                 }
 
-                .ant-menu-dark .ant-menu-item:not(.ant-menu-item-selected):hover {
-                    background: linear-gradient(135deg, #f51010ff 0%, #764ba2 100%) !important;
+                .ant-menu-dark .ant-menu-item-selected .menu-icon-wrapper {
+                    filter: drop-shadow(0 0 10px rgba(255, 77, 79, 0.8))
+                            drop-shadow(0 0 20px rgba(255, 77, 79, 0.6));
+                    animation: neonPulse 2s ease-in-out infinite;
                 }
+
+                /* Hover Effect - Neon Glow */
+                .ant-menu-dark .ant-menu-item:not(.ant-menu-item-selected):hover {
+                    background: linear-gradient(135deg, rgba(255, 77, 79, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%) !important;
+                    border-radius: 8px !important;
+                    border: 1px solid rgba(255, 77, 79, 0.3) !important;
+                    box-shadow: 
+                        0 0 15px rgba(255, 77, 79, 0.5),
+                        0 0 25px rgba(255, 77, 79, 0.3),
+                        inset 0 0 10px rgba(255, 77, 79, 0.1) !important;
+                }
+
                 .ant-menu-dark .ant-menu-item:not(.ant-menu-item-selected):hover .ant-menu-title-content {
                     color: #fff !important;
+                    text-shadow: 
+                        0 0 8px rgba(255, 77, 79, 0.6),
+                        0 0 15px rgba(255, 77, 79, 0.4);
+                }
+
+                .ant-menu-dark .ant-menu-item:not(.ant-menu-item-selected):hover .menu-icon-wrapper {
+                    filter: drop-shadow(0 0 8px rgba(255, 77, 79, 0.6))
+                            drop-shadow(0 0 15px rgba(255, 77, 79, 0.4));
                 }
 
                 .ant-menu-dark .ant-menu-item .ant-menu-title-content {
@@ -85,7 +156,9 @@ function SideMenu() {
 
                 .ant-menu-dark .ant-menu-item {
                     background-color: transparent !important;
-                    transition: background 0.3s ease;
+                    transition: all 0.3s ease;
+                    margin: 4px 8px !important;
+                    padding: 0 16px !important;
                 }
 
                 .menu-item-wrapper {
@@ -101,7 +174,7 @@ function SideMenu() {
                     align-items: center;
                     justify-content: center;
                     min-width: 24px;
-                    transition: transform 0.3s ease, margin-left 0.3s ease;
+                    transition: all 0.3s ease;
                 }
 
                 .menu-text {
@@ -131,7 +204,7 @@ function SideMenu() {
                     transition: opacity 0.3s ease, max-width 0.3s ease;
                 }
 
-                /* ========== COLLAPSE BUTTON - REDESIGNED ========== */
+                /* ========== COLLAPSE BUTTON - NEON GLOW ========== */
                 .collapse-btn-wrapper {
                     display: flex;
                     justify-content: center;
@@ -148,8 +221,8 @@ function SideMenu() {
                 }
 
                 .collapse-btn {
-                    background: linear-gradient(135deg, rgba(255, 77, 79, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
-                    border: 1.5px solid rgba(255, 77, 79, 0.3);
+                    background: linear-gradient(135deg, rgba(255, 77, 79, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+                    border: 2px solid rgba(255, 77, 79, 0.5);
                     border-radius: 12px;
                     color: #fff;
                     cursor: pointer;
@@ -161,9 +234,13 @@ function SideMenu() {
                     height: 44px;
                     transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
                     padding: 0;
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
                     position: relative;
                     overflow: hidden;
+                    box-shadow: 
+                        0 0 15px rgba(255, 77, 79, 0.5),
+                        0 0 25px rgba(255, 77, 79, 0.3),
+                        0 0 35px rgba(118, 75, 162, 0.2),
+                        inset 0 0 10px rgba(255, 77, 79, 0.1);
                 }
 
                 .collapse-btn::before {
@@ -173,7 +250,7 @@ function SideMenu() {
                     left: -100%;
                     width: 100%;
                     height: 100%;
-                    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+                    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
                     transition: left 0.5s ease;
                 }
 
@@ -182,15 +259,24 @@ function SideMenu() {
                 }
 
                 .collapse-btn:hover {
-                    background: linear-gradient(135deg, rgba(255, 77, 79, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
-                    border-color: rgba(255, 77, 79, 0.5);
-                    box-shadow: 0 6px 20px rgba(255, 77, 79, 0.3);
+                    background: linear-gradient(135deg, rgba(255, 77, 79, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
+                    border-color: rgba(255, 77, 79, 0.8);
+                    box-shadow: 
+                        0 0 20px rgba(255, 77, 79, 0.8),
+                        0 0 30px rgba(255, 77, 79, 0.6),
+                        0 0 40px rgba(118, 75, 162, 0.4),
+                        inset 0 0 15px rgba(255, 77, 79, 0.2);
                     transform: translateY(-2px);
+                    text-shadow: 
+                        0 0 10px rgba(255, 77, 79, 0.8),
+                        0 0 20px rgba(255, 77, 79, 0.6);
                 }
 
                 .collapse-btn:active {
                     transform: translateY(0);
-                    box-shadow: 0 2px 8px rgba(255, 77, 79, 0.2);
+                    box-shadow: 
+                        0 0 10px rgba(255, 77, 79, 0.6),
+                        0 0 20px rgba(255, 77, 79, 0.4);
                 }
 
                 .collapse-btn-icon {
@@ -199,19 +285,22 @@ function SideMenu() {
                     justify-content: center;
                     font-size: 18px;
                     transition: transform 0.3s ease;
+                    filter: drop-shadow(0 0 5px rgba(255, 77, 79, 0.6));
                 }
 
                 .collapse-btn:hover .collapse-btn-icon {
                     transform: scale(1.2) rotate(180deg);
+                    filter: drop-shadow(0 0 10px rgba(255, 77, 79, 0.8))
+                            drop-shadow(0 0 20px rgba(255, 77, 79, 0.6));
                 }
 
-                /* Tooltip styling */
+                /* Tooltip styling with Neon */
                 .collapse-btn-tooltip {
                     position: absolute;
                     bottom: -32px;
                     left: 50%;
                     transform: translateX(-50%);
-                    background: rgba(0, 0, 0, 0.8);
+                    background: rgba(0, 0, 0, 0.9);
                     color: white;
                     padding: 6px 12px;
                     border-radius: 6px;
@@ -221,6 +310,11 @@ function SideMenu() {
                     pointer-events: none;
                     transition: opacity 0.2s ease;
                     z-index: 10;
+                    border: 1px solid rgba(255, 77, 79, 0.4);
+                    box-shadow: 
+                        0 0 10px rgba(255, 77, 79, 0.4),
+                        0 0 20px rgba(255, 77, 79, 0.2);
+                    text-shadow: 0 0 5px rgba(255, 77, 79, 0.6);
                 }
 
                 .collapse-btn:hover .collapse-btn-tooltip {
