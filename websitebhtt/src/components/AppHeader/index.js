@@ -4,9 +4,10 @@ import {
     UserOutlined,
     EditOutlined,
     LogoutOutlined,
-    SearchOutlined,
+    SearchOutlined,    ShoppingCartOutlined,
+
     BulbOutlined,
-    SettingOutlined,
+    SettingOutlined,    CloseOutlined,
     
 } from "@ant-design/icons";
 import {
@@ -14,7 +15,7 @@ import {
     Drawer,
     List,
     Space,
-    Typography,
+    Typography, 
     Input,
     Button,
     Avatar,
@@ -27,27 +28,26 @@ import {
     Switch,
     Divider,
     Select,
+    Rate, 
+    Empty, 
+    Descriptions,
+    Tooltip,
 } from "antd";
+// ✅ SỬA LỖI WARNING: Xóa 'useContext' vì không dùng
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next"; 
+import { useAuth } from "../../context/AuthContext";
+
+// ✅ THÊM: Import context để có thể trả lời đánh giá
+import { useOrderHistory } from "../../context/OrderHistoryContext";
 
 // =================================================================
-// --- MOCK API DATA (KEEP) ---
+// --- MOCK API DATA (Giữ lại getOrders) ---
 // =================================================================
-const getComments = () =>
-    Promise.resolve({
-        comments: [
-            { body: "Sản phẩm A rất tốt!" },
-            { body: "Tôi cần hỗ trợ về đơn hàng B." },
-            { body: "Đơn hàng rất chi là đẹp." },
-        ],
-    });
 
-const getOrders = () =>
-    Promise.resolve({
-        products: [{ title: "Tai nghe X" }, { title: "Chuột không dây Y" }],
-    });
+const GLOBAL_REVIEWS_KEY = 'app_reviews_v1';
+const NOTIFICATIONS_KEY = 'app_order_notifications_v1';
 
 const mockSearchData = [
     // Thêm trường dịch cho dữ liệu mock
@@ -83,13 +83,16 @@ const mockSearchData = [
 // --- MAIN COMPONENT: APPHEADER ---
 // =================================================================
 
+// 👈 Thêm Typography.Text và Typography.Paragraph
+const { Text, Paragraph } = Typography; const { TextArea } = Input;
+
 function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) { 
     
     const { t, i18n } = useTranslation();
     const navigate = useNavigate();
 
-    const [comments, setComments] = useState([]);
-    const [orders, setOrders] = useState([]);
+    const [comments, setComments] = useState([]); // 👈 State này bây giờ sẽ chứa ĐÁNH GIÁ
+    const [orderNotifications, setOrderNotifications] = useState([]); // ⭐ STATE MỚI CHO THÔNG BÁO ĐƠN HÀNG
     const [commentsOpen, setCommentsOpen] = useState(false);
     const [notificationsOpen, setNotifications] = useState(false); // Đổi tên để tránh conflict
     const [adminOpen, setAdminOpen] = useState(false);
@@ -98,13 +101,95 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
         notifications: true,
         autoUpdate: false,
     });
+    
+    // ✅ THÊM: State cho modal trả lời đánh giá
+    const [isReviewModalVisible, setIsReviewModalVisible] = useState(false);
+    const [selectedReview, setSelectedReview] = useState(null);
+    // const [replyContent, setReplyContent] = useState(""); // <-- ĐÃ XÓA (ĐÚNG)
+    const [isSubmittingReply, setIsSubmittingReply] = useState(false);
+    const [formReply] = Form.useForm();
 
     const PRIMARY_COLOR = "#1677ff";
 
+    // ✅ (MỚI) Hàm tải đánh giá thật từ localStorage
+    const loadAdminReviews = useCallback(() => {
+        try {
+            const storedReviews = localStorage.getItem(GLOBAL_REVIEWS_KEY);
+            const reviews = storedReviews ? JSON.parse(storedReviews) : [];
+            setComments(reviews); 
+            console.log("Admin Header: Đã tải đánh giá", reviews);
+        } catch (e) {
+            console.error("Lỗi khi tải đánh giá cho admin:", e);
+            setComments([]);
+        }
+    }, []); // Không có dependency, chỉ định nghĩa hàm
+
+    // ⭐ HÀM MỚI: Tải thông báo đơn hàng từ localStorage
+    const loadOrderNotifications = useCallback(() => {
+        try {
+            const stored = localStorage.getItem(NOTIFICATIONS_KEY);
+            const notifications = stored ? JSON.parse(stored) : [];
+            // Chỉ lấy 20 thông báo gần nhất để tránh quá tải
+            setOrderNotifications(notifications.slice(0, 20));
+        } catch (e) {
+            console.error("Lỗi khi tải thông báo đơn hàng:", e);
+            setOrderNotifications([]);
+        }
+    }, []);
+
+    // ⭐ HÀM MỚI: Xóa một thông báo khỏi danh sách chuông
+    const handleDeleteNotification = (notificationId, event) => {
+        event.stopPropagation(); // Ngăn không cho sự kiện click vào List.Item chạy
+
+        try {
+            const stored = localStorage.getItem(NOTIFICATIONS_KEY);
+            const notifications = stored ? JSON.parse(stored) : [];
+            const updatedNotifications = notifications.filter(n => n.id !== notificationId);
+
+            localStorage.setItem(NOTIFICATIONS_KEY, JSON.stringify(updatedNotifications));
+            setOrderNotifications(updatedNotifications); // Cập nhật UI ngay lập tức
+            message.info("Đã ẩn thông báo.");
+        } catch (e) {
+            console.error("Lỗi khi xóa thông báo:", e);
+            message.error("Không thể ẩn thông báo.");
+        }
+    };
+    // ✅ (QUAN TRỌNG) Lấy hàm trả lời và currentUser từ context
+    const { addAdminReply, deleteReview } = useOrderHistory();
+    const { currentUser } = useAuth(); // <--- ĐẢM BẢO DÒNG NÀY ĐÚNG
+    
+
     useEffect(() => {
-        getComments().then((res) => setComments(res.comments || []));
-        getOrders().then((res) => setOrders(res.products || []));
-    }, [i18n.language]);
+        // ✅ (MỚI) Tải đánh giá thật khi component mount
+        loadAdminReviews(); 
+        loadOrderNotifications(); // ⭐ Tải thông báo đơn hàng
+    }, [i18n.language, loadAdminReviews, loadOrderNotifications]); // Thêm loadAdminReviews
+
+// ✅ THÊM ĐOẠN MỚI NÀY (Đồng bộ 2 tab)
+    useEffect(() => {
+        const handleStorageUpdate = (event) => {
+            // Chỉ chạy khi 'app_reviews_v1' bị thay đổi ở tab khác
+            if (event.key === GLOBAL_REVIEWS_KEY) { 
+                console.log("Admin Header: Nhận được tín hiệu 'storage' (cross-tab), tải lại đánh giá...");
+                loadAdminReviews();
+            }
+            // ⭐ THÊM: Lắng nghe sự kiện cập nhật đơn hàng
+            if (event.key === NOTIFICATIONS_KEY || event.type === 'orders_updated') {
+                console.log("Admin Header: Nhận được tín hiệu 'orders_updated', tải lại thông báo...");
+                loadOrderNotifications();
+            }
+        };
+
+        // Lắng nghe sự kiện 'storage' (hoạt động cross-tab)
+        window.addEventListener('storage', handleStorageUpdate);
+        window.addEventListener('orders_updated', handleStorageUpdate); // ⭐ Lắng nghe sự kiện tùy chỉnh
+
+        // Dọn dẹp
+        return () => {
+            window.removeEventListener('storage', handleStorageUpdate);
+            window.removeEventListener('orders_updated', handleStorageUpdate);
+        };
+    }, [loadAdminReviews, loadOrderNotifications]); // Phụ thuộc vào hàm loadAdminReviews
 
     const handleChangeLanguage = useCallback(
         (newLang) => {
@@ -145,11 +230,98 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
         );
     }, [isDarkMode, onToggleDarkMode, t]); 
 
+    // ✅ THÊM: Hàm mở modal chi tiết đánh giá
+    const handleOpenReviewModal = (review) => {
+        setSelectedReview(review);
+        setIsReviewModalVisible(true);
+        setCommentsOpen(false); // Đóng drawer danh sách
+    };
+
+    // ✅ (SỬA LỖI BIÊN DỊCH) Hàm đóng modal
+    const handleCloseReviewModal = () => {
+        setIsReviewModalVisible(false);
+        setSelectedReview(null);
+        // setReplyContent(""); // <--- ❌ XÓA DÒNG NÀY (Đây là lỗi compile cũ)
+        formReply.resetFields(); // ✅ Chỉ cần dòng này
+    };
+
+    // ✅ (SỬA LỖI RUNTIME) Hàm gửi trả lời của admin
+    const handleReplySubmit = async (values) => {
+        
+        // Lấy nội dung từ 'values' do AntD Form cung cấp
+        const replyContent = values.replyContent;
+
+        // Kiểm tra
+        if (!selectedReview || !replyContent || !replyContent.trim()) {
+            message.warning("Vui lòng nhập nội dung trả lời.");
+            return; 
+        }
+
+        setIsSubmittingReply(true);
+
+        try {
+            // ✅ SỬA LỖI RUNTIME:
+            // Đảm bảo 'currentUser' (lấy từ useAuth ở dòng 116) 
+            // được truyền vào làm đối số thứ 3
+            const success = await addAdminReply(
+                selectedReview.id,
+                replyContent,
+                currentUser // <--- Đây là mấu chốt của lỗi F12
+            );
+
+            if (success) {
+                message.success("Đã gửi câu trả lời thành công!");
+
+                // ✅ Đồng bộ 2 tab
+                window.dispatchEvent(new Event('reviews_updated'));
+
+                // Tải lại danh sách đánh giá ngay trên tab admin này
+                loadAdminReviews(); 
+                handleCloseReviewModal();
+                
+                // Xóa nội dung form
+                // formReply.resetFields(); // Đã gọi trong handleCloseReviewModal
+
+            } else {
+                // Lỗi ("Chỉ admin...") đã được 'addAdminReply' xử lý và hiển thị
+            }
+
+        } catch (error) {
+            // Bắt các lỗi không mong muốn (ví dụ: lỗi mạng)
+            console.error("Lỗi nghiêm trọng khi gửi trả lời:", error);
+            message.error("Đã xảy ra lỗi hệ thống khi gửi trả lời.");
+
+        } finally {
+            // Luôn tắt loading dù thành công hay thất bại
+            setIsSubmittingReply(false);
+        }
+    };
+
+    // ⭐ HÀM MỚI: Xử lý xóa đánh giá
+    const handleDeleteReview = (reviewId, event) => {
+        event.stopPropagation(); // Ngăn không cho modal chi tiết mở ra
+
+        Modal.confirm({
+            title: 'Xác nhận xóa đánh giá',
+            content: 'Bạn có chắc chắn muốn xóa vĩnh viễn đánh giá này không? Hành động này không thể hoàn tác.',
+            okText: 'Xóa',
+            okType: 'danger',
+            cancelText: 'Hủy',
+            onOk: async () => {
+                const success = await deleteReview(reviewId);
+                if (success) {
+                    message.success('Đã xóa đánh giá thành công.');
+                    loadAdminReviews(); // Tải lại danh sách ngay lập tức
+                } else {
+                    message.error('Không thể xóa đánh giá. Vui lòng thử lại.');
+                }
+            },
+        });
+    };
     // =================================================================
-    // 🔍 LOGIC RENDER ITEM & SEARCH OPTIONS (Sửa lỗi dependency)
+    // 🔍 LOGIC RENDER ITEM & SEARCH OPTIONS
     // =================================================================
 
-    // ✅ Đặt renderItem vào useCallback để tạo dependency ổn định
     const renderItem = useCallback((item) => {
         const label =
             i18n.language === "en" ? item.label_en || item.label : item.label_vi || item.label;
@@ -193,12 +365,10 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
                 </Flex>
             ),
         };
-    }, [i18n.language, t]); // ✅ Thêm i18n.language và t vào dependency
+    }, [i18n.language, t]); 
 
-    // ✅ useMemo dùng renderItem làm dependency
     const currentSearchOptions = useMemo(() => mockSearchData.map(renderItem), [renderItem]); 
     
-    // ✅ handleIconHover cũng cần isDarkMode và PRIMARY_COLOR
     const handleIconHover = useCallback((e, isEntering, iconColor = "#555") => {
         const target = e.currentTarget;
         const icon = target.querySelector(".anticon");
@@ -209,7 +379,7 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
             target.style.backgroundColor = isDarkMode ? '#1e1e1e' : "#f5f5f5"; 
             if (icon) icon.style.color = iconColor;
         }
-    }, [isDarkMode, PRIMARY_COLOR]); // ✅ Thêm isDarkMode vào dependency
+    }, [isDarkMode, PRIMARY_COLOR]); 
 
     // =================================================================
     // 🧑‍💼 ADMIN POPOVER CONTENT (Không thay đổi)
@@ -258,7 +428,7 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
     );
 
     // =================================================================
-    // 🧱 RENDER UI (Đã sửa lỗi cân chỉnh tìm kiếm)
+    // 🧱 RENDER UI (Không thay đổi)
     // =================================================================
     return (
         <div
@@ -287,14 +457,14 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
                 </Typography.Title>
             </Flex>
 
-            {/* SEARCH - SỬ DỤNG MARGIN LEFT AUTO ĐỂ CĂN SÁT CỤM ICON PHẢI */}
+            {/* SEARCH */}
             <AutoComplete
                 dropdownMatchSelectWidth={500}
                 options={currentSearchOptions}
                 style={{ 
                     width: 450, 
-                    marginRight: 100, /* Khoảng cách với cụm icon */
-                    marginLeft: 'auto' /* 👈 ĐIỀU CHỈNH CHÍNH */
+                    marginRight: 100, 
+                    marginLeft: 'auto' 
                 }} 
                 onSelect={onSearch}
             >
@@ -306,27 +476,25 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
                     style={{ 
                         borderRadius: 8, 
                         height: 40,
-                        backgroundColor: isDarkMode ? '#333' : '#fff', // 👈 Dark Mode
-                        color: isDarkMode ? '#fff' : '#000', // 👈 Dark Mode
-                        borderColor: isDarkMode ? '#444' : '#d9d9d9', // 👈 Dark Mode
+                        backgroundColor: isDarkMode ? '#333' : '#fff', 
+                        color: isDarkMode ? '#fff' : '#000', 
+                        borderColor: isDarkMode ? '#444' : '#d9d9d9', 
                     }}
                 />
             </AutoComplete>
 
             {/* ICONS & LANGUAGE SELECTOR */}
             <Space size={16} align="center"> 
-                {/* 👈 NÚT CHỌN NGÔN NGỮ ĐÃ ĐƯỢC CÂN ĐỐI */}
                 <Select
                     value={i18n.language}
                     onChange={handleChangeLanguage}
-                    // Đảm bảo chiều cao 40px, style cho căn chỉnh
                     style={{ 
                         width: 140, 
                         height: 40, 
                         lineHeight: '40px', 
                         verticalAlign: 'middle', 
-                        backgroundColor: isDarkMode ? '#333' : 'transparent', // 👈 Dark Mode
-                        color: isDarkMode ? '#fff' : '#000', // 👈 Dark Mode
+                        backgroundColor: isDarkMode ? '#333' : 'transparent', 
+                        color: isDarkMode ? '#fff' : '#000', 
                     }} 
                     bordered={false}
                     dropdownStyle={{ minWidth: 150 }}
@@ -368,14 +536,14 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
                         <BulbOutlined
                             style={{
                                 fontSize: 22,
-                                color: isDarkMode ? "#ffc53d" : "#FFD700", // 👈 Màu icon cho Dark Mode
+                                color: isDarkMode ? "#ffc53d" : "#FFD700", 
                                 filter: isDarkMode ? "drop-shadow(0 0 4px #ffc53d)" : "drop-shadow(0 0 4px #FFD700)",
                             }}
                         />
                     }
-                    onClick={handleToggleDarkMode} // 👈 SỬ DỤNG HÀM MỚI
+                    onClick={handleToggleDarkMode} 
                     style={{
-                        backgroundColor: isDarkMode ? "#3e3e1e" : "#fff7e6", // 👈 Màu nền cho Dark Mode
+                        backgroundColor: isDarkMode ? "#3e3e1e" : "#fff7e6", 
                         borderColor: "transparent",
                         boxShadow: isDarkMode ? "0 0 6px rgba(255, 197, 61, 0.4)" : "0 0 6px rgba(255, 215, 0, 0.4)",
                         width: 40, 
@@ -385,14 +553,14 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
                     onMouseLeave={(e) => handleIconHover(e, false, isDarkMode ? "#ffc53d" : "#FFD700")}
                 />
 
-                <Badge count={comments.length}>
+                <Badge count={comments.length}> 
                     <Button
                         type="default"
                         shape="circle"
                         icon={<MailOutlined style={{ fontSize: 20, color: isDarkMode ? '#ccc' : "#555" }} />}
                         onClick={() => setCommentsOpen(true)}
                         style={{ 
-                            backgroundColor: isDarkMode ? '#333' : "#f5f5f5", // 👈 Dark Mode
+                            backgroundColor: isDarkMode ? '#333' : "#f5f5f5", 
                             borderColor: "transparent",
                             width: 40, 
                             height: 40,
@@ -402,14 +570,14 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
                     />
                 </Badge>
 
-                <Badge count={orders.length}>
+                <Badge count={orderNotifications.length}>
                     <Button
                         type="default"
                         shape="circle"
                         icon={<BellOutlined style={{ fontSize: 20, color: isDarkMode ? '#ccc' : "#555" }} />}
                         onClick={() => setNotifications(true)}
                         style={{ 
-                            backgroundColor: isDarkMode ? '#333' : "#f5f5f5", // 👈 Dark Mode
+                            backgroundColor: isDarkMode ? '#333' : "#f5f5f5", 
                             borderColor: "transparent",
                             width: 40, 
                             height: 40,
@@ -424,7 +592,7 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
                         style={{
                             cursor: "pointer",
                             padding: "4px 4px",
-                            background: isDarkMode ? '#333' : "#f5f7fa", // 👈 Dark Mode
+                            background: isDarkMode ? '#333' : "#f5f7fa", 
                             borderRadius: 25,
                             transition: "all 0.2s ease",
                             display: 'flex', 
@@ -445,41 +613,160 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
                 </Popover>
             </Space>
 
-            {/* DRAWER & MODAL (Không thay đổi) */}
+            {/* ========================================================== */}
+            {/* ⭐️ DRAWER ĐÁNH GIÁ (MAIL) ĐÃ ĐƯỢC CẬP NHẬT ⭐️ */}
+            {/* ========================================================== */}
             <Drawer
-                title={t("new_comment")}
+                title={`${t("new_review")} (${comments.length})`}
                 open={commentsOpen}
                 onClose={() => setCommentsOpen(false)}
                 maskClosable
-                style={{ backgroundColor: isDarkMode ? '#1e1e1e' : '#fff' }} // 👈 Dark Mode
+                width={400} 
+                style={{ backgroundColor: isDarkMode ? '#1e1e1e' : '#fff' }} 
+                bodyStyle={{ padding: 0 }} 
             >
-                <List dataSource={comments} renderItem={(item) => <List.Item style={{ color: isDarkMode ? '#ccc' : '#000' }}>{item.body}</List.Item>} />
+                <List 
+                    dataSource={comments}
+                    renderItem={(item) => (
+                        <List.Item
+                            style={{
+                            color: isDarkMode ? '#ccc' : '#000',
+                            borderBottom: `1px solid ${isDarkMode ? '#333' : '#f0f0f0'}`,
+                            padding: '12px 24px',
+                            cursor: 'pointer',
+                            transition: 'background-color 0.2s',
+                            }}
+                            onClick={() => handleOpenReviewModal(item)}
+                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = isDarkMode ? '#2a2a2a' : '#f9f9f9'}
+                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                            actions={currentUser?.role === 'admin' ? [
+                                <Button type="text" danger shape="circle" icon={<CloseOutlined />} onClick={(e) => handleDeleteReview(item.id, e)} />
+                            ] : []}
+                        >
+                            <List.Item.Meta
+                                // ⭐ THAY ĐỔI: Ưu tiên avatar thật, nếu không có mới dùng avatar mặc định
+                                avatar={
+                                    <Avatar 
+                                        src={item.userAvatar || `https://api.dicebear.com/7.x/initials/svg?seed=${item.user || 'User'}`} 
+                                    />
+                                }
+                                title={
+                                    <Flex justify="space-between">
+                                        <Text strong style={{ color: isDarkMode ? '#fff' : '#000' }}>
+                                            {item.user || t('anonymous_user')}
+                                        </Text>
+                                        <Text type="secondary" style={{ fontSize: 12 }}>
+                                            {new Date(item.date).toLocaleDateString('vi-VN')}
+                                        </Text>
+                                    </Flex>
+                                }
+                                description={
+                                    <div>
+                                        <Flex align="center" gap={8} style={{ marginBottom: 8 }}>
+                                            <Avatar 
+                                                shape="square" 
+                                                size={32} 
+                                                src={item.productImage} 
+                                                alt={item.productTitle} 
+                                            />
+                                            <Text style={{ color: isDarkMode ? '#ccc' : '#000', fontSize: 12 }}>
+                                                {t('product')}: <Text strong style={{ color: isDarkMode ? '#eee' : '#000' }}>{item.productTitle}</Text>
+                                            </Text>
+                                        </Flex>
+                                        <div style={{ margin: '8px 0' }}>
+                                            <Rate disabled value={item.rating} style={{ fontSize: 16 }} />
+                                        </div>
+                                        <Paragraph 
+                                            style={{ color: isDarkMode ? '#bbb' : '#333', margin: 0 }}
+                                            ellipsis={{ rows: 3, expandable: true, symbol: t('see_more') }}
+                                        >
+                                            {item.comment}
+                                        </Paragraph>
+                                    </div>
+                                }
+                            />
+                        </List.Item>
+                    )}
+                    locale={{ emptyText: (
+                        <div style={{ padding: '20px 0', color: isDarkMode ? '#888' : '#aaa' }}>
+                            <Empty description={t('no_new_reviews', { ns: 'translation' })} /> 
+                        </div>
+                    )}}
+                />
             </Drawer>
+            
+            {/* DRAWER NOTIFICATIONS (Không thay đổi) */}
+            {/* ⭐ DRAWER THÔNG BÁO ĐƠN HÀNG (BELL) - ĐÃ THIẾT KẾ LẠI HOÀN TOÀN ⭐ */}
             <Drawer
-                title={t("order_notification")}
+                title={`${t("order_notification")} (${orderNotifications.length})`}
                 open={notificationsOpen}
                 onClose={() => setNotifications(false)}
                 maskClosable
-                style={{ backgroundColor: isDarkMode ? '#1e1e1e' : '#fff' }} // 👈 Dark Mode
+                width={450}
+                style={{ backgroundColor: isDarkMode ? '#1e1e1e' : '#fff' }}
+                bodyStyle={{ padding: 0 }}
             >
                 <List
-                    dataSource={orders}
+                    dataSource={orderNotifications}
                     renderItem={(item) => (
-                        <List.Item>
-                            <Typography.Text strong style={{ color: isDarkMode ? '#fff' : '#000' }}>{item.title}</Typography.Text>{" "}
-                            <Typography.Text style={{ color: isDarkMode ? '#ccc' : '#000' }}>{t("order_placed")}</Typography.Text>
+                        <List.Item
+                            style={{
+                                padding: '16px 24px',
+                                borderBottom: `1px solid ${isDarkMode ? '#333' : '#f0f0f0'}`,
+                                cursor: 'pointer',
+                                transition: 'background-color 0.2s',
+                            }}
+                            // ⭐ THÊM: Nút xóa (action)
+                            actions={[
+                                <Tooltip title="Ẩn thông báo này">
+                                    <Button 
+                                        type="text" 
+                                        shape="circle" 
+                                        icon={<CloseOutlined style={{ fontSize: 14 }} />} 
+                                        onClick={(e) => handleDeleteNotification(item.id, e)} />
+                                </Tooltip>
+                            ]}
+                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = isDarkMode ? '#2a2a2a' : '#f9f9f9'}
+                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                            onClick={() => navigate(`/admin/orders`)} // Chuyển đến trang quản lý đơn hàng
+                        >
+                            <List.Item.Meta
+                                avatar={<Avatar src={item.details?.userAvatar} icon={<UserOutlined />} size={48} />}
+                                title={
+                                    <Flex justify="space-between" align="center">
+                                        <Text strong style={{ color: isDarkMode ? '#fff' : '#000' }}>
+                                            {item.customerName} <Text type="secondary">vừa đặt hàng</Text>
+                                        </Text>
+                                        <Text type="secondary" style={{ fontSize: 12 }}>
+                                            {new Date(item.date).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                                        </Text>
+                                    </Flex>
+                                }
+                                description={
+                                    <div style={{ marginTop: 8 }}>
+                                        <Flex gap={12} align="center">
+                                            <Avatar shape="square" size={48} src={item.details?.productImage} icon={<ShoppingCartOutlined />} />
+                                            <div>
+                                                <Text style={{ color: isDarkMode ? '#ccc' : '#555' }}>{item.details?.productName}</Text>
+                                                {item.details?.otherItemsCount > 0 && <Text type="secondary"> và {item.details.otherItemsCount} sản phẩm khác</Text>}
+                                                <Text strong style={{ display: 'block', color: '#1677ff', fontSize: 16, marginTop: 4 }}>${item.total?.toFixed(2)}</Text>
+                                            </div>
+                                        </Flex>
+                                    </div>
+                                }
+                            />
                         </List.Item>
                     )}
                 />
             </Drawer>
-            {/* MODAL ADMIN PROFILE */}
+            {/* MODAL ADMIN PROFILE (Không thay đổi) */}
             <Modal
                 title={`👨‍💼 ${t("admin_profile")}`}
                 open={adminOpen}
                 onCancel={() => setAdminOpen(false)}
                 footer={null}
                 centered
-                bodyStyle={{ backgroundColor: isDarkMode ? '#2c2c2c' : '#fff' }} // 👈 Dark Mode
+                bodyStyle={{ backgroundColor: isDarkMode ? '#2c2c2c' : '#fff' }} 
             >
                 <div style={{ textAlign: "center", marginBottom: 20 }}>
                     <Avatar
@@ -514,7 +801,7 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
                     </Space>
                 </Form>
             </Modal>
-            {/* SYSTEM SETTINGS MODAL (Đã xóa phần ngôn ngữ) */}
+            {/* SYSTEM SETTINGS MODAL (Không thay đổi) */}
             <Modal
                 title={`⚙️ ${t("system_settings")}`}
                 open={settingsOpen}
@@ -528,7 +815,7 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
                     </Button>,
                 ]}
                 centered
-                bodyStyle={{ backgroundColor: isDarkMode ? '#2c2c2c' : '#fff' }} // 👈 Dark Mode
+                bodyStyle={{ backgroundColor: isDarkMode ? '#2c2c2c' : '#fff' }} 
             >
                 <Form layout="vertical">
                     <Form.Item label={t("notifications_mode")} style={{ color: isDarkMode ? '#fff' : '#000' }}>
@@ -558,7 +845,7 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
                         <Button
                             type={isDarkMode ? "default" : "primary"}
                             icon={<BulbOutlined />}
-                            onClick={handleToggleDarkMode} // 👈 SỬ DỤNG HÀM MỚI
+                            onClick={handleToggleDarkMode} 
                             style={{
                                 width: "100%",
                                 background: isDarkMode ? "#333" : "#fff",
@@ -571,6 +858,93 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
                     </Form.Item>
                 </Form>
             </Modal>
+
+            {/* ========================================================== */}
+            {/* ⭐️ MODAL CHI TIẾT & TRẢ LỜI ĐÁNH GIÁ (ĐÃ CHUẨN) ⭐️ */}
+            {/* ========================================================== */}
+            {selectedReview && (
+                <Modal
+                    title={`Chi tiết đánh giá #${selectedReview.id.slice(-6)}`}
+                    open={isReviewModalVisible}
+                    onCancel={handleCloseReviewModal}
+                    width={600}
+                    footer={[
+                        <Button key="back" onClick={handleCloseReviewModal}>
+                            {t('cancel')}
+                        </Button>,
+                        <Button 
+                            key="submit" 
+                            type="primary" 
+                            loading={isSubmittingReply} 
+                            onClick={() => formReply.submit()} // ✅ Đã sửa (gọi submit của form)
+                            // ⭐ THAY ĐỔI: Luôn cho phép admin gửi trả lời mới
+                        >
+                            Gửi trả lời
+                        </Button>,
+                    ]}
+                >
+                    <List.Item>
+                        <List.Item.Meta
+                            avatar={<Avatar size={48} src={`https://api.dicebear.com/7.x/initials/svg?seed=${selectedReview.user || 'User'}`} />}
+                            title={<Text strong>{selectedReview.user || t('anonymous_user')}</Text>}
+                            description={
+                                <Text type="secondary" style={{ fontSize: 12 }}>
+                                    {new Date(selectedReview.date).toLocaleString('vi-VN')}
+                                </Text>
+                            }
+                        />
+                    </List.Item>
+                    <Divider style={{ margin: '12px 0' }} />
+                    <Descriptions bordered column={1} size="small">
+                        <Descriptions.Item label="Sản phẩm">
+                            <Flex align="center" gap={8}>
+                                <Avatar shape="square" src={selectedReview.productImage} />
+                                <Text strong>{selectedReview.productTitle}</Text>
+                            </Flex>
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Đánh giá">
+                            <Rate disabled value={selectedReview.rating} style={{ fontSize: 16 }} />
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Nội dung">
+                            {selectedReview.comment}
+                        </Descriptions.Item>
+                    </Descriptions>
+                    <Divider>Phản hồi của Admin</Divider>
+
+                    {/* ⭐ THAY ĐỔI: Hiển thị danh sách các phản hồi cũ */}
+                    {Array.isArray(selectedReview.adminReplies) && selectedReview.adminReplies.length > 0 && (
+                        <List
+                            size="small"
+                            dataSource={selectedReview.adminReplies}
+                            renderItem={reply => (
+                                <List.Item style={{ border: 'none', padding: '8px 0' }}>
+                                    <List.Item.Meta
+                                        avatar={<Avatar src="https://api.dicebear.com/7.x/adventurer/svg?seed=Admin" />}
+                                        title={<Text strong>Doãn Bá Min</Text>}
+                                        description={
+                                            <>
+                                                <Text>{reply.comment}</Text>
+                                                <Text type="secondary" style={{ fontSize: 11, display: 'block', marginTop: 4 }}>{new Date(reply.date).toLocaleString('vi-VN')}</Text>
+                                            </>
+                                        }
+                                    />
+                                </List.Item>
+                            )}
+                            style={{ marginBottom: 16, background: '#fafafa', padding: '8px 12px', borderRadius: 8 }}
+                        />
+                    )}
+
+                    {/* ⭐ THAY ĐỔI: Form trả lời luôn hiển thị */}
+                    <Form form={formReply} onFinish={handleReplySubmit}>
+                        <Form.Item name="replyContent" noStyle>
+                            <TextArea
+                                rows={4}
+                                placeholder={`Nhập câu trả lời mới cho ${selectedReview.user}...`}
+                            />
+                        </Form.Item>
+                    </Form>
+                </Modal>
+            )}
         </div>
     );
 }
