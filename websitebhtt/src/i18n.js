@@ -30,7 +30,7 @@ const resources = {
       "see_more": "xem thêm",
       "no_new_reviews": "Không có đánh giá mới nào",
       // SIDE MENU
-      "overview": "Tổng quan", "inventory": "Quản lý kho", "orders": "Đơn hàng",
+      "overview": "Tổng quan", "inventory": "Quản lý kho", "orders": "Đơn hàng","inventory1": "QUẢN LÝ KHO",
       "staffs": "Nhân viên", "customers": "Khách hàng", "marketing": "Marketing & Khuyến mãi", "help": "Hỗ trợ",
 
       // DASHBOARD
@@ -65,7 +65,7 @@ const resources = {
       "furniture": "Nội thất", "accessories": "Phụ kiện",
       
       // ORDERS PAGE
-      "orders_title": "Quản lý Đơn hàng", "orders_search_placeholder": "Tìm theo tên sản phẩm...",
+      "orders_title": "QUẢN LÝ ĐƠN HÀNG", "orders_search_placeholder": "Tìm theo tên sản phẩm...",
       "orders_filter_all": "Tất cả", "orders_filter_delivered": "Đã giao",
       "orders_filter_processing": "Đang xử lý", "orders_filter_cancelled": "Đã hủy",
       "orders_btn_create": "Tạo đơn hàng", "orders_col_product": "Sản phẩm (Mã đơn)",
@@ -81,7 +81,7 @@ const resources = {
       "orders_product_info": "Thông tin sản phẩm", "orders_payment_total": "Tổng thanh toán", "orders_msg_status_required": "Chọn trạng thái!",
 
       // STAFFS PAGE 
-      "staffs_title": "Quản lý nhân viên", "staffs_search_placeholder": "Tìm theo tên, email hoặc phone...",
+      "staffs_title": "QUẢN LÝ NHÂN VIÊN", "staffs_search_placeholder": "Tìm theo tên, email hoặc phone...",
       "staffs_filter_all": "Tất cả vai trò", "staffs_filter_admin": "Admin", "staffs_filter_staff": "Nhân viên",
       "staffs_btn_add": "Thêm nhân viên", "staffs_col_staff": "Nhân viên", "staffs_col_phone": "Số điện thoại",
       "staffs_col_role": "Vai trò", "staffs_col_status": "Trạng thái", "staffs_col_actions": "Hành động",
@@ -99,7 +99,7 @@ const resources = {
       "staffs_msg_role_required": "Chọn vai trò",
       
       // CUSTOMERS PAGE
-      "cus_title_customer_management": "Quản lý khách hàng", "cus_placeholder_search": "Tìm tên, SĐT, Email...",
+      "cus_title_customer_management": "QUẢN LÝ KHÁCH HÀNG", "cus_placeholder_search": "Tìm tên, SĐT, Email...",
       "cus_placeholder_filter_city": "Lọc TP", "cus_filter_all": "Tất cả", "cus_button_activity": "Hoạt động",
       "cus_button_export_report": "Xuất báo cáo", "cus_col_customer": "Khách hàng",
       "cus_status_online": "Đang hoạt động", "cus_status_offline": "Ngoại tuyến", "cus_col_contact_info": "Thông tin liên hệ",
@@ -152,7 +152,7 @@ const resources = {
       "promo_loyalty_gold_benefit": "1.5x điểm tích lũy, 1 voucher sinh nhật",
       "promo_loyalty_diamond_benefit": "2x điểm tích lũy, Miễn phí vận chuyển,voucher giảm giá 25% ",
 
-      // HELP PAGE (OLD)
+      // HELP PAGE (OLD)\
       "help_title": "Trung tâm Hỗ trợ & Chẩn đoán", "help_subtitle": "Kiểm tra tình trạng hệ thống, tìm kiếm tài liệu và gửi yêu cầu hỗ trợ nhanh.",
       "help_card_diagnosis": "Công cụ Chẩn đoán nhanh", "help_text_enter_id": "Nhập ID để kiểm tra trạng thái Order hoặc User:",
       "help_input_placeholder": "Nhập Order ID hoặc User ID", "help_btn_run": "Chạy", "help_msg_enter_id": "Vui lòng nhập ID Đơn hàng hoặc ID Người dùng!",
@@ -298,7 +298,7 @@ const resources = {
       "see_more": "see more",
       "no_new_reviews": "No new reviews",
       // SIDE MENU
-      "overview": "Overview", "inventory": "Inventory Management", "orders": "Orders",
+      "overview": "Overview", "inventory": "Inventory Management", "orders": "Orders","inventory1":"Inventory Management",
       "staffs": "Staffs", "customers": "Customers", "marketing": "Marketing & Promotion", "help": "Support",
 
       // DASHBOARD

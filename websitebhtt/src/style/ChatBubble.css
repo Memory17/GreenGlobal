@@ -1,3 +1,35 @@
+/* --- Keyframes mới cho Header --- */
+
+/**
+ * Hiệu ứng Shimmer (lấp lánh) cho background gradient
+ */
+@keyframes gradientShimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/**
+ * Hiệu ứng "nhịp đập" (Pulse) cho viền avatar
+ */
+@keyframes pulseGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(255, 255, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
+}
+
 /* ChatBubble.css */
 
 /* --- 1. Định nghĩa Keyframes (Linh hồn của hiệu ứng) --- */
@@ -47,26 +79,20 @@
 
 .support-popup-card {
   position: fixed;
-  /* đặt z-index cao hơn để không bị che bởi các element float khác */
   z-index: 3000;
-  /* Hiển thị bên cạnh (bên trái) của bubble dưới */
-  bottom: 24px; /* cùng đáy với bubble */
-  right: 88px; /* đặt sát bên trái bubble (bubble có right:24 + nút ~56) */
+  bottom: 24px;
+  right: 88px;
   width: 320px;
   max-height: 400px;
   overflow-y: auto;
   background-color: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2); /* Đổ bóng đẹp hơn */
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
-
-  /* --- 3. Áp dụng hiệu ứng cho Card --- */
   animation-name: fadeInUp;
   animation-duration: 0.3s;
   animation-timing-function: ease-out;
-
-  /* Giúp card không bị co giật khi nội dung bên trong có animation */
   transform-origin: bottom right;
 }
 
@@ -80,15 +106,11 @@
 .support-option-item {
   padding: 16px 0 !important;
   border-bottom: 1px solid #f0f0f0;
-
-  /* --- 4a. Áp dụng hiệu ứng trượt (Staggered) --- */
-  opacity: 0; /* Quan trọng: Mặc định ẩn đi để animation có tác dụng */
+  opacity: 0;
   animation-name: slideInRight;
   animation-duration: 0.4s;
   animation-timing-function: ease-out;
-  animation-fill-mode: forwards; /* Giữ lại trạng thái cuối (opacity: 1) */
-  
-  /* --- 4b. Thêm hiệu ứng "mượt mà" cho hover --- */
+  animation-fill-mode: forwards;
   transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
@@ -96,43 +118,35 @@
   border-bottom: none;
 }
 
-/* --- 4c. Đây là phần "siêu đỉnh": tạo độ trễ cho từng mục --- */
-/* Mục thứ 1: trễ 0.1s */
 .support-option-item:nth-child(1) {
   animation-delay: 0.1s;
 }
-/* Mục thứ 2: trễ 0.2s */
+
 .support-option-item:nth-child(2) {
   animation-delay: 0.2s;
 }
-/* Mục thứ 3: trễ 0.3s */
+
 .support-option-item:nth-child(3) {
   animation-delay: 0.3s;
 }
-/* (Bạn có thể thêm nth-child(4), (5) nếu có nhiều mục hơn) */
-
 
 /* --- 5. Hiệu ứng Hover "Mượt mà" --- */
 
 .support-option-item:hover {
   background-color: #f7f7f7;
-  transform: scale(1.02); /* Phóng to nhẹ toàn bộ mục */
+  transform: scale(1.02);
 }
 
-/* Kiểu dáng cho icon "Gửi" (SendOutlined) */
 .support-option-item .ant-list-item-action .anticon-send {
   font-size: 18px;
   color: #1890ff;
-  /* Thêm transition cho icon */
   transition: transform 0.2s ease;
 }
 
-/* Khi hover vào MỤC, icon "Gửi" sẽ trượt sang phải */
 .support-option-item:hover .ant-list-item-action .anticon-send {
-  transform: translateX(3px) rotate(-10deg); /* Vừa trượt vừa xoay nhẹ */
+  transform: translateX(3px) rotate(-10deg);
 }
 
-/* Kiểu dáng tiêu đề */
 .support-option-item .ant-list-item-meta-title a {
   color: #050505;
   font-weight: 500;
@@ -140,14 +154,13 @@
 }
 
 .support-option-item:hover .ant-list-item-meta-title a {
-  color: #1890ff; /* Đổi màu tiêu đề khi hover */
+  color: #1890ff;
 }
 
-/* Responsive: trên màn hình nhỏ, đặt popup phía trên bubble để tránh che nội dung */
 @media (max-width: 480px) {
   .support-popup-card {
     right: 24px;
-    bottom: 88px; /* hiển thị phía trên bubble dưới */
+    bottom: 88px;
     width: calc(100% - 48px);
     left: 24px;
     right: 24px;
@@ -157,34 +170,33 @@
 /* Messenger-style chat panel (giống Messenger) */
 .messenger-panel {
   position: fixed;
-  /* đặt z-index cao hơn hẳn để không bị che bởi các element float khác trên trang */
   z-index: 3000;
-  /* Hiển thị bên cạnh (bên trái) của bubble trên: */
-  bottom: 24px; /* căn cùng đáy với bubble dưới */
-  right: 88px; /* đặt sát bên trái bubble (bubble có right:24 + size ~56) */
+  bottom: 24px;
+  right: 88px;
   width: 360px;
-  max-height: 460px; /* cân đối hơn */
-  /* chuyển panel thành flex column để dễ neo input xuống đáy */
+  max-height: 460px;
   display: flex;
   flex-direction: column;
-  height: 460px; /* cố định chiều cao để phần input không bị đẩy ra ngoài */
-  overflow: hidden; /* ẩn phần vượt ra và cho messenger-messages cuộn bên trong */
+  height: 460px;
+  overflow: hidden;
   border-radius: 12px;
-  box-shadow: 0 12px 36px rgba(0,0,0,0.14);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.14);
   background: #fff;
-  padding-bottom: 0; /* không để padding-bottom để input dính sát đáy panel */
+  padding-bottom: 0;
   animation: fadeInScale 220ms ease-out;
   transition: box-shadow 180ms ease, transform 180ms ease;
-  box-sizing: border-box; /* ensure padding included in height */
+  box-sizing: border-box;
 }
 
 .messenger-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex: 0 0 auto; /* header fixed size, don't grow */
-  /* add breathing room so avatar and text don't touch the panel edge */
-  padding: 12px; /* top/right/bottom/left */
+  flex: 0 0 auto;
+  padding: 12px;
+  background: linear-gradient(135deg, #1890ff 0%, #1677ff 100%);
+  color: white;
+  border-radius: 12px 12px 0 0;
 }
 
 .messenger-header-left {
@@ -193,14 +205,23 @@
 }
 
 .messenger-header-left .ant-avatar {
-  /* ensure avatar remains crisp and slightly larger */
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  margin-right: 12px; /* add breathing room to the right of the avatar */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-right: 12px;
 }
 
 .messenger-header-title {
-  /* small padding so the title block doesn't touch the avatar or icon */
   padding: 2px 6px 2px 0;
+  color: white;
+}
+
+.messenger-header-title div:first-child {
+  font-weight: 600;
+  color: white;
+}
+
+.messenger-header-title div:last-child {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .messenger-header-right {
@@ -210,36 +231,58 @@
 }
 
 .messenger-alert-icon {
-  color: #52c41a; /* green alert color */
+  color: white;
   font-size: 20px;
-  margin-left: 8px; /* separate a bit from title */
-  padding: 4px; /* give the icon a touch of padding */
+  margin-left: 8px;
+  padding: 4px;
   border-radius: 6px;
+  transition: transform 0.2s ease;
+}
+
+.messenger-alert-icon:hover {
+  transform: scale(1.1);
 }
 
 .messenger-messages {
   padding: 12px;
-  /* chiếm không gian còn lại giữa header và input */
   flex: 1 1 auto;
   min-height: 140px;
   overflow-y: auto;
   background: linear-gradient(180deg, #ffffff 0%, #fbfbff 100%);
   border-radius: 8px;
   box-sizing: border-box;
-  max-height: calc(100% - 120px); /* ensure messages area cannot push input down */
+  max-height: calc(100% - 120px);
 }
 
+/* 👈 MESSAGE ITEM STYLES - PHÂN BIỆT ROLE */
 .message-item {
   display: flex;
   margin-bottom: 10px;
+  animation: fadeInScale 0.3s ease-out;
 }
 
-.message-item.admin {
+/* Tin nhắn của người hiện tại - XANH (Phải) */
+.message-item.current-user {
+  justify-content: flex-end;
+}
+
+.message-item.current-user .message-bubble {
+  background: #1890ff;
+  color: white;
+  border-radius: 12px 0 12px 12px;
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.2);
+}
+
+/* Tin nhắn của người khác - XÁM (Trái) */
+.message-item.other-user {
   justify-content: flex-start;
 }
 
-.message-item.user {
-  justify-content: flex-end;
+.message-item.other-user .message-bubble {
+  background: #e8e8e8;
+  color: #111;
+  border-radius: 0 12px 12px 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .message-bubble {
@@ -248,21 +291,22 @@
   border-radius: 12px;
   line-height: 1.3;
   transition: transform 120ms ease, box-shadow 120ms ease;
-  word-break: break-word; /* prevent very long words from expanding the panel */
+  word-break: break-word;
   overflow-wrap: anywhere;
   white-space: pre-wrap;
+  font-size: 14px;
 }
 
-.message-item.admin .message-bubble {
-  background: #f0f0f2;
-  color: #111;
-  border-bottom-left-radius: 4px;
+.message-bubble:hover {
+  transform: translateY(-2px);
 }
 
-.message-item.user .message-bubble {
-  background: #1890ff;
-  color: #fff;
-  border-bottom-right-radius: 4px;
+.message-item.current-user .message-bubble:hover {
+  box-shadow: 0 6px 18px rgba(24, 144, 255, 0.3);
+}
+
+.message-item.other-user .message-bubble:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
 }
 
 .message-image {
@@ -272,30 +316,22 @@
   border-radius: 8px;
 }
 
-.message-item.user .message-bubble:hover,
-.message-item.admin .message-bubble:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(24,144,255,0.12);
-}
-
 .messenger-input {
   padding: 12px;
   border-top: 1px solid #f0f0f0;
-  background: transparent; /* make container transparent so textarea background controls look */
-  position: relative; /* để tăng độ ưu tiên z-index cho nút gửi */
+  background: transparent;
+  position: relative;
   z-index: 3001;
   display: flex;
   gap: 8px;
   align-items: flex-end;
-  flex: 0 0 auto; /* keep input fixed size and anchored to bottom */
+  flex: 0 0 auto;
 }
 
-/* Tăng độ bo góc và nền cho vùng input để nằm hoàn toàn trong panel */
 .messenger-input .ant-input-textarea {
   border-radius: 8px;
 }
 
-/* Đảm bảo nút Gửi và input luôn nằm trên các floating elements */
 .messenger-input .ant-btn,
 .messenger-input .ant-input,
 .messenger-input .ant-input-textarea {
@@ -303,36 +339,34 @@
   z-index: 3002;
 }
 
-/* Send-row: hide block background and tighten spacing so the button sits on panel */
 .messenger-send-row {
   display: flex;
   justify-content: flex-end;
   margin-top: 8px;
-  background: transparent; /* remove background */
+  background: transparent;
   padding: 0;
 }
 
 .messenger-send-row .ant-btn {
-  margin-right: 4px; /* small gap from the panel edge */
-  margin-bottom: 2px; /* align with textarea */
+  margin-right: 4px;
+  margin-bottom: 2px;
 }
 
-/* Make textarea have a little right padding so text doesn't touch the send icon */
 .messenger-textarea .ant-input-textarea {
   padding-right: 12px;
 }
 
-/* send icon plain button (no circular blue background) */
 .send-icon-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   background: transparent;
   border: none;
-  color: #1677ff; /* stronger blue for the icon */
-  font-size: 22px; /* larger icon */
-  padding: 8px 10px; /* larger hit area while remaining compact */
+  color: #1677ff;
+  font-size: 22px;
+  padding: 8px 10px;
   cursor: pointer;
+  transition: transform 0.2s ease;
 }
 
 .send-icon-button:active,
@@ -341,14 +375,13 @@
   box-shadow: none;
 }
 
-.send-icon-button .anticon {
-  font-size: 22px; /* ensure the Antd icon scales accordingly */
-  line-height: 1;
-}
-
-/* Hover/active micro-interaction */
 .send-icon-button:hover {
   transform: translateY(-2px) scale(1.03);
+}
+
+.send-icon-button .anticon {
+  font-size: 22px;
+  line-height: 1;
 }
 
 .icon-action-button {
@@ -361,34 +394,36 @@
   font-size: 18px;
   padding: 6px 8px;
   cursor: pointer;
+  transition: color 0.2s ease, transform 0.2s ease;
 }
 
 .icon-action-button:hover {
-  color: #1677ff;
   transform: translateY(-2px);
 }
 
 .icon-action-button.emoji-button {
-  color: #faad14; /* warm/orange for emoji */
+  color: #faad14;
 }
+
 .icon-action-button.emoji-button:hover {
   color: #d48806;
 }
 
 .icon-action-button.picture-button {
-  color: #13c2c2; /* teal for images */
+  color: #13c2c2;
 }
+
 .icon-action-button.picture-button:hover {
   color: #08979c;
 }
 
 .emoji-picker {
   position: absolute;
-  bottom: 64px; /* sit above the input row */
+  bottom: 64px;
   right: 12px;
   background: #fff;
   border: 1px solid #eee;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
   padding: 8px;
   border-radius: 8px;
   display: flex;
@@ -403,65 +438,754 @@
   font-size: 18px;
   padding: 4px 6px;
   cursor: pointer;
+  transition: transform 0.2s ease;
 }
 
-.emoji-btn:hover { transform: scale(1.15); }
+.emoji-btn:hover {
+  transform: scale(1.15);
+}
 
-/* Remove any accidental default border around button in some browsers */
 .send-icon-button::-moz-focus-inner {
   border: 0;
 }
 
-/* Textarea wrapper: make textarea fill the remaining width and remove extra white block */
 .messenger-textarea {
   flex: 1 1 auto;
 }
 
 .messenger-textarea .ant-input-textarea {
   width: 100%;
-  background: #ffffff; /* keep input white but confined to textarea area */
+  background: #ffffff;
   border-radius: 8px;
   resize: none;
   border: 1px solid #e6e6e6;
   box-shadow: none;
 }
 
-/* Reduce default bottom margin so button sits aligned */
 .messenger-textarea .ant-input {
   margin-bottom: 0;
 }
 
-/* Hover effect for panel */
 .messenger-panel:hover {
   transform: translateY(-6px);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
 }
 
-/* Custom scrollbar for messages */
 .messenger-messages::-webkit-scrollbar {
   width: 8px;
 }
+
 .messenger-messages::-webkit-scrollbar-track {
   background: transparent;
 }
+
 .messenger-messages::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,0.12);
+  background: rgba(0, 0, 0, 0.12);
   border-radius: 6px;
 }
 
-/* Firefox scrollbar */
 .messenger-messages {
   scrollbar-width: thin;
-  scrollbar-color: rgba(0,0,0,0.12) transparent;
+  scrollbar-color: rgba(0, 0, 0, 0.12) transparent;
 }
 
-/* Responsive: trên màn hình nhỏ (mobile), đặt panel lên trên bubble để tránh che nội dung chính */
 @media (max-width: 480px) {
   .messenger-panel {
     right: 24px;
-    bottom: 88px; /* hiển thị phía trên bubble trên */
+    bottom: 88px;
     width: calc(100% - 48px);
     left: 24px;
     right: 24px;
+  }
+}
+/* ===== TYPING INDICATOR ===== */
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #f0f0f0;
+  border-radius: 18px;
+  width: fit-content;
+  animation: fadeInScale 0.3s ease-out;
+}
+
+.typing-indicator span {
+  width: 10px;
+  height: 10px;
+  background-color: #bbb;
+  border-radius: 50%;
+  animation: typing 1.4s infinite;
+}
+
+.typing-indicator span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typing {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.6;
+  }
+  30% {
+    transform: translateY(-12px);
+    opacity: 1;
+  }
+}
+
+/* ===== MESSAGE TIMESTAMPS & READ STATUS ===== */
+.message-footer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #999;
+  padding: 0 4px;
+}
+
+.message-time {
+  font-size: 12px;
+  color: #aaa;
+  font-weight: 400;
+}
+
+.read-status {
+  font-size: 13px;
+  color: #1890ff;
+  font-weight: bold;
+}
+
+.message-item.current-user .read-status {
+  color: #1890ff;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ===== MESSAGE BUBBLE ===== */
+.message-item {
+  display: flex;
+  margin-bottom: 12px;
+  animation: fadeInScale 0.3s ease-out;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.message-item.current-user {
+  align-items: flex-end;
+}
+
+.message-item.other-user {
+  align-items: flex-start;
+}
+
+.message-bubble {
+  max-width: 72%;
+  padding: 12px 16px;
+  border-radius: 18px;
+  line-height: 1.4;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  font-size: 14px;
+  transition: all 180ms cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeInScale 0.3s ease-out;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.message-item.current-user .message-bubble {
+  background: linear-gradient(135deg, #1890ff 0%, #0050b3 100%);
+  color: white;
+  border-radius: 18px 4px 18px 18px;
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.25);
+}
+
+.message-item.other-user .message-bubble {
+  background: #f5f5f5;
+  color: #262626;
+  border-radius: 4px 18px 18px 18px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.message-bubble:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+}
+
+.message-item.current-user .message-bubble:hover {
+  box-shadow: 0 8px 24px rgba(24, 144, 255, 0.35) !important;
+}
+
+.message-image {
+  max-width: 240px;
+  max-height: 280px;
+  display: block;
+  border-radius: 12px;
+  animation: fadeInScale 0.4s ease-out;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* ===== PRODUCT CARD ===== */
+.product-card {
+  padding: 0 !important;
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px !important;
+  overflow: hidden;
+  min-width: 200px;
+  background: white !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+  transition: all 0.3s ease;
+}
+
+.product-card:hover {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16) !important;
+}
+
+.product-image {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+}
+
+.product-info {
+  padding: 14px;
+  background: white;
+}
+
+.product-name {
+  font-weight: 600;
+  color: #262626;
+  margin-bottom: 6px;
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+.product-price {
+  color: #1890ff;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+/* ===== QUICK REPLY BUTTONS ===== */
+.quick-replies {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #f0f2f5 100%);
+  border-top: 1px solid #eee;
+  animation: fadeInUp 0.3s ease-out;
+}
+
+.quick-reply-btn {
+  padding: 12px 16px;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  color: #1890ff;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: left;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.quick-reply-btn:hover {
+  background: #f0f7ff;
+  border-color: #1890ff;
+  transform: translateX(6px);
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.15);
+}
+
+.quick-reply-btn:active {
+  transform: scale(0.97) translateX(6px);
+}
+
+/* ===== MESSENGER PANEL ===== */
+.messenger-panel {
+  position: fixed;
+  z-index: 3000;
+  bottom: 24px;
+  right: 88px;
+  width: 380px;
+  max-height: 500px;
+  display: flex;
+  flex-direction: column;
+  height: 500px;
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+  background: #fff;
+  padding-bottom: 0;
+  animation: fadeInScale 220ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: all 200ms ease;
+  box-sizing: border-box;
+}
+
+.messenger-panel:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.2);
+}
+
+/* ===== HEADER ===== */
+/* >>> ĐÃ NÂNG CẤP PHẦN NÀY <<< */
+.messenger-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 0 0 auto;
+  padding: 16px;
+  color: white;
+  border-radius: 16px 16px 0 0;
+  font-weight: 500;
+  position: relative; /* Thêm để giữ shadow đẹp */
+  z-index: 10;
+  /* Hiệu ứng Gradient Động */
+  background: linear-gradient(125deg, #1890ff, #007bff, #0050b3);
+  background-size: 200% 200%; /* Phóng to gradient */
+  animation: gradientShimmer 8s ease infinite; /* Áp dụng animation */
+  /* Hiệu ứng Shadow và Hover */
+  box-shadow: 0 6px 18px rgba(24, 144, 255, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.messenger-header:hover {
+  transform: translateY(-2px); /* Nhấc lên 1 chút */
+  box-shadow: 0 10px 24px rgba(24, 144, 255, 0.4); /* Shadow đẹp hơn */
+}
+
+/* >>> VÀ PHẦN AVATAR BÊN DƯỚI <<< */
+
+.messenger-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0px;
+}
+
+.messenger-header-left .ant-avatar {
+  border: 2px solid white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  /* Áp dụng hiệu ứng Pulse */
+  animation: pulseGlow 2.5s infinite cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.messenger-header-title {
+  color: white;
+}
+
+.messenger-header-title > div:first-child {
+  font-weight: 600;
+  font-size: 15px;
+  color: white;
+  letter-spacing: -0.3px;
+}
+
+.messenger-header-title > div:last-child {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 2px;
+}
+
+.messenger-header-right {
+  display: flex;
+  align-items: center;
+}
+
+.messenger-alert-icon {
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 6px;
+  border-radius: 8px;
+}
+
+.messenger-alert-icon:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.15) rotate(15deg);
+}
+
+/* ===== MESSAGES AREA ===== */
+.messenger-messages {
+  padding: 16px;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfcfd 100%);
+  border-radius: 0 0 8px 8px;
+  box-sizing: border-box;
+}
+
+.messenger-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.messenger-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.messenger-messages::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 3px;
+  transition: background 0.2s ease;
+}
+
+.messenger-messages::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.messenger-messages {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.12) transparent;
+}
+
+/* ===== INPUT AREA ===== */
+.messenger-input {
+  padding: 14px;
+  border-top: 1px solid #f0f0f0;
+  background: white;
+  position: relative;
+  z-index: 3001;
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  border-radius: 0 0 16px 16px;
+}
+
+.messenger-textarea {
+  flex: 1 1 100%;
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.messenger-textarea .ant-input-textarea {
+  width: 100%;
+  background: #f8f9fa;
+  border-radius: 12px;
+  resize: none;
+  border: 1px solid #e0e0e0;
+  box-shadow: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.messenger-textarea .ant-input-textarea:focus {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.1);
+  background: white;
+}
+
+.messenger-textarea .ant-input-textarea-show-count::after {
+  color: #999;
+}
+
+.messenger-send-row {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  width: 100%;
+  padding: 0;
+  margin-top: 6px;
+}
+
+/* ===== ACTION BUTTONS ===== */
+.send-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1890ff 0%, #0050b3 100%);
+  border: none;
+  color: white;
+  font-size: 20px;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.25);
+  flex-shrink: 0;
+}
+
+.send-icon-button:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 24px rgba(24, 144, 255, 0.35);
+}
+
+.send-icon-button:active {
+  transform: scale(0.95);
+}
+
+.icon-action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border: 1px solid #e0e0e0;
+  color: #555;
+  font-size: 18px;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.icon-action-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.icon-action-button.emoji-button {
+  color: #faad14;
+  border-color: #ffd666;
+}
+
+.icon-action-button.emoji-button:hover {
+  background: #fffbe6;
+  border-color: #faad14;
+  box-shadow: 0 4px 12px rgba(250, 173, 20, 0.2);
+}
+
+.icon-action-button.picture-button {
+  color: #13c2c2;
+  border-color: #87e8de;
+}
+
+.icon-action-button.picture-button:hover {
+  background: #e6fffb;
+  border-color: #13c2c2;
+  box-shadow: 0 4px 12px rgba(19, 194, 194, 0.2);
+}
+
+/* ===== EMOJI PICKER ===== */
+.emoji-picker {
+  position: absolute;
+  bottom: 120px;
+  right: 14px;
+  background: white;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15);
+  padding: 12px;
+  border-radius: 12px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  z-index: 3500;
+  max-width: 320px;
+  animation: fadeInScale 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  justify-content: center;
+}
+
+.emoji-btn {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  padding: 6px 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.emoji-btn:hover {
+  transform: scale(1.25);
+  background: #f0f0f0;
+}
+
+/* ===== SUPPORT POPUP CARD ===== */
+.support-popup-card {
+  position: fixed;
+  z-index: 3000;
+  bottom: 24px;
+  right: 88px;
+  width: 340px;
+  max-height: 420px;
+  overflow-y: auto;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+  animation: fadeInUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: bottom right;
+}
+
+.support-popup-header {
+  padding: 18px 24px 0 24px;
+}
+
+.support-popup-header h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+}
+
+/* ===== SUPPORT OPTIONS ===== */
+.support-option-item {
+  padding: 14px 0 !important;
+  border-bottom: 1px solid #f0f0f0;
+  opacity: 0;
+  animation: slideInRight 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.support-option-item:last-child {
+  border-bottom: none;
+}
+
+.support-option-item:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.support-option-item:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.support-option-item:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.support-option-item:hover {
+  background-color: #f8f9fa;
+  transform: translateX(4px);
+  padding-left: 4px !important;
+}
+
+.support-option-item .ant-list-item-meta {
+  align-items: center;
+}
+
+.support-option-item .ant-avatar {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.support-option-item .ant-list-item-action .anticon-send {
+  font-size: 18px;
+  color: #1890ff;
+  transition: all 0.2s ease;
+}
+
+.support-option-item:hover .ant-list-item-action .anticon-send {
+  transform: translateX(4px) rotate(-10deg);
+  color: #0050b3;
+}
+
+.support-option-item .ant-list-item-meta-title a {
+  color: #262626;
+  font-weight: 500;
+  font-size: 14px;
+  transition: color 0.2s ease;
+}
+
+.support-option-item:hover .ant-list-item-meta-title a {
+  color: #1890ff;
+}
+
+.support-option-item .ant-list-item-meta-description {
+  font-size: 12px;
+  color: #8c8c8c;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .messenger-panel {
+    width: 360px;
+    max-height: 580px;
+    right: 72px;
+  }
+
+  .support-popup-card {
+    width: 320px;
+    right: 72px;
+  }
+}
+
+@media (max-width: 480px) {
+  .messenger-panel,
+  .support-popup-card {
+    right: 16px;
+    bottom: 80px;
+    width: calc(100% - 32px);
+    left: 16px;
+    right: auto;
+    border-radius: 16px;
+  }
+
+  .message-bubble {
+    max-width: 85%;
+  }
+
+  .emoji-picker {
+    bottom: auto;
+    top: -340px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    width: calc(100% - 28px);
+  }
+
+  .messenger-panel {
+    max-height: 75vh;
+    height: 75vh;
   }
 }
