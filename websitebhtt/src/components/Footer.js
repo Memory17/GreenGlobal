@@ -1,9 +1,10 @@
+import React from "react";
 import { Typography, Row, Col, Input, Button } from "antd";
 import "../style/AppFooter.css";
+
+// Import images (giữ nguyên như của bạn)
 import footerLogo from "../assets/images/logo2.jpg";
-
 import redbullLogo from "../assets/images/redbull.png";
-
 import cr7Logo from "../assets/images/cr7logo.png";
 import vietnamLogo from "../assets/images/vietnamlogo.png";
 import idealLogo from "../assets/images/ideal.png";
@@ -20,124 +21,102 @@ import {
   FacebookFilled,
   TwitterSquareFilled,
   CloseCircleFilled,
+  SendOutlined
 } from "@ant-design/icons";
-const { Text } = Typography;
+
+const { Text, Title } = Typography;
+
 const AppFooter = () => {
   return (
     <div className="footer">
-      <Row gutter={16} className="footer-row">
-        <Col className="footer-logo" span={8}>
-          <img src={footerLogo} alt="" />
-          <div className="subscribe-input">
-            <Input
-              className="footer-input"
-              placeholder="Enter your Email"
-            ></Input>
-            <Button className="footer-button" type="primary">
-              Subscribe
-            </Button>
+      <div className="footer-overlay"></div> {/* Lớp phủ tạo hiệu ứng nền */}
+      <Row gutter={[32, 32]} className="footer-row">
+        
+        {/* --- COLUMN 1: LOGO & SUBSCRIBE --- */}
+        <Col xs={24} md={8} className="footer-col-logo">
+          <div className="logo-wrapper">
+            <img src={footerLogo} alt="Brand Logo" className="main-logo" />
           </div>
-          <Text className="footer-text-gaith">
-            @Gaith 2025 All Right reserved
+          <div className="subscribe-section">
+            <Text className="subscribe-title">Subscribe to our news</Text>
+            <div className="subscribe-input-group">
+              <Input
+                className="footer-input"
+                placeholder="Enter your Email..."
+                prefix={<SendOutlined className="input-icon"/>}
+              />
+              <Button className="footer-button" type="primary">
+                Join Now
+              </Button>
+            </div>
+          </div>
+          <Text className="footer-copyright">
+            © Gaith 2025. All Rights Reserved.
           </Text>
         </Col>
-        <Col className="quick-link" span={3}>
-          <Text strong className="quick-link">
-            Quick Links
-          </Text>
-          <br />
-          <Text className="quick-link-content">Shop</Text>
-          <br />
-          <Text className="quick-link-content">About Us</Text>
-          <br />
-          <Text className="quick-link-content">Blogs</Text>
-          <br />
-          <Text className="quick-link-content">FAQ</Text>
-          <br />
-          <Text className="quick-link-content">Customer Service</Text>
-          <br />
-          <Text className="quick-link-content">Contact Us</Text>
+
+        {/* --- COLUMN 2: QUICK LINKS --- */}
+        <Col xs={12} md={3} className="footer-col-links">
+          <Title level={5} className="footer-heading">Quick Links</Title>
+          <div className="link-list">
+            <Text className="link-item">Shop</Text>
+            <Text className="link-item">About Us</Text>
+            <Text className="link-item">Blogs</Text>
+            <Text className="link-item">FAQ</Text>
+            <Text className="link-item">Customer Service</Text>
+            <Text className="link-item">Contact Us</Text>
+          </div>
         </Col>
-        <Col className="legal-link" span={3}>
-          <Text strong className="legal-link">
-            Legal Link
-          </Text>
-          <br />
-          <Text className="legal-link-content">Privacy Policy</Text>
-          <br />
-          <Text className="legal-link-content">Term & Conditions</Text>
-          <br />
-          <Text className="legal-link-content">Imprint</Text>
-          <br />
-          <Text className="legal-link-content">Cookie Policy</Text>
-          <br />
-          <Text className="legal-link-content">Refund Policy</Text>
-          <br />
-          <Text className="legal-link-content">Shipping Policy</Text> <br />
-          <Text className="legal-link-content">Compliance Information</Text>
-          <br />
+
+        {/* --- COLUMN 3: LEGAL LINKS --- */}
+        <Col xs={12} md={3} className="footer-col-links">
+          <Title level={5} className="footer-heading">Legal</Title>
+          <div className="link-list">
+            <Text className="link-item">Privacy Policy</Text>
+            <Text className="link-item">Terms & Conditions</Text>
+            <Text className="link-item">Imprint</Text>
+            <Text className="link-item">Cookie Policy</Text>
+            <Text className="link-item">Refund Policy</Text>
+            <Text className="link-item">Shipping Policy</Text>
+            <Text className="link-item">Compliance Info</Text>
+          </div>
           <div className="social-icons">
-            <FacebookFilled className="icon facebook" />{" "}
-            <TwitterSquareFilled className="icon twitter" />{" "}
+            <FacebookFilled className="icon facebook" />
+            <TwitterSquareFilled className="icon twitter" />
             <CloseCircleFilled className="icon xicon" />
           </div>
         </Col>
-        <Col className="contact-information" span={3}>
-          <Text strong className="contact-information">
-            Contact Information
-          </Text>
-          <br />
-          <Text className="contact-information-content">Email</Text>
-          <br />
-          <Text className="contact-information-content">Information</Text>
-          <br />
-          <Text className="contact-information-content">Address</Text>
-        </Col>
-        <Col className="connect-payment" span={7}>
-          <div className="logo-connect">
-            <img className="logo-connect-content" src={vietnamLogo} alt="" />
-            <img className="logo-connect-content" src={redbullLogo} alt="" />
-            <img className="logo-connect-content" src={cr7Logo} alt="" />
+
+        {/* --- COLUMN 4: CONTACT --- */}
+        <Col xs={12} md={3} className="footer-col-links">
+          <Title level={5} className="footer-heading">Contact</Title>
+          <div className="link-list">
+            <Text className="link-item">support@gaith.com</Text>
+            <Text className="link-item">+84 909 000 111</Text>
+            <Text className="link-item">123 Street, City</Text>
           </div>
-          <div className="card-logo">
-            <div className="card-logo-item1">
-                <div className="card-ideal">
-                    <img className="" src={idealLogo} alt="" />
+        </Col>
+
+        {/* --- COLUMN 5: PARTNERS & PAYMENTS --- */}
+        <Col xs={24} md={7} className="footer-col-payment">
+          <div className="logo-connect">
+            <img className="partner-logo" src={vietnamLogo} alt="VN" />
+            <img className="partner-logo" src={redbullLogo} alt="RB" />
+            <img className="partner-logo" src={cr7Logo} alt="CR7" />
+          </div>
+          
+          <div className="payment-grid">
+             {/* Gom tất cả logo thanh toán vào một grid để dễ style */}
+             {[idealLogo, visaLogo, MastercardLogo, giropay, GooglePay, PayPal, KCB, CBC, KLARNA, APAY].map((logo, index) => (
+                <div className="card-glass" key={index}>
+                  <img src={logo} alt="payment" />
                 </div>
-                <div className="card-ideal">
-                    <img className="" src={visaLogo} alt="" />
-                </div>
-                <div className="card-ideal">
-                    <img className="" src={MastercardLogo} alt="" />
-                </div>
-                <div className="card-ideal">
-                    <img className="" src={giropay} alt="" />
-                </div>
-                <div className="card-ideal">
-                    <img className="" src={GooglePay} alt="" />
-                </div>
-            </div>
-            <div className="card-logo-item2">
-                <div className="card-ideal">
-                    <img className="" src={PayPal} alt="" />
-                </div>
-                <div className="card-ideal">
-                    <img className="" src={KCB} alt="" />
-                </div>
-                <div className="card-ideal">
-                    <img className="" src={CBC} alt="" />
-                </div>
-                <div className="card-ideal">
-                    <img className="" src={KLARNA} alt="" />
-                </div>
-                <div className="card-ideal">
-                    <img className="" src={APAY} alt="" />
-                </div>
-            </div>
+             ))}
           </div>
         </Col>
       </Row>
     </div>
   );
 };
+
 export default AppFooter;

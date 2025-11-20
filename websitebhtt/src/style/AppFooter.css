@@ -1,130 +1,250 @@
-.footer{
-  background-color: black;
-  padding: 20px;
-  height: 450px;
-  margin-top: 50px;
+/* --- VARIABLES & GLOBAL --- */
+:root {
+  --footer-bg: #050505; /* Đen sâu */
+  --primary-color: #00d2ff; /* Màu xanh Neon Cyberpunk */
+  --secondary-color: #9254de; /* Màu tím Neon */
+  --text-color: #b3b3b3;
+  --text-hover: #ffffff;
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
 }
-.footer-logo img{
-  width: 100px;
-  height: auto;
-  margin-top: 30px;
-  
-}
-.subscribe-input{
-  display: flex;
-  margin-top: 100px;
-  gap: 12px;
 
+.footer {
+  background-color: var(--footer-bg);
+  padding: 60px 20px;
+  margin-top: 50px;
+  position: relative;
+  overflow: hidden;
+  color: var(--text-color);
+  font-family: 'Inter', sans-serif; /* Nên dùng font hiện đại */
 }
-.footer-input{
+
+/* Hiệu ứng background glow nhẹ */
+.footer::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(0, 210, 255, 0.03) 0%, transparent 60%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.footer-row {
+  position: relative;
+  z-index: 1;
+  max-width: 1400px;
+  margin: 0 auto !important;
+}
+
+/* --- LOGO & INPUT --- */
+.logo-wrapper .main-logo {
+  width: 120px;
+  filter: drop-shadow(0 0 10px rgba(255,255,255,0.1));
+  transition: transform 0.3s;
+}
+.logo-wrapper .main-logo:hover {
+  transform: scale(1.05);
+}
+
+.subscribe-section {
+  margin-top: 30px;
+}
+.subscribe-title {
+  color: white !important;
+  display: block;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.subscribe-input-group {
+  display: flex;
+  gap: 10px;
+  background: var(--glass-bg);
+  padding: 5px;
   border-radius: 50px;
-  height: 45px;
-  width: 200px;
+  border: 1px solid var(--glass-border);
+  transition: 0.3s;
 }
-.footer-button{
+
+/* Hiệu ứng Input phát sáng khi focus */
+.subscribe-input-group:focus-within {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 15px rgba(0, 210, 255, 0.2);
+}
+
+.footer-input {
+  background: transparent !important;
+  border: none !important;
+  color: white !important;
+  box-shadow: none !important;
+}
+.footer-input::placeholder {
+  color: #666;
+}
+.input-icon {
+  color: var(--primary-color);
+}
+
+.footer-button {
   border-radius: 50px;
-background-color: #383737;
-height: 45px;
-}
-.footer-text-gaith{
-  color: #555;
-  margin-top: 120px ;
-  display: flex;
-}
-.quick-link{
+  background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+  border: none;
+  height: 40px;
+  font-weight: bold;
   color: white;
-  margin-top: 30px;
-  font-size: 15px;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
-.quick-link-content{
+.footer-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 210, 255, 0.4);
+}
+
+.footer-copyright {
   color: #555;
-  margin-top: 3px;
+  margin-top: 40px;
+  display: block;
+  font-size: 12px;
+}
+
+/* --- HEADINGS & LINKS --- */
+.footer-heading {
+  color: white !important;
+  margin-bottom: 20px !important;
+  position: relative;
+  display: inline-block;
+}
+
+/* Gạch chân ngắn dưới tiêu đề */
+.footer-heading::after {
+  content: '';
+  position: absolute;
+  width: 30px;
+  height: 3px;
+  background: var(--primary-color);
+  bottom: -5px;
+  left: 0;
+  border-radius: 2px;
+}
+
+.link-list {
   display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
-.legal-link{
-  color: white;
-  margin-top: 30px;
-  font-size: 15px;
-  
+
+.link-item {
+  color: var(--text-color);
+  cursor: pointer;
+  position: relative;
+  width: fit-content;
+  transition: color 0.3s;
 }
-.legal-link-content{
-  color: #555;
-  margin-top: 3px;
-  display: flex;
+
+/* Hiệu ứng gạch chân chạy từ trái qua phải khi hover */
+.link-item::before {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0%;
+  height: 1px;
+  background-color: var(--primary-color);
+  transition: width 0.3s ease-in-out;
 }
-.contact-information{
-  color: white;
-  margin-top: 30px;
-  font-size: 15px;
- 
+
+.link-item:hover {
+  color: var(--text-hover);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
 }
-.contact-information-content{
-  color: #555;
-  margin-top: 3px;
-  display: flex;
+.link-item:hover::before {
+  width: 100%;
 }
+
+/* --- SOCIAL ICONS --- */
 .social-icons {
   display: flex;
-  gap: 20px; /* khoảng cách giữa các icon */
-  align-items: center;
+  gap: 15px;
+  margin-top: 25px;
 }
 
 .social-icons .icon {
-  font-size: 32px; /* phóng to icon */
+  font-size: 28px;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy effect */
+  color: #888;
 }
 
-/* hover phóng to nhẹ */
 .social-icons .icon:hover {
-  transform: scale(1.2);
+  transform: translateY(-5px) scale(1.1);
+  color: white;
 }
+.social-icons .facebook:hover { text-shadow: 0 0 15px #3b5998; color: #3b5998; }
+.social-icons .twitter:hover { text-shadow: 0 0 15px #1da1f2; color: #1da1f2; }
+.social-icons .xicon:hover { text-shadow: 0 0 15px #e0245e; color: #e0245e; }
 
-/* màu riêng cho từng icon */
-.social-icons .facebook {
-  color: #3b5998;
-}
 
-.social-icons .twitter {
-  color: #1da1f2;
-}
-
-.social-icons .xicon {
-  color: #e0245e; /* màu giống X hiện tại */
-}
-.logo-connect{
-  justify-content: flex-end;
+/* --- PARTNERS & PAYMENTS --- */
+.footer-col-payment {
   display: flex;
-  gap: 10px;
-  margin-top: 30px;
+  flex-direction: column;
+  align-items: flex-end; /* Canh phải */
 }
-.logo-connect-content{
-  height: 50px;
+
+.logo-connect {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.partner-logo {
+  height: 40px;
   width: auto;
-  display: flex;
- 
+  filter: grayscale(100%); /* Làm xám logo đối tác */
+  opacity: 0.6;
+  transition: 0.4s;
+}
+.partner-logo:hover {
+  filter: grayscale(0%); /* Hiện màu khi hover */
+  opacity: 1;
+  transform: scale(1.1);
+}
 
-}
-.card-logo-item1{
+/* Grid cho thẻ thanh toán */
+.payment-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
   gap: 10px;
-  margin-top: 70px;
+}
+
+/* Hiệu ứng Glassmorphism cho thẻ Card */
+.card-glass {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(4px);
+  border-radius: 8px;
+  width: 55px;
+  height: 35px;
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
 }
-.card-logo-item2{
-    gap: 10px;
-  margin-top: 10px;
-  display: flex;
-  justify-content: flex-end;
+
+.card-glass img {
+  max-width: 80%;
+  max-height: 80%;
+  object-fit: contain;
+  border-radius: 4px;
 }
-.card-ideal{
-background-color: white;
-border-radius: 10px;
-width: 60px;
-height: 40px;
-}
-.card-ideal img{
-  width: 60px;
-height: 40px;
-border-radius: 10px;
+
+/* Hover vào thẻ thanh toán: Nổi lên và phát sáng */
+.card-glass:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-5px) rotateX(10deg);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  border-color: rgba(255,255,255,0.3);
 }

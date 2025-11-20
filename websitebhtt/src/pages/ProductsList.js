@@ -657,7 +657,7 @@ function Product() {
                     </div>
                   }
                 />
-
+ 
                 <p className="product-description">{product.description}</p>
 
                 <div

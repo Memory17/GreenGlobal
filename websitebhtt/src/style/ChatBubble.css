@@ -1189,3 +1189,179 @@
     height: 75vh;
   }
 }
+.emoji-picker {
+  max-height: 180px;   /* đặt chiều cao tối đa */
+  overflow-y: auto;    /* bật thanh cuộn dọc */
+}
+
+/* ========================================================= */
+/* === [SIÊU ĐỈNH] KEYFRAMES CHO HIỆU ỨNG === */
+/* ========================================================= */
+@keyframes conversationItemSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+
+
+/* ========================================================= */
+/* === [MỚI] GIAO DIỆN CHAT CHO ADMIN === */
+/* ========================================================= */
+
+/* --- Bố cục 2 cột --- */
+.messenger-panel.admin-view {
+  flex-direction: row; /* Chuyển sang bố cục hàng ngang */
+  width: 700px; /* Rộng hơn */
+  height: 500px; /* Cao hơn */
+  max-height: 80vh;
+}
+
+/* --- Cột 1: Danh sách cuộc trò chuyện --- */
+.conversation-list {
+  width: 250px;
+  flex-shrink: 0;
+  border-right: 1px solid #e8e8e8; /* Màu border nhạt hơn */
+  display: flex;
+  flex-direction: column;
+  /* [NÂNG CẤP] Nền gradient nhẹ nhàng */
+  background: linear-gradient(to bottom, #fdfdff, #f7f8fc);
+}
+
+.conversation-list-header {
+  padding: 16px;
+  border-bottom: 1px solid #e8e8e8;
+  flex-shrink: 0;
+  /* [NÂNG CẤP] Nền trắng và có bóng mờ nhẹ */
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(4px);
+}
+
+.conversation-list-header .ant-typography {
+  font-weight: 600 !important; /* Tăng độ đậm cho tiêu đề */
+  color: #333;
+}
+
+.conversation-list .ant-list {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.conversation-list-item {
+  padding: 12px 16px !important;
+  cursor: pointer;
+  /* [NÂNG CẤP] Transition mượt mà hơn cho nhiều thuộc tính */
+  transition: transform 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease;
+  border-left: 4px solid transparent;
+  border-bottom: 1px solid #f0f0f0 !important;
+
+  /* [SIÊU ĐỈNH] Hiệu ứng xuất hiện lần lượt */
+  opacity: 0; /* Mặc định ẩn đi */
+  animation: conversationItemSlideIn 0.4s ease-out forwards;
+}
+
+/* [SIÊU ĐỈNH] Tạo độ trễ cho các item đầu tiên để có hiệu ứng staggered */
+.conversation-list-item:nth-child(1) { animation-delay: 0.1s; }
+.conversation-list-item:nth-child(2) { animation-delay: 0.15s; }
+.conversation-list-item:nth-child(3) { animation-delay: 0.2s; }
+.conversation-list-item:nth-child(4) { animation-delay: 0.25s; }
+.conversation-list-item:nth-child(5) { animation-delay: 0.3s; }
+
+.conversation-list-item:hover {
+  /* [NÂNG CẤP] Hiệu ứng "nâng" lên khi hover */
+  transform: translateX(5px);
+  background-color: #f0f5ff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.conversation-list-item.selected {
+  /* [NÂNG CẤP] Trạng thái được chọn nổi bật hơn */
+  background: linear-gradient(90deg, #e6f7ff, #d1eeff);
+  border-left-color: #007bff;
+  box-shadow: inset 3px 0 8px -3px rgba(24, 144, 255, 0.3);
+}
+
+.conversation-list-item .ant-list-item-meta-title {
+  margin-bottom: 2px !important;
+}
+
+.convo-title {
+  font-weight: 600; /* Tên người dùng đậm hơn */
+  color: #333;
+}
+
+.convo-desc {
+  font-size: 13px;
+  color: #888;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.unread-badge {
+  background-color: #ff4d4f;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+  /* [SIÊU ĐỈNH] Hiệu ứng "nhịp đập" cho huy hiệu */
+  animation: pulse-red 2s infinite;
+}
+
+@keyframes pulse-red {
+  0% { box-shadow: 0 0 0 0 rgba(255, 77, 79, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(255, 77, 79, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 77, 79, 0); }
+}
+
+/* --- Thanh cuộn tùy chỉnh cho danh sách --- */
+.conversation-list .ant-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.conversation-list .ant-list::-webkit-scrollbar-track {
+  background: #f9f9f9;
+}
+
+.conversation-list .ant-list::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+/* --- Cột 2: Khu vực chat --- */
+.chat-area {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Quan trọng */
+}
+
+/* Khi chưa chọn cuộc trò chuyện */
+.no-conversation-selected {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #aaa;
+  font-size: 16px;
+  background-color: #fafafa;
+}
+
+/* Ghi đè một số style cho chat-area */
+.chat-area .messenger-header {
+  border-radius: 0; /* Bỏ bo góc header */
+}
+.chat-area .messenger-input {
+  border-radius: 0 0 16px 0; /* Bo góc dưới phải */
+}

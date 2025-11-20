@@ -7,7 +7,7 @@ import {
     Button, 
     Divider,
     Row,       
-    Col,       
+    Col,        
     Card,      
     Rate,
     Tooltip,    

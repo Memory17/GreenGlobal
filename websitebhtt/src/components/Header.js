@@ -13,7 +13,7 @@ import {
   Drawer,
   Divider,
   AutoComplete, // MỚI: Thêm AutoComplete
-  List,
+  List, 
   Typography,
 } from "antd";
 import {
@@ -24,6 +24,8 @@ import {
   LogoutOutlined,
   MenuOutlined,
   BellOutlined, // ⭐️ THÊM: Icon chuông
+  SearchOutlined,
+  
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/images/logo2.jpg";
@@ -267,23 +269,37 @@ const AppHeader = () => {
         {/* --- RIGHT SIDE DESKTOP --- */}
         <div className="header-right-desktop">
           
-          {/* MỚI: Bọc Input.Search bằng AutoComplete */}
-          <AutoComplete
-            options={options} // Danh sách gợi ý
-            style={{ width: 220 }} // match CSS width to avoid pushing layout
-            onSelect={onSelectSuggestion} // Khi chọn gợi ý
-            onChange={setSearchValue} // Khi gõ chữ
-            value={searchValue} // Giá trị đang gõ
-            popupClassName="search-autocomplete-popup" // Class để CSS nếu cần
-          >
-            <Input.Search
-              placeholder="Tìm sản phẩm..."
-              allowClear
-              onSearch={handleSearch} // Xử lý khi nhấn Enter/nút Search
-              className="header-search"
-              enterButton
-            />
-          </AutoComplete>
+          {/* --- PHẦN THANH TÌM KIẾM MỚI (MODERN UI) --- */}
+<div className="modern-search-wrapper">
+  <AutoComplete
+    options={options}
+    onSelect={onSelectSuggestion}
+    onChange={setSearchValue}
+    value={searchValue}
+    popupClassName="modern-search-dropdown" // Class CSS cho menu gợi ý
+    style={{ width: "100%" }}
+    backfill
+  >
+    <Input
+      className="modern-search-input"
+      placeholder="Tìm kiếm sản phẩm..."
+      // Icon kính lúp nằm bên trái
+      
+      // Nút tìm kiếm tùy chỉnh nằm bên phải
+      suffix={
+        <div 
+          className="search-btn-custom"
+          onClick={() => handleSearch(searchValue)}
+        >
+          <SearchOutlined /> 
+        </div>
+      }
+      allowClear
+      onPressEnter={(e) => handleSearch(e.target.value)} // Giữ logic Enter
+    />
+  </AutoComplete>
+</div>
+{/* --- HẾT PHẦN TÌM KIẾM --- */}
           
           {/* ⭐️ THÊM: Icon chuông thông báo */}
           {isLoggedIn && (
@@ -321,6 +337,7 @@ const AppHeader = () => {
               onClick={handleLogout}
               type="primary"
               icon={<LogoutOutlined />}
+              className="header-logout-btn" // THÊM MỚI
             >
               Đăng xuất
             </Button>
@@ -329,6 +346,7 @@ const AppHeader = () => {
               onClick={() => navigate("/login")}
               type="primary"
               icon={<LoginOutlined />}
+              className="header-login-btn" // THÊM MỚI
             >
               Đăng nhập
             </Button>
