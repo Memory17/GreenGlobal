@@ -108,26 +108,18 @@ const Checkout = () => {
         allFormInfo.date = allFormInfo.date.toISOString();
       }
 
-      // 4. TẠO DỮ LIỆU ĐƠN HÀNG (THAY ĐỔI)
-      const newOrderData = {
-        items: Array.isArray(effectiveItems) ? [...effectiveItems] : [],
-        totals: {
-          total: total,
-          discount: discount,
-          shipping: deliveryFee,
-          subtotal: subtotal,
-        },
-        delivery: allFormInfo, // Thông tin giao hàng từ form
-        // Context sẽ tự động thêm: id, orderDate, status
-      };
-
       // 5. GỌI CẢ HAI CONTEXT (THÊM MỚI)
-      addOrderToHistory(newOrderData); // Lưu toàn bộ đơn hàng vào lịch sử
+      addOrderToHistory(effectiveItems, { total, discount, shipping: deliveryFee, subtotal }, allFormInfo); // ⭐ SỬA: Gọi với 3 tham số
       addConfirmingOrder();           // Tăng số đếm (badge)
 
       // 6. Lưu state tạm thời để hiển thị popup (giữ nguyên)
-  setOrderedItems(Array.isArray(effectiveItems) ? [...effectiveItems] : []);
-      setOrderTotals(newOrderData.totals);
+      setOrderedItems(Array.isArray(effectiveItems) ? [...effectiveItems] : []);
+      setOrderTotals({
+        total: total,
+        discount: discount,
+        shipping: deliveryFee,
+        subtotal: subtotal,
+      });
       setDeliveryInfo(allFormInfo);
 
       setShowSuccess(true); // Hiển thị popup thành công

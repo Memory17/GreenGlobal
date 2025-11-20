@@ -1,12 +1,33 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
+
+// --- KEY ĐỂ LƯU TRỮ TRONG LOCALSTORAGE ---
+const CART_STORAGE_KEY = 'shopping_cart_items';
+
+// --- HÀM HELPER ĐỂ LẤY GIỎ HÀNG TỪ LOCALSTORAGE ---
+const getInitialCartState = () => {
+  try {
+    const storedCart = localStorage.getItem(CART_STORAGE_KEY);
+    // Nếu có dữ liệu trong localStorage, parse nó, nếu không, trả về mảng rỗng
+    return storedCart ? JSON.parse(storedCart) : [];
+  } catch (error) {
+    console.error("Lỗi khi đọc giỏ hàng từ localStorage:", error);
+    // Nếu có lỗi (ví dụ dữ liệu bị hỏng), trả về mảng rỗng để tránh crash
+    return [];
+  }
+};
 
 // 1. Tạo Context
 const CartContext = createContext();
 
 // 2. Tạo Provider Component
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([]);
+  // ⭐ THAY ĐỔI 1: Khởi tạo state từ localStorage thay vì mảng rỗng
+  const [cartItems, setCartItems] = useState(getInitialCartState);
 
+  // ⭐ THAY ĐỔI 2: Sử dụng useEffect để lưu vào localStorage mỗi khi cartItems thay đổi
+  useEffect(() => {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems));
+  }, [cartItems]); // Hook này sẽ chạy mỗi khi `cartItems` có sự thay đổi
   // Hàm thêm sản phẩm vào giỏ (hỗ trợ quantity tuỳ chọn)
   const addToCart = (product, qty = 1) => {
     const quantityToAdd = Math.max(1, Number(qty) || 1);
@@ -77,4 +98,3 @@ export const CartProvider = ({ children }) => {
 export const useCart = () => {
   return useContext(CartContext);
 };
-

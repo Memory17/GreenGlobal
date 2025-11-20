@@ -25,6 +25,10 @@ const resources = {
       "search_results": "kết quả",
       "dark_mode_status": "Chế độ {{status}} đã được kích hoạt!",
       
+      "new_review": "Đánh giá mới",
+      "anonymous_user": "Người dùng ẩn danh",
+      "see_more": "xem thêm",
+      "no_new_reviews": "Không có đánh giá mới nào",
       // SIDE MENU
       "overview": "Tổng quan", "inventory": "Quản lý kho", "orders": "Đơn hàng",
       "staffs": "Nhân viên", "customers": "Khách hàng", "marketing": "Marketing & Khuyến mãi", "help": "Hỗ trợ",
@@ -289,6 +293,10 @@ const resources = {
       "search_results": "results",
       "dark_mode_status": "Dark mode {{status}} activated!",
       
+      "new_review": "New Reviews",
+      "anonymous_user": "Anonymous User",
+      "see_more": "see more",
+      "no_new_reviews": "No new reviews",
       // SIDE MENU
       "overview": "Overview", "inventory": "Inventory Management", "orders": "Orders",
       "staffs": "Staffs", "customers": "Customers", "marketing": "Marketing & Promotion", "help": "Support",
