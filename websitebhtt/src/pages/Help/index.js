@@ -15,7 +15,7 @@ import {
   DeleteOutlined, SaveOutlined, LineChartOutlined,
   EyeOutlined, LikeOutlined, MessageOutlined,
   AppstoreOutlined, BarsOutlined, PushpinOutlined // <-- (MỚI) Thêm icon cho 2 tính năng mới
-} from '@ant-design/icons';
+} from '@ant-design/icons'; // <-- (MỚI) Thêm icon cho 2 tính năng mới
 import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement,
@@ -25,6 +25,16 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, ChartTit
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
+// Small util: responsive width hook
+const useWindowWidth = () => {
+  const [width, setWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+  useEffect(() => {
+    const handler = () => setWidth(window.innerWidth);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
+  return width;
+};
 const { Search } = Input;
 const GRADIENT_BUTTON_STYLE = {
   background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -277,6 +287,9 @@ const TicketManagementTab = ({ onTicketsLoaded }) => {
   const pendingTicketsCount = allProcessedTickets.filter(t => t.status === 'Chờ Phản hồi').length;
   const totalHighPriority = allProcessedTickets.filter(t => t.priority === 'CAO').length;
 
+  const width = useWindowWidth();
+  const isMobile = width < 768;
+
   return (
     <>
       <Alert
@@ -287,52 +300,109 @@ const TicketManagementTab = ({ onTicketsLoaded }) => {
       />
 
       <Row gutter={16} style={{ marginBottom: 24 }}>
-        <Col span={6}>
-          <Card title="Ticket Mới" bordered={false} hoverable style={{ borderLeft: '5px solid #1890ff' }}>
-            <AlertOutlined style={{ fontSize: 24, color: '#1890ff' }} />
-            <span style={{ fontSize: 28, fontWeight: 'bold', marginLeft: 16 }}>{newTicketsCount}</span>
+          <Col xs={24} sm={12} md={6}>
+          <Card className="help-summary-card help-summary-card-mini" bordered={false} hoverable style={{ "--accent-color": '#1890ff' }}>
+            <div className="summary-inner">
+              <div className="summary-icon"><AlertOutlined /></div>
+              <div className="summary-number">{newTicketsCount}</div>
+              <div className="summary-progress"><div className="summary-progress-fill" style={{ width: `${Math.round((newTicketsCount / Math.max(1, Math.max(newTicketsCount, inProgressTicketsCount, pendingTicketsCount, totalHighPriority))) * 100)}%` }} /></div>
+              <div className="summary-label">Ticket Mới</div>
+            </div>
           </Card>
         </Col>
-        <Col span={6}>
-          <Card title="Đang Xử lý" bordered={false} hoverable style={{ borderLeft: '5px solid #faad14' }}>
-            <SolutionOutlined style={{ fontSize: 24, color: '#faad14' }} />
-            <span style={{ fontSize: 28, fontWeight: 'bold', marginLeft: 16 }}>{inProgressTicketsCount}</span>
+          <Col xs={24} sm={12} md={6}>
+          <Card className="help-summary-card help-summary-card-mini" bordered={false} hoverable style={{ "--accent-color": '#faad14' }}>
+            <div className="summary-inner">
+              <div className="summary-icon"><SolutionOutlined /></div>
+              <div className="summary-number">{inProgressTicketsCount}</div>
+              <div className="summary-progress"><div className="summary-progress-fill" style={{ width: `${Math.round((inProgressTicketsCount / Math.max(1, Math.max(newTicketsCount, inProgressTicketsCount, pendingTicketsCount, totalHighPriority))) * 100)}%` }} /></div>
+              <div className="summary-label">Đang Xử lý</div>
+            </div>
           </Card>
         </Col>
-        <Col span={6}>
-          <Card title="TB Phản hồi" bordered={false} hoverable style={{ borderLeft: '5px solid #52c41a' }}>
-            <ClockCircleOutlined style={{ fontSize: 24, color: '#52c41a' }} />
-            <span style={{ fontSize: 28, fontWeight: 'bold', marginLeft: 16 }}>{pendingTicketsCount}</span>
+          <Col xs={24} sm={12} md={6}>
+          <Card className="help-summary-card help-summary-card-mini" bordered={false} hoverable style={{ "--accent-color": '#52c41a' }}>
+            <div className="summary-inner">
+              <div className="summary-icon"><ClockCircleOutlined /></div>
+              <div className="summary-number">{pendingTicketsCount}</div>
+              <div className="summary-progress"><div className="summary-progress-fill" style={{ width: `${Math.round((pendingTicketsCount / Math.max(1, Math.max(newTicketsCount, inProgressTicketsCount, pendingTicketsCount, totalHighPriority))) * 100)}%` }} /></div>
+              <div className="summary-label">TB Phản hồi</div>
+            </div>
           </Card>
         </Col>
-        <Col span={6}>
-          <Card title="Khẩn cấp (Tổng)" bordered={false} hoverable style={{ borderLeft: '5px solid #f5222d' }}>
-            <AlertOutlined style={{ fontSize: 24, color: '#f5222d' }} />
-            <span style={{ fontSize: 28, fontWeight: 'bold', marginLeft: 16 }}>{totalHighPriority}</span>
+          <Col xs={24} sm={12} md={6}>
+          <Card className="help-summary-card help-summary-card-mini" bordered={false} hoverable style={{ "--accent-color": '#f5222d' }}>
+            <div className="summary-inner">
+              <div className="summary-icon"><AlertOutlined /></div>
+              <div className="summary-number">{totalHighPriority}</div>
+              <div className="summary-progress"><div className="summary-progress-fill" style={{ width: `${Math.round((totalHighPriority / Math.max(1, Math.max(newTicketsCount, inProgressTicketsCount, pendingTicketsCount, totalHighPriority))) * 100)}%` }} /></div>
+              <div className="summary-label">Khẩn cấp</div>
+            </div>
           </Card>
         </Col>
       </Row>
 
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-        <Space>
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsCreateModalVisible(true)} style={GRADIENT_BUTTON_STYLE}>{t('help_btn_create_manual')}</Button>
-          <Button icon={<ReloadOutlined />} onClick={fetchTickets} loading={loading}>{t('help_btn_reload_rules')}</Button>
-        </Space>
-        <Search
-          placeholder={t('help_search_ticket_placeholder')}
-          onSearch={setSearchKeyword}
-          style={{ width: 300 }}
-          enterButton
-        />
+          <Space>
+            <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsCreateModalVisible(true)} style={GRADIENT_BUTTON_STYLE}>{t('help_btn_create_manual')}</Button>
+            <Button icon={<ReloadOutlined />} onClick={fetchTickets} loading={loading}>{t('help_btn_reload_rules')}</Button>
+          </Space>
+          <div style={{ flex: isMobile ? '1 1 100%' : '0 1 auto', display: 'flex', justifyContent: isMobile ? 'stretch' : 'flex-end' }}>
+            <Search
+              placeholder={t('help_search_ticket_placeholder')}
+              onSearch={setSearchKeyword}
+              style={{ width: isMobile ? '100%' : 300 }}
+              enterButton
+            />
+          </div>
       </div>
-      <Table
-        columns={columns}
-        dataSource={tickets}
-        loading={loading}
-        pagination={{ pageSize: 10 }}
-        scroll={{ x: 'max-content' }}
-        onChange={handleTableChange}
-      />
+      {isMobile ? (
+        <List
+          dataSource={tickets}
+          split={false}
+          renderItem={(tRecord) => (
+            <List.Item>
+              <Card className="help-ticket-card" style={{ width: '100%' }}>
+                <div className="ticket-meta" style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                  <div className="ticket-left" style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    <div className="ticket-top"><Text strong className="ticket-id">{tRecord.id}</Text> <Text type="secondary">{tRecord.customer}</Text></div>
+                    <div className="ticket-title" style={{ fontWeight: 600 }}>{tRecord.title}</div>
+                    <div className="ticket-tags" style={{ marginTop: 6 }}>
+                      <Space size="small">{getStatusTag(tRecord.status, t)}{getPriorityTag(tRecord.priority, t)}</Space>
+                    </div>
+                  </div>
+                  <div className="ticket-right" style={{ marginLeft: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
+                    <Text type="secondary" style={{ whiteSpace: 'nowrap', fontSize: 12 }}>{`${Math.floor((Date.now() - tRecord.updated) / 60000)} phút`}</Text>
+                    <div className="ticket-actions">
+                      <Button type="text" size="small" shape="circle" icon={<EyeOutlined />} onClick={() => showDetailModal(tRecord)} />
+                      <Button type="text" size="small" shape="circle" icon={<EditOutlined />} onClick={() => showDetailModal(tRecord)} />
+                      <Button type="text" size="small" shape="circle" icon={<DeleteOutlined />} danger onClick={async () => {
+                        try {
+                          await updateSupportTicket(tRecord.key || tRecord.id, { status: 'Đã Đóng' });
+                          message.success(t('help_msg_ticket_closed', { id: tRecord.id }));
+                          fetchTickets();
+                        } catch (e) {
+                          console.error('Close ticket failed', e);
+                          message.error(t('help_msg_ticket_close_failed'));
+                        }
+                      }} />
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </List.Item>
+          )}
+        />
+      ) : (
+        <Table
+          columns={columns}
+          dataSource={tickets}
+          loading={loading}
+          pagination={{ pageSize: 10 }}
+          scroll={{ x: 'max-content' }}
+          onChange={handleTableChange}
+        />
+      )}
 
       <Modal
         title={
@@ -349,7 +419,7 @@ const TicketManagementTab = ({ onTicketsLoaded }) => {
           setIsCreateModalVisible(false);
           createTicketForm.resetFields();
         }}
-        width={700}
+        width={isMobile ? '94%' : 700}
         okText={t('help_modal_create_ticket_ok')}
         cancelText={t('help_modal_create_ticket_cancel')}
         okButtonProps={{ icon: <PlusOutlined /> }}
@@ -544,7 +614,7 @@ const TicketManagementTab = ({ onTicketsLoaded }) => {
             message.error(t('help_msg_ticket_update_failed'));
           }
         }}
-        width={720}
+        width={isMobile ? '94%' : 720}
       >
         {selectedTicket ? (
           <Form form={detailForm} layout="vertical" initialValues={{
@@ -1235,6 +1305,8 @@ const ReportsAnalyticsTab = ({ allTickets }) => {
 const AutomationSettingsTab = () => {
   const { t } = useTranslation();
   const [automationRules, setAutomationRules] = useState(mockAutomationRules);
+  const width = useWindowWidth();
+  const isMobile = width < 768;
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
   const [editingRule, setEditingRule] = useState(null);
@@ -1315,18 +1387,21 @@ const AutomationSettingsTab = () => {
       dataIndex: 'name',
       key: 'name',
       width: 200,
+      ellipsis: true,
       render: (text) => <Text strong>{text}</Text>
     },
     {
       title: t('help_automation_col_condition'),
       dataIndex: 'condition',
       key: 'condition',
+      ellipsis: true,
       render: (text) => <Tag color="blue">{text}</Tag>
     },
     {
       title: t('help_automation_col_action'),
       dataIndex: 'action',
       key: 'action',
+      ellipsis: true,
       render: (text) => <Tag color="green">{text}</Tag>
     },
     {
@@ -1386,11 +1461,40 @@ const AutomationSettingsTab = () => {
           {t('help_automation_btn_create_new')}
         </Button>
       </div>
-      <Table
-        columns={rulesColumns}
-        dataSource={automationRules}
-        pagination={false}
-      />
+      {isMobile ? (
+        <List
+          dataSource={automationRules}
+          renderItem={(rule) => (
+            <List.Item>
+              <Card className="automation-rule-card">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontWeight: 700, marginBottom: 6, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{rule.name}</div>
+                    <Space size="small" wrap>
+                      <Tag color="blue" style={{ fontSize: 12, whiteSpace: 'nowrap' }}>{rule.condition}</Tag>
+                      <Tag color="green" style={{ fontSize: 12, whiteSpace: 'nowrap' }}>{rule.action}</Tag>
+                    </Space>
+                  </div>
+                  <div style={{ marginLeft: 12 }}>
+                    <Space>
+                      <Switch checked={rule.enabled} onChange={() => handleToggleStatus(rule.key)} />
+                      <Button type="text" size="small" icon={<EditOutlined />} onClick={() => handleEditRule(rule)} />
+                      <Button type="text" size="small" danger icon={<DeleteOutlined />} onClick={() => handleDeleteRule(rule.key)} />
+                    </Space>
+                  </div>
+                </div>
+              </Card>
+            </List.Item>
+          )}
+        />
+      ) : (
+        <Table
+          columns={rulesColumns}
+          dataSource={automationRules}
+          pagination={false}
+          scroll={{ x: 'max-content' }}
+        />
+      )}
       <Modal
         title={
           <Space>
@@ -1573,6 +1677,8 @@ const AutomationSettingsTab = () => {
 
 const SupportPage = () => {
   const { t } = useTranslation();
+  const width = useWindowWidth();
+  const isMobile = width < 768;
 
   const [allTicketsData, setAllTicketsData] = useState([]);
 
@@ -1604,8 +1710,8 @@ const SupportPage = () => {
   ];
   return (
     <Layout style={{ padding: '0 24px 24px' }}>
-      <Title level={2} style={{ margin: '16px 0' }}>
-        🔥 {t('help_title')}
+      <Title level={isMobile ? 4 : 2} style={{ margin: '16px 0' }}>
+        {isMobile ? t('help_title') : `🔥 ${t('help_title')}`}
       </Title>
       <Content
         style={{
@@ -1614,12 +1720,14 @@ const SupportPage = () => {
           minHeight: 280,
           background: '#fff',
           borderRadius: 8,
+          paddingBottom: isMobile ? 120 : 24, // avoid overlap with floating actions on mobile
+          paddingRight: isMobile ? 22 : 24,
         }}
       >
         <Tabs
           defaultActiveKey="1"
           items={items}
-          size="large"
+          size={isMobile ? 'small' : 'large'}
         />
       </Content>
     </Layout>

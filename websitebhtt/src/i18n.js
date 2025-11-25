@@ -120,6 +120,7 @@ const resources = {
       "cus_timeline_account_registered": "Khách hàng đăng ký tài khoản", "cus_timeline_order_success": "Đặt hàng thành công",
       "cus_timeline_value": "Giá trị", "cus_timeline_live_chat_request": "Yêu cầu hỗ trợ qua Live Chat (Chờ xử lý)",
       "today": "Hôm nay", "cus_report_filename": "bao_cao_khach_hang",
+      "cus_pagination_total": "Hiển thị {{start}}-{{end}} / {{total}} khách hàng",
 
       // PROMOTION PAGE
       "promo_title": "Quản lý Marketing & Khuyến mãi", "promo_tab_campaigns": "Chiến dịch Khuyến mãi",
@@ -388,6 +389,7 @@ const resources = {
       "cus_timeline_account_registered": "Customer registered account", "cus_timeline_order_success": "Order successful",
       "cus_timeline_value": "Value", "cus_timeline_live_chat_request": "Live Chat support request (Pending)",
       "today": "Today", "cus_report_filename": "customer_report",
+      "cus_pagination_total": "Showing {{start}}-{{end}} of {{total}} customers",
       
       // PROMOTION PAGE
       "promo_title": "Marketing & Promotion Management", "promo_tab_campaigns": "Promo Campaigns",

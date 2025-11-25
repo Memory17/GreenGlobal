@@ -191,10 +191,8 @@
 /* * 2. Hiệu ứng "Siêu Đỉnh" khi Focus (Bấm vào)
  * Áp dụng cho cả hai thanh search
  */
-.header-search:focus-within,
-.drawer-search:focus-within {
+.header-search:focus-within {
   transform: translateX(-80px);
-
   width: 310px !important;
   background: #ffffff; /* Chuyển nền sang trắng khi gõ */
   border-color: #1677ff; /* Màu xanh chủ đạo của Antd */
@@ -202,6 +200,16 @@
   
   /* Hiệu ứng "phát sáng" (glow) hiện đại và bắt mắt */
   box-shadow: 0 4px 12px rgba(22, 119, 255, 0.2);
+}
+
+/* Không dịch chuyển vị trí search trong Drawer (mobile) để tránh bị che bởi header / close button */
+.drawer-search:focus-within {
+  transform: none !important;
+  width: 100% !important;
+  background: #ffffff; /* Chuyển nền sang trắng khi gõ */
+  border-color: #1677ff; /* Màu xanh chủ đạo của Antd */
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(22, 119, 255, 0.12);
 }
 
 /* * 3. Tùy chỉnh ô Input bên trong

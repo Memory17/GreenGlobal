@@ -1,14 +1,14 @@
 // Tên file: src/pages/Login.js
 // ĐÃ CẬP NHẬT: Lưu currentUser vào localStorage
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Typography, Form, Input, Button, Row, Col, message,
 } from "antd";
 import {
   GoogleOutlined, LoginOutlined, FacebookFilled,
 } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { loginUser } from "../data/authService";
 import "../style/Login.css"; 
 import { useAuth } from "../context/AuthContext";
@@ -31,6 +31,14 @@ const { Title, Text, Link } = Typography;
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    // If redirected here because admin required, show a warning
+    if (location.state?.reason === 'admin_required') {
+      message.warning('Vui lòng đăng nhập bằng tài khoản quản trị để truy cập trang quản trị.');
+    }
+  }, [location.state]);
   const [loading, setLoading] = useState(false);
   const { login } = useAuth(); 
 
@@ -62,11 +70,9 @@ const Login = () => {
       // userData lúc này đã chứa avatar tùy chỉnh (nếu có)
       login(userData.token, userData); 
 
-      if (userData.role === 'admin') {
-        navigate("/admin");
-      } else {
-        navigate("/");
-      }
+      // If location.state.from exists, redirect there (e.g. admin path)
+      const redirectTo = location.state?.from || (userData.role === 'admin' ? '/admin' : '/');
+      navigate(redirectTo);
 
     } catch (error) {
       message.error(error.message || "Đăng nhập thất bại. Vui lòng thử lại.");

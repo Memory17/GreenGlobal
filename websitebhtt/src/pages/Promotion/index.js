@@ -55,8 +55,20 @@ const formatLoyaltyCurrency = (amount, i18n, t) => {
 // --- 2.1. Quản lý Chiến dịch Khuyến mãi (Tab 1) (Giữ nguyên) ---
 // (Component CampaignsManagement giữ nguyên)
 
+const useWindowWidth = () => {
+    const [width, setWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+    useEffect(() => {
+        const handler = () => setWidth(window.innerWidth);
+        window.addEventListener('resize', handler);
+        return () => window.removeEventListener('resize', handler);
+    }, []);
+    return width;
+};
+
 const CampaignsManagement = () => {
     const { t, i18n } = useTranslation();
+    const width = useWindowWidth();
+    const isMobile = width < 768;
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [editingRecord, setEditingRecord] = useState(null);
     const [form] = Form.useForm();
@@ -190,13 +202,42 @@ const CampaignsManagement = () => {
                 </Button>
             }
         >
-            <Table 
-                columns={columns} 
-                dataSource={data} 
-                rowKey="key" 
-                pagination={{ pageSize: 5 }} 
-                className="professional-coupon-table" 
-            />
+            {isMobile ? (
+                <List
+                    dataSource={data}
+                    split={false}
+                    renderItem={(item) => (
+                        <List.Item>
+                            <Card className="promo-card-mobile" style={{ width: '100%' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <div style={{ flex: 1 }}>
+                                        <div style={{ fontWeight: 700 }}>{i18n.language === 'en' ? item.name_en : item.name}</div>
+                                        <div style={{ color: '#888', fontSize: 12 }}>{item.type_vi || item.type}</div>
+                                        <div style={{ color: '#aaa', fontSize: 12 }}>{item.time[0]} {t('promo_text_to')} {item.time[1]}</div>
+                                    </div>
+                                    <div style={{ marginLeft: 12, textAlign: 'right' }}>
+                                        <Space direction="vertical" size={6}>
+                                            <Switch checked={item.status === 'active'} checkedChildren={t('promo_status_running')} unCheckedChildren={t('promo_status_paused')} />
+                                            <Space>
+                                                <Button type="text" icon={<EditOutlined />} size="small" onClick={() => handleEdit(item)} />
+                                                <Button type="text" danger icon={<DeleteOutlined />} size="small" />
+                                            </Space>
+                                        </Space>
+                                    </div>
+                                </div>
+                            </Card>
+                        </List.Item>
+                    )}
+                />
+            ) : (
+                <Table 
+                    columns={columns} 
+                    dataSource={data} 
+                    rowKey="key" 
+                    pagination={{ pageSize: 5 }} 
+                    className="professional-coupon-table" 
+                />
+            )}
             
             <Modal
                 title={editingRecord ? t('promo_modal_edit') : t('promo_modal_create')}
@@ -272,6 +313,40 @@ const CouponsTableLogic = ({ t, coupons, loading, handleEdit, handleDelete }) =>
         },
     ];
 
+    const width = useWindowWidth();
+    const isMobile = width < 768;
+
+    if (isMobile) {
+        return (
+            <List
+                dataSource={coupons}
+                split={false}
+                renderItem={(record) => (
+                    <List.Item>
+                        <Card className="promo-card-mobile" style={{ width: '100%' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div>
+                                    <div style={{ fontWeight: 700 }}><Tag color="orange">{record.code}</Tag></div>
+                                    <div style={{ color: '#888', fontSize: 12 }}>{record.value}</div>
+                                    <div style={{ color: '#aaa', fontSize: 12 }}>{record.expireDate}</div>
+                                </div>
+                                <div>
+                                    <Space direction="vertical">
+                                        <Progress percent={Math.floor(((record.used || 0) / (record.limit || 1)) * 100)} size="small" />
+                                        <Space>
+                                            <Button type="text" icon={<EditOutlined />} size="small" onClick={() => handleEdit(record, 'coupon')} />
+                                            <Button type="text" danger icon={<DeleteOutlined />} size="small" onClick={() => handleDelete(record.key, 'coupon')} />
+                                        </Space>
+                                    </Space>
+                                </div>
+                            </div>
+                        </Card>
+                    </List.Item>
+                )}
+            />
+        );
+    }
+
     return (
         <Table 
             columns={columns} 
@@ -318,6 +393,36 @@ const ShippingTableLogic = ({ t, rules, loading, handleEdit, handleDelete }) => 
             )
         },
     ];
+    const width = useWindowWidth();
+    const isMobile = width < 768;
+    if (isMobile) {
+        return (
+            <List
+                dataSource={rules}
+                split={false}
+                renderItem={(record) => (
+                    <List.Item>
+                        <Card className="promo-card-mobile" style={{ width: '100%' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div style={{ flex: 1 }}>
+                                    <div style={{ fontWeight: 700 }}>{record.ruleName}</div>
+                                    <div style={{ color: '#888', fontSize: 12 }}>{'Đơn hàng tối thiểu'} : {record.minOrderValueDisplay || record.minOrderValue}</div>
+                                    <div style={{ color: '#aaa', fontSize: 12 }}>{record.discountType}</div>
+                                </div>
+                                <div>
+                                    <Space>
+                                        <Button type="text" icon={<EditOutlined />} size="small" onClick={() => handleEdit(record, 'shipping')} />
+                                        <Button type="text" danger icon={<DeleteOutlined />} size="small" onClick={() => handleDelete(record.key, 'shipping')} />
+                                    </Space>
+                                </div>
+                            </div>
+                        </Card>
+                    </List.Item>
+                )}
+            />
+        );
+    }
+
     return (
         <Table 
             columns={columns} 
@@ -646,11 +751,14 @@ const LoyaltyManagement = () => {
         )},
     ];
 
+    const width = useWindowWidth();
+    const isMobile = width < 768;
+
     return (
         <Space direction="vertical" style={{ width: '100%' }} size="large">
             <Card title={t('promo_card_loyalty_config')}>
                 <List
-                    grid={{ gutter: 16, column: 3 }}
+                    grid={{ gutter: 16, column: isMobile ? 1 : 3 }}
                     dataSource={loyaltyTiers}
                     renderItem={(item) => (
                         <List.Item>
@@ -737,6 +845,27 @@ const PromotionPage = () => {
                     display: inline-block;
                     margin-bottom: 0 !important;
                 }
+                /* smaller title and icon hidden on mobile for better layout */
+                @media (max-width: 576px) {
+                    .promotion-title { font-size: 18px !important; font-weight: 700; }
+                    .promotion-alert-icon { display: none !important; }
+                    .promotion-card-title { font-size: 14px !important; }
+                    .ant-card .ant-card-meta-title { font-size: 14px !important; }
+                    .ant-card .ant-card-meta-description { font-size: 12px !important; }
+                }
+
+                /* Tabs: use horizontal scrolling nav on small screens */
+                .ant-tabs-nav-list { gap: 8px; }
+                .ant-tabs-nav-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+                .ant-tabs-tab {
+                    min-width: 72px;
+                    padding: 6px 10px;
+                    border-radius: 10px;
+                }
+
+                /* Adjust card and table spacing */
+                .ant-card { margin-bottom: 12px; }
+                .ant-table-wrapper { width: 100%; }
                 
                 /* CSS TÙY CHỈNH CHO BẢNG (áp dụng cho tất cả bảng) */
                 .professional-coupon-table .ant-table-thead > tr > th {
@@ -750,6 +879,28 @@ const PromotionPage = () => {
                 }
                 .professional-coupon-table .ant-table-tbody td:last-child {
                     text-align: center !important;
+                }
+                .professional-coupon-table {
+                    width: 100%;
+                    overflow-x: auto;
+                    -webkit-overflow-scrolling: touch;
+                }
+                /* Make the table responsive: allow horizontal scroll but keep neat visual */
+                .professional-coupon-table .ant-table {
+                    min-width: 560px; /* allow comfortable mobile view but still can scroll */
+                }
+                /* Mobile card used when we switch to List view */
+                .promo-card-mobile {
+                    border-radius: 10px;
+                    padding: 10px;
+                    box-shadow: 0 6px 16px rgba(15, 23, 36, 0.06);
+                    transition: transform 0.2s ease, box-shadow 0.2s ease;
+                    border: 1px solid rgba(0,0,0,0.04);
+                }
+                .promo-card-mobile:hover { transform: translateY(-6px); box-shadow: 0 10px 30px rgba(15, 23, 36, 0.08); }
+                @media (max-width: 768px) {
+                    .PageContent .ant-card { margin: 0 8px; }
+                    .promo-card-mobile { padding: 10px; }
                 }
                 `}
             </style>

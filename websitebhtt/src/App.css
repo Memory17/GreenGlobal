@@ -62,6 +62,20 @@ body {
   flex-shrink: 0;
 }
 
+/* Menu toggle button (Hamburger) visible on mobile only */
+.header-menu-toggle { display: none; }
+.header-more-toggle { display: none; }
+.header-search-toggle { display: none; }
+.header-hide-on-mobile { display: inline-flex; }
+.header-avatar { display: inline-flex; }
+@media (max-width: 576px) {
+  .header-menu-toggle { display: inline-flex !important; width: 40px; height: 40px; }
+  .header-more-toggle { display: inline-flex !important; width: 40px; height: 40px; }
+  .header-search-toggle { display: inline-flex !important; width: 40px; height: 40px; }
+  .header-hide-on-mobile { display: none !important; }
+  .header-avatar { display: inline-flex !important; }
+}
+
 .AppHeader .header-center-search {
   flex: 1 1 auto;
   max-width: 500px;
@@ -95,7 +109,7 @@ body {
 /* --- FOOTER, SIDEMENU VÀ PAGE CONTENT --- */
 /* ========================================================= */
 .AppFooter {
-  height: 50px;
+  min-height: 50px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -108,8 +122,13 @@ body {
   bottom: 0;
   left: 0;
   width: 100%;
-  z-index: 1000;
+  z-index: 1200; /* bring footer above mobile overlay and side menu */
   box-sizing: border-box;
+}
+
+/* Ensure modality (modals/drawers) stacks above ChatBubble & footer (prevent footer covering forms) */
+.ant-modal-root, .ant-modal-wrap, .ant-modal, .ant-modal-mask, .ant-drawer, .ant-drawer-mask {
+  z-index: 4000 !important;
 }
 
 /* ✅ FIX CHÍNH: SideMenuAndPageContent sử dụng flexbox */
@@ -130,6 +149,10 @@ body {
   transition: width 0.3s ease;
   flex-shrink: 0;
   background: #001529;
+  /* Ensure the sidebar occupies full vertical height of the page content area
+     (leaving room for header and footer which are fixed). Use calc so the
+     side menu reaches the bottom. */
+  min-height: calc(100vh - 100px);
 }
 
 .SideMenu::-webkit-scrollbar {
@@ -1246,10 +1269,14 @@ padding-right: "20px"; */
 .PageContent {
   flex: 1;
   padding: 20px 24px;
+  /* Always leave room for fixed footer so inline controls and bottom-focused forms
+     are not covered. This uses a CSS variable set by ChatBubble; default to 56px. */
+  padding-bottom: calc(var(--app-footer-height, 56px) + 16px);
   box-sizing: border-box;
   background: linear-gradient(90deg, #fbfbfd 0%, #f3f8fc 100%);
   overflow-y: auto;
   overflow-x: hidden;
+  transition: transform 0.28s ease, margin-left 0.28s ease;
 }
 .PageContent > * { width: 100%; }
 .PageContent .ant-table { width: 100%; }
@@ -1259,6 +1286,7 @@ padding-right: "20px"; */
   display: inline-block;
   background: linear-gradient(270deg, #ff4d4f, #ff7a45, #ffc53d, #73d13d, #36cfc9, #597ef7, #9254de);
   background-size: 1400% 1400%;
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: gradientShift 8s ease infinite;
@@ -1283,7 +1311,7 @@ padding-right: "20px"; */
 /* --- RESPONSIVE --- */
 @media (max-width: 768px) {
   .AppHeader { flex-wrap: nowrap; padding: 3px 15px; min-width: 100%; }
-  .AppHeader .header-center-search { flex: 1 1 auto; max-width: 500px; margin: 0 15px; }
+  .AppHeader .header-center-search { flex: 1 1 auto; max-width: 350px; margin: 0 12px; }
   .App { padding-top: 50px; }
   .SideMenuAndPageContent { overflow: hidden; }
   .SideMenu { width: 80px; }
@@ -1293,9 +1321,38 @@ padding-right: "20px"; */
 }
 @media (max-width: 576px) {
   .AppHeader .header-center-search { display: none; }
-  .SideMenu { display: none !important; }
+  .AppHeader .header-left img { height: 36px !important; }
+  .AppHeader .header-right { gap: 6px; }
+  .AppHeader .header-left { gap: 6px; }
+  /* On mobile we hide the sidebar by default using transform so PageContent still occupies the width.
+     When admin toggles the side menu (isSideMenuOpen), the 'mobile-open' class will slide it in.
+     We avoid `display: none` because then the DOM isn't available for overlay toggles. */
+  .SideMenu {
+    display: block !important;
+    position: fixed;
+    left: 0;
+    top: 50px; /* height of admin header */
+    /* Extend to bottom of viewport so the menu reaches the end of the screen
+       and will sit under the footer (footer has higher z-index). Add padding
+       to keep the collapse button visible above the footer. */
+    bottom: 0;
+    height: auto; /* allow top+bottom to control height */
+    width: 260px;
+    padding-bottom: 56px; /* leave space for the footer and mobile fab */
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 1100; /* below footer (1200) */
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+    background: #001529; /* explicit bg to ensure visibility */
+  }
+  .SideMenu.mobile-open { transform: translateX(0%) !important; }
+  /* shift PageContent when mobile menu opens so it doesn't stay behind the overlay */
+  .SideMenuAndPageContent.mobile-open .PageContent { transform: translateX(260px); }
+  /* if collapsed state (icon-only menu), shift less */
+  .SideMenuAndPageContent.mobile-open.collapsed .PageContent { transform: translateX(80px); }
   .PageContent { padding: 10px; }
   .AppFooter { justify-content: space-around; gap: 10px; padding: 8px 5px; }
+  .App { padding-bottom: 80px; }
   .AppHeader .header-left img { height: 38px !important; }
   .AppHeader .header-right { gap: 8px; }
   .PageContent .ant-table-wrapper { overflow-x: auto; }
@@ -1365,3 +1422,220 @@ padding-right: "20px"; */
   border-color: #777 !important;
   color: #fff !important;
 }
+
+/* Mobile overlay for SideMenu (only used on small screens when menu is open) */
+.menu-overlay { display: none; }
+@media (max-width: 576px) {
+  .menu-overlay {
+    display: block !important;
+    position: fixed;
+    left: 0;
+    top: 50px;
+    bottom: 0;
+    width: 100vw;
+    height: auto; /* height anchored by top/bottom so it won't cover footer */
+    background: rgba(0,0,0,0.35);
+    z-index: 1090; /* below side menu (1100) and below footer (1200) */
+    transition: opacity 0.2s ease;
+    opacity: 0; /* hidden by default */
+    pointer-events: none;
+  }
+  .menu-overlay.open { opacity: 1; pointer-events: auto; }
+}
+
+/* Tablet behaviour (between 577px and 768px): stack SideMenu above content and make content full width */
+@media (min-width: 577px) and (max-width: 768px) {
+  .SideMenuAndPageContent {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .SideMenu {
+    width: 100%;
+    height: auto;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+  .PageContent {
+    width: 100%;
+    min-width: 0; /* prevent children overflow */
+    padding: 8px 12px;
+  }
+  .AppHeader { padding-left: 12px; padding-right: 12px; }
+  .AppFooter { padding-left: 12px; padding-right: 12px; }
+}
+
+/* Reduce table paddings and font sizes on small screens for better layout */
+@media (max-width: 576px) {
+  .professional-coupon-table .ant-table-cell {
+    padding: 8px 6px;
+    font-size: 13px;
+  }
+  .professional-coupon-table .ant-table-thead > tr > th {
+    font-size: 13px;
+    padding: 8px 6px;
+  }
+}
+
+/* Help page mobile card tweaks */
+.help-card-mobile {
+  border-radius: 12px;
+  box-shadow: 0 10px 20px rgba(15,23,36,0.06);
+  border: 1px solid rgba(0,0,0,0.04);
+  padding: 12px !important;
+}
+.help-card-mobile .ant-btn {
+  padding: 6px 8px;
+}
+@media (max-width: 576px) {
+  .help-card-mobile { padding: 10px !important; }
+  .help-card-mobile .ant-typography { font-size: 14px; }
+}
+
+/* Summary cards on admin help dashboard */
+.help-summary-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 12px;
+  padding: 10px 14px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(250,250,250,0.98));
+  box-shadow: 0 8px 22px rgba(16,24,40,0.04);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.help-summary-card .ant-card-body {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.help-summary-card .ant-card-body > .anticon { font-size: 26px; }
+.help-summary-card .ant-card-meta-title, .help-summary-card .ant-card-meta-description { margin: 0; }
+@media (max-width: 576px) {
+  .help-summary-card { justify-content: space-between; padding: 10px; }
+  .help-summary-card .ant-card-body { flex-direction: column; align-items: flex-start; }
+  .help-summary-card .ant-card-meta-title { font-size: 16px; }
+}
+
+/* Smaller / mini style for the summary cards */
+.help-summary-card-mini {
+  padding: 10px 12px;
+  min-height: 64px;
+  border-radius: 10px;
+  position: relative;
+  overflow: visible;
+  background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(248,249,250,0.95));
+  box-shadow: 0 6px 20px rgba(16,24,40,0.06);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.help-summary-card-mini:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(16,24,40,0.08); }
+.help-summary-card-mini::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 56%;
+  border-radius: 4px;
+  background: var(--accent-color, #1890ff);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+.help-summary-card-mini .summary-inner { display:flex; flex-direction: column; align-items: center; gap:6px; margin-left: 18px; }
+.help-summary-card-mini .summary-icon { font-size: 18px; border-radius: 50%; padding: 6px; background: rgba(0,0,0,0.04); width: 44px; height: 44px; display:flex; align-items:center; justify-content:center; color: var(--accent-color, #1890ff); background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(255,255,255,0.9)); border: 1px solid rgba(0,0,0,0.04); }
+.help-summary-card-mini .summary-number { font-size: 16px; font-weight: 700; color: #111827; }
+.help-summary-card-mini .summary-number { animation: popIn 0.5s ease; }
+.summary-number-muted { font-size: 12px; color: rgba(0,0,0,0.6); }
+
+/* subtle icon accent glow */
+.help-summary-card-mini .summary-icon::after {
+  content: '';
+  position: absolute;
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  filter: blur(8px);
+  opacity: 0.6;
+  z-index: 0;
+  transform: translate(0, 0);
+  background: linear-gradient(90deg, rgba(255,255,255,0.8), rgba(255,255,255,0.9));
+}
+.help-summary-card-mini .summary-icon { position: relative; z-index: 10; }
+
+/* progress indicator under the number */
+.summary-progress { width: 100%; height: 5px; border-radius: 6px; background: rgba(0,0,0,0.05); margin-top:8px; overflow: hidden; }
+.summary-progress > .summary-progress-fill { height: 100%; width: 40%; background: linear-gradient(90deg, rgba(255,255,255,0.5), rgba(255,255,255,0.2)), var(--accent-color, #1890ff); box-shadow: 0 2px 10px rgba(0,0,0,0.06); border-radius: 6px; transition: width 0.45s cubic-bezier(.25,.9,.35,1); }
+
+/* Nice micro animation when card hovered */
+.help-summary-card-mini:hover .summary-progress > .summary-progress-fill { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(16,24,40,0.08); }
+
+@keyframes popIn {
+  0% { transform: scale(0.86); opacity: 0; }
+  60% { transform: scale(1.03); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+.help-summary-card-mini .summary-label { color: rgba(0,0,0,0.65); font-size: 12px; }
+
+.help-summary-card .ant-card-meta-title { font-weight: 700; font-size: 15px; }
+.help-summary-card .ant-card-meta-description { color: rgba(0,0,0,0.55); font-size: 13px; }
+
+/* Desktop card hover - subtle lift */
+.help-summary-card:hover { transform: translateY(-6px); box-shadow: 0 16px 46px rgba(16,24,40,0.08); }
+
+@media (max-width: 576px) {
+  .help-summary-card-mini { min-height: 72px; padding: 12px; }
+  .help-summary-card-mini::before { left: 12px; height: 48%; width: 5px; }
+  .help-summary-card-mini .summary-inner { margin-left: 22px; }
+}
+
+/* Ticket card compact style */
+.help-ticket-card {
+  border-radius: 12px;
+  padding: 12px !important;
+  box-shadow: 0 8px 22px rgba(15, 23, 36, 0.06);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  overflow: hidden; /* keep content tidy */
+}
+.help-ticket-card:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(15,23,36,0.08); }
+.help-ticket-card .ticket-meta .ticket-left .ticket-id { color:#222; font-size: 14px; }
+.help-ticket-card .ticket-meta .ticket-left .ticket-title { font-size: 14px; }
+.help-ticket-card .ticket-meta .ticket-left .ticket-title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+.help-ticket-card .ticket-meta .ticket-right .ticket-actions .ant-btn { width: 32px; height: 32px; padding: 0; display:inline-flex; align-items:center; justify-content:center; border-radius: 50%; }
+.help-ticket-card .ticket-meta .ticket-right .ticket-actions .ant-btn .anticon { font-size: 14px; }
+.help-ticket-card .ticket-meta .ticket-right .ticket-actions .ant-btn.danger { background: rgba(255,77,79,0.06); }
+
+@media (max-width: 576px) {
+  .help-ticket-card { padding: 10px !important; }
+  .help-ticket-card .ticket-meta .ticket-left .ticket-title { font-size: 13px; }
+  .help-ticket-card .ticket-meta .ticket-right .ticket-actions .ant-btn { width:28px; height:28px; }
+}
+
+/* Tabs responsiveness globally */
+.ant-tabs-nav-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.ant-tabs-tab { min-width: 72px; padding: 6px 10px; border-radius: 10px; white-space: nowrap; }
+.ant-tabs-nav-list { gap: 8px; }
+
+/* Small title display for Help & Promotion pages */
+@media (max-width: 576px) {
+  .page-content h2, .page-content h3, .page-content h4, .page-content h1 { font-size: 18px; }
+}
+
+/* Automation rules card mobile style */
+.automation-rule-card {
+  padding: 12px !important;
+  border-radius: 12px;
+  box-shadow: 0 10px 20px rgba(15,23,36,0.06);
+  border: 1px solid rgba(0,0,0,0.04);
+}
+.automation-rule-card .ant-tag { max-width: 160px; text-overflow: ellipsis; overflow: hidden; }
+.automation-rule-card .ant-tag { white-space: normal; display: inline-block; max-width: calc(100% - 60px); }
+.automation-rule-card .ant-tag + .ant-tag { margin-left: 8px; }
+.automation-rule-card .ant-btn { padding: 6px; }
+
+/* Generic fix: prevent flex children overflow in compact cards */
+.ticket-meta, .summary-inner, .automation-rule-card { min-width: 0; }
+.ticket-meta > div, .summary-inner > div, .automation-rule-card > div { min-width: 0; }

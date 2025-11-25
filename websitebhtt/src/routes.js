@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
@@ -52,6 +52,18 @@ function AdminLayout({ children }) {
   );
 }
 
+// ============ Middleware: Admin Guard ============
+import { useAuth } from "./context/AuthContext";
+
+function RequireAdminAuth({ children }) {
+  const { isLoggedIn, currentUser } = useAuth();
+  // If not logged in or not an admin, redirect to login
+  if (!isLoggedIn || currentUser?.role !== "admin") {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+}
+
 // ============ Định tuyến ============
 function AppRoutes() {
   return (
@@ -85,13 +97,15 @@ function AppRoutes() {
         <Route
           path="/admin/*"
           element={
-            <AdminLayout>
-              <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="products" element={<Inventory />} />
-                <Route path="messages" element={<Messages />} />
-              </Routes>
-            </AdminLayout>
+            <RequireAdminAuth>
+              <AdminLayout>
+                <Routes>
+                  <Route path="/" element={<Dashboard />} />
+                  <Route path="products" element={<Inventory />} />
+                  <Route path="messages" element={<Messages />} />
+                </Routes>
+              </AdminLayout>
+            </RequireAdminAuth>
           }
         />
       </Routes>

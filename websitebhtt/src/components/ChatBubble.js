@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { FloatButton, Card, List, Avatar, Typography, Input } from 'antd';
+import { FloatButton, Card, List, Avatar, Typography, Input, Badge } from 'antd';
 import {
   CloseOutlined,
   SendOutlined,
@@ -17,6 +17,7 @@ import '../style/ChatBubble.css';
 const { Text, Title } = Typography;
 
 const channel = new BroadcastChannel('chat_channel');
+const LOCAL_CHAT_KEY = 'local_chat_messages_v1';
 
 const ChatBubble = () => {
   const [isPopupVisible, setIsPopupVisible] = useState(false);
@@ -31,31 +32,120 @@ const ChatBubble = () => {
       isRead: true
     },
   ]);
+  // load persisted messages if any
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(LOCAL_CHAT_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored).map((m) => ({ ...m, timestamp: new Date(m.timestamp) }));
+        setMessages(parsed);
+      }
+    } catch (e) {}
+  }, []);
+
+  // persist messages to localStorage whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem(LOCAL_CHAT_KEY, JSON.stringify(messages));
+    } catch (e) {}
+  }, [messages]);
   const [inputValue, setInputValue] = useState('');
   const [isAdminTyping, setIsAdminTyping] = useState(false);
   const messagesContainerRef = useRef(null);
   const fileInputRef = useRef(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [footerHeight, setFooterHeight] = useState(50);
+  const [systemStatusOffset, setSystemStatusOffset] = useState(0);
+  // distance from the viewport bottom to the TOP edge of the system-status element
+  const [systemStatusTopOffset, setSystemStatusTopOffset] = useState(0);
+  const [floatBtnHeight, setFloatBtnHeight] = useState(56);
+  // Small manual nudge (in px) to ensure no overlap after collision calc
+  const [manualNudge, setManualNudge] = useState(0);
 
   const location = useLocation();
   const currentUserRole = location.pathname.startsWith('/admin') ? 'admin' : 'user';
 
+  // Extra margin above system status (in px)
+  // Small upward nudge to ensure the floats don't overlap the footer system-status text
+  const EXTRA_MARGIN = 92;
+  // Visual scaling applied to the FloatButtons (keep in sync with transform scale in inline style)
+  const FLOAT_SCALE = 1.5;
+  // Calculate bottom offsets for floating buttons to avoid overlapping footer
+  const calcBottom = (base) => {
+    const baseWithFooter = base + footerHeight;
+    // prefer using the top-offset of the status element so we ensure the float's TOP doesn't overlap
+    const minFromStatus = systemStatusTopOffset ? Math.max(0, systemStatusTopOffset + EXTRA_MARGIN - floatBtnHeight)
+      : (systemStatusOffset ? systemStatusOffset + EXTRA_MARGIN + floatBtnHeight : 0);
+    // Always pick a bottom that keeps the button above both footer and system status
+    // This avoids overlap at any screen width (desktop or mobile).
+    return Math.max(baseWithFooter, minFromStatus, base) + (manualNudge || 0);
+  };
+
+  // Update footerHeight and system status offset when needed
+  useEffect(() => {
+    const updateFooterHeight = () => {
+      try {
+        const footer = document.querySelector('.AppFooter');
+        const height = footer ? Math.round(footer.getBoundingClientRect().height) : 50;
+        setFooterHeight(height);
+        document.documentElement.style.setProperty('--app-footer-height', `${height}px`);
+        // system status (distance from top to bottom of viewport -> distance from bottom)
+        const statusElem = document.querySelector('.system-status-container');
+        // distance from the viewport bottom to the bottom edge of the system-status element
+        const statusOffset = statusElem ? Math.round(window.innerHeight - statusElem.getBoundingClientRect().bottom) : 0;
+        setSystemStatusOffset(statusOffset);
+        document.documentElement.style.setProperty('--app-status-offset', `${statusOffset}px`);
+        // also compute distance from the viewport bottom to the TOP edge of the status element
+        const statusTopOffset = statusElem ? Math.round(window.innerHeight - statusElem.getBoundingClientRect().top) : 0;
+        setSystemStatusTopOffset(statusTopOffset);
+        document.documentElement.style.setProperty('--app-status-top-offset', `${statusTopOffset}px`);
+        document.documentElement.style.setProperty('--app-extra-margin', `${EXTRA_MARGIN}px`);
+        // measure float button height (for bottom-calculation)
+        const floatEls = document.querySelectorAll('.ant-float-btn');
+        if (floatEls && floatEls.length) {
+          let maxH = 0;
+          floatEls.forEach((el) => { maxH = Math.max(maxH, el.offsetHeight); });
+          const visualHeight = Math.round((maxH || 56) * FLOAT_SCALE);
+          setFloatBtnHeight(visualHeight);
+          document.documentElement.style.setProperty('--app-float-btn-height', `${visualHeight}px`);
+        }
+      } catch (e) {}
+    };
+    updateFooterHeight();
+    window.addEventListener('resize', updateFooterHeight);
+    const footerNode = document.querySelector('.AppFooter');
+    const observer = footerNode ? new MutationObserver(updateFooterHeight) : null;
+    if (observer && footerNode) observer.observe(footerNode, { attributes: true, childList: true, subtree: true });
+    return () => {
+      window.removeEventListener('resize', updateFooterHeight);
+      if (observer) observer.disconnect();
+    };
+  }, []);
+
   // Typing indicator simulation
   useEffect(() => {
     const handleTypingMessage = (event) => {
-      if (event.data.type === 'typing') {
-        setIsAdminTyping(event.data.isTyping);
-      } else if (event.data.sender !== currentUserRole) {
-        setMessages((prev) => [...prev, event.data]);
-        setIsAdminTyping(false);
-      }
-    };
+        const data = event.data;
+        if (data.type === 'typing') {
+          setIsAdminTyping(data.isTyping);
+        } else if (data.type === 'message_read') {
+          setMessages((prev) => prev.map(m => ({ ...m, isRead: true })));
+        } else if (data.sender !== currentUserRole) {
+          // normalize timestamp to Date if necessary
+          const normalized = { ...data, timestamp: data.timestamp ? new Date(data.timestamp) : new Date() };
+          setMessages((prev) => [...prev, normalized]);
+          setIsAdminTyping(false);
+        }
+      };
 
     channel.addEventListener('message', handleTypingMessage);
     return () => {
       channel.removeEventListener('message', handleTypingMessage);
     };
   }, [currentUserRole]);
+
+  // Read/unread badge
+  const unreadCount = messages.filter(m => !m.isRead && m.sender !== currentUserRole).length;
 
   // Handle user typing - broadcast typing status
   const handleInputChange = (e) => {
@@ -129,6 +219,19 @@ const ChatBubble = () => {
     setInputValue('');
   };
 
+  // mark user-sent messages as read when admin opens the messenger
+  useEffect(() => {
+    if (isMessengerOpen && currentUserRole === 'admin') {
+      const needUpdate = messages.some((m) => m.sender !== 'admin' && !m.isRead);
+      if (needUpdate) {
+        const updated = messages.map((m) => m.sender !== 'admin' ? { ...m, isRead: true } : m);
+        setMessages(updated);
+        // notify others
+        channel.postMessage({ type: 'message_read', timestamp: Date.now() });
+      }
+    }
+  }, [isMessengerOpen, currentUserRole, messages]);
+
   const handleImageSend = (dataUrl) => {
     if (!dataUrl) return;
     const imgMsg = { 
@@ -175,6 +278,21 @@ const ChatBubble = () => {
     return senderRole === currentUserRole 
       ? 'message-item current-user' 
       : 'message-item other-user';
+  };
+
+  // Helper: group messages, and insert date separators
+  const groupMessagesWithDates = (msgs) => {
+    const out = [];
+    let lastDate = null;
+    msgs.forEach((m) => {
+      const day = new Date(m.timestamp).toDateString();
+      if (day !== lastDate) {
+        out.push({ type: 'date', id: `d-${m.id}`, day });
+        lastDate = day;
+      }
+      out.push({ type: 'message', ...m });
+    });
+    return out;
   };
 
   const renderMessage = (m) => {
@@ -283,19 +401,22 @@ const ChatBubble = () => {
           </div>
 
           <div className="messenger-messages" ref={messagesContainerRef}>
-            {messages.map((m) => (
-              <div key={m.id} className={getMessageClass(m.sender)}>
-                {renderMessage(m)}
-                <div className="message-footer">
-                  <span className="message-time">{formatTime(m.timestamp)}</span>
-                  {m.sender === currentUserRole && currentUserRole === 'user' && (
-                    <span className="read-status">
-                      {m.isRead ? '✓✓' : '✓'}
-                    </span>
-                  )}
+            {groupMessagesWithDates(messages).map((m) => {
+              if (m.type === 'date') {
+                return (<div key={m.id} className="message-date-separator">{m.day}</div>);
+              }
+              return (
+                <div key={m.id} className={getMessageClass(m.sender)}>
+                  {renderMessage(m)}
+                  <div className="message-footer">
+                    <span className="message-time">{formatTime(m.timestamp)}</span>
+                    {m.sender === currentUserRole && currentUserRole === 'user' && (
+                      <span className="read-status">{m.isRead ? '✓✓' : '✓'}</span>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
 
             {isAdminTyping && (
               <div className="message-item other-user">
@@ -383,26 +504,28 @@ const ChatBubble = () => {
         </div>
       )}
 
-      <FloatButton
-        icon={isMessengerOpen ? <CloseOutlined /> : <WechatOutlined />}
-        type="primary"
-        style={{
-          right: 24,
-          bottom: 88,
-          zIndex: 1001,
-          transform: 'scale(1.5)'
-        }}
-        onClick={toggleMessenger}
-        tooltip={<div>{isMessengerOpen ? 'Đóng Messenger' : 'Mở Messenger'}</div>}
-      />
+      <Badge count={unreadCount} offset={[12, -6]} size="small">
+        <FloatButton
+          icon={isMessengerOpen ? <CloseOutlined /> : <WechatOutlined />}
+          type="primary"
+          style={{
+            right: 24,
+            bottom: calcBottom(88),
+            zIndex: 1300,
+            transform: 'scale(1.5)'
+          }}
+          onClick={toggleMessenger}
+          tooltip={<div>{isMessengerOpen ? 'Đóng Messenger' : 'Mở Messenger'}</div>}
+        />
+      </Badge>
 
       <FloatButton
         icon={isPopupVisible ? <CloseOutlined /> : <CustomerServiceOutlined />}
         type="primary"
         style={{
           right: 24,
-          bottom: 24,
-          zIndex: 1001,
+          bottom: calcBottom(24),
+          zIndex: 1300,
           transform: 'scale(1.5)',
         }}
         onClick={togglePopup}

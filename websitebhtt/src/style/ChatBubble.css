@@ -80,7 +80,7 @@
 .support-popup-card {
   position: fixed;
   z-index: 3000;
-  bottom: 24px;
+  bottom: calc(var(--app-status-top-offset, var(--app-status-offset, var(--app-footer-height, 50px))) + var(--app-float-btn-height, 56px) + var(--app-extra-margin, 92px));
   right: 88px;
   width: 320px;
   max-height: 400px;
@@ -160,10 +160,19 @@
 @media (max-width: 480px) {
   .support-popup-card {
     right: 24px;
-    bottom: 88px;
+    bottom: calc(var(--app-status-top-offset, var(--app-status-offset, var(--app-footer-height, 50px))) + var(--app-float-btn-height, 56px) + var(--app-extra-margin, 92px) + 40px);
     width: calc(100% - 48px);
     left: 24px;
     right: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .messenger-panel {
+    bottom: calc(var(--app-status-offset, var(--app-footer-height, 50px)) + var(--app-float-btn-height, 56px) + var(--app-extra-margin, 48px) + 40px);
+    right: 24px;
+    left: 24px;
+    width: calc(100% - 48px);
   }
 }
 
@@ -171,7 +180,7 @@
 .messenger-panel {
   position: fixed;
   z-index: 3000;
-  bottom: 24px;
+  bottom: calc(var(--app-status-top-offset, var(--app-status-offset, var(--app-footer-height, 50px))) + var(--app-float-btn-height, 56px) + var(--app-extra-margin, 92px));
   right: 88px;
   width: 360px;
   max-height: 460px;
@@ -626,6 +635,17 @@
 
 .message-item.other-user {
   align-items: flex-start;
+}
+
+.message-date-separator {
+  text-align: center;
+  color: #666;
+  font-size: 12px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.04);
+  margin: 8px auto;
+  display: inline-block;
 }
 
 .message-bubble {
