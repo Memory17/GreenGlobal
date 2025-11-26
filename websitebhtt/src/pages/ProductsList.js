@@ -3,7 +3,6 @@ import {
   Typography,
   Spin,
   message,
-  Space,
   Button,
   Divider,
   Row,
@@ -14,16 +13,28 @@ import {
   Carousel,
   Slider, 
   Input, 
+  Pagination, // Import Pagination
+  Popover, // Import Popover
 } from "antd";
 import { 
   ShoppingCartOutlined, 
   ThunderboltOutlined,
-  FilterOutlined, // Đã thêm icon Filter
+  ThunderboltFilled,
+  FireFilled,
+  ArrowRightOutlined,
+  SearchOutlined,
+  DollarOutlined,
+  StarOutlined,
+  CloseCircleFilled,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 
 // Đảm bảo các đường dẫn này chính xác
 import "../style/ProductList.css"; 
+import "../style/Pagination.css"; // Import Pagination CSS
+import HotDeal from "../components/HotDeal"; // Import HotDeal component
+import BestSellers from "../components/BestSellers"; // Import BestSellers component
+import TopRated from "../components/TopRated"; // Import TopRated component
 import {
   getProductCategories,
   // getProductsByFullUrl, // Không cần dùng hàm này nữa nếu lọc trên client
@@ -53,6 +64,10 @@ function Product() {
   const [searchQuery, setSearchQuery] = useState(""); 
   const [displayProducts, setDisplayProducts] = useState([]); // List cuối cùng để render
   
+  // --- STATE CHO PAGINATION ---
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(12); // Số sản phẩm mỗi trang
+
   // --- STATE ĐỂ BẬT/TẮT BỘ LỌC ---
   const [showFilters, setShowFilters] = useState(false); // Mặc định là ẩn
   
@@ -125,8 +140,20 @@ function Product() {
 
       // 4. Cập nhật danh sách hiển thị
       setDisplayProducts(productsToFilter);
+      setCurrentPage(1); // Reset về trang 1 khi filter thay đổi
     }
   }, [filteredProducts, priceRange, minRating, loading, searchQuery]);
+
+  // --- TÍNH TOÁN SẢN PHẨM CHO TRANG HIỆN TẠI ---
+  const indexOfLastProduct = currentPage * pageSize;
+  const indexOfFirstProduct = indexOfLastProduct - pageSize;
+  const currentProducts = displayProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+
+  const handlePageChange = (page, pageSize) => {
+    setCurrentPage(page);
+    setPageSize(pageSize);
+    window.scrollTo({ top: 0, behavior: 'smooth' }); // Cuộn lên đầu trang khi chuyển trang
+  };
 
   const formatTime = (seconds) => {
     const h = Math.floor(seconds / 3600)
@@ -203,138 +230,61 @@ function Product() {
       {/* --------- DANH MỤC NỔI BẬT -------- */}
       {/* ------------------------------------------- */}
       <div style={{ marginBottom: "40px" }}>
-        <Divider>
-          <Title level={4}>🌟 Danh Mục Nổi Bật</Title>
-        </Divider>
-        <Row gutter={[16, 16]}>
-          {/* Hàng 1 */}
-          <Col xs={24} sm={12} md={8}>
-            <div
-              className="category-overlay-card"
-              onClick={() => handleCategoryClick("smartphones")}
-            >
-              <img
-                alt="Điện Thoại"
-                src="https://tinyurl.com/y3nm9j8x"
-                className="category-overlay-image"
-              />
-              <div className="category-overlay-text">
-                Điện Thoại
-                <span className="category-product-count">
-                  {categoryCounts.smartphones} Sản phẩm
-                </span>
+        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+           <Title level={3} style={{ color: '#333', margin: 0 }}>☀️ Danh Mục Nổi Bật</Title>
+        </div>
+        
+        <Row gutter={[24, 24]}>
+          {[
+            { key: 'smartphones', title: 'Điện Thoại', img: 'https://tinyurl.com/y3nm9j8x' },
+            { key: 'laptops', title: 'Laptop', img: 'https://tinyurl.com/bhndmjk2' },
+            { key: 'skincare', title: 'Chăm Sóc Da', img: 'https://tinyurl.com/yjrzc3fu' },
+            { key: 'groceries', title: 'Hàng Tạp Hóa', img: 'https://tinyurl.com/2y3kznyc' },
+            { key: 'home-decoration', title: 'Nội thất', img: 'https://tinyurl.com/msrmhyry' },
+            { key: 'fragrances', title: 'Nước Hoa', img: 'https://tinyurl.com/nhkc6wve' }
+          ].map((cat) => (
+            <Col xs={24} sm={12} md={8} key={cat.key}>
+              <div
+                className="category-overlay-card"
+                onClick={() => handleCategoryClick(cat.key)}
+              >
+                <div className="category-image-wrapper">
+                  <img
+                    alt={cat.title}
+                    src={cat.img}
+                    className="category-overlay-image"
+                  />
+                </div>
+                <div className="category-overlay-content">
+                  <h3 className="featured-category-title">{cat.title}</h3>
+                  <span className="category-product-count">
+                    {categoryCounts[cat.key] || 0} Sản phẩm
+                  </span>
+                </div>
               </div>
-            </div>
-          </Col>
-          <Col xs={24} sm={12} md={8}>
-            <div
-              className="category-overlay-card"
-              onClick={() => handleCategoryClick("laptops")}
-            >
-              <img
-                alt="Laptop"
-                src="https://tinyurl.com/bhndmjk2"
-                className="category-overlay-image"
-              />
-              <div className="category-overlay-text">
-                Laptop
-                <span className="category-product-count">
-                  {categoryCounts.laptops} Sản phẩm
-                </span>
-              </div>
-            </div>
-          </Col>
-          <Col xs={24} sm={12} md={8}>
-            <div
-              className="category-overlay-card"
-              onClick={() => handleCategoryClick("skincare")}
-            >
-              <img
-                alt="Chăm Sóc Da"
-                src="https://tinyurl.com/yjrzc3fu"
-                className="category-overlay-image"
-              />
-              <div className="category-overlay-text">
-                Chăm Sóc Da
-                <span className="category-product-count">
-                  {categoryCounts.skincare} Sản phẩm
-                </span>
-              </div>
-            </div>
-          </Col>
-        </Row>
-        <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
-          {/* Hàng 2 */}
-          <Col xs={24} sm={12} md={8}>
-            <div
-              className="category-overlay-card"
-              onClick={() => handleCategoryClick("groceries")}
-            >
-              <img
-                alt="Hàng Tạp Hóa"
-                src="https://tinyurl.com/2y3kznyc"
-                className="category-overlay-image"
-              />
-              <div className="category-overlay-text">
-                Hàng Tạp Hóa
-                <span className="category-product-count">
-                  {categoryCounts.groceries} Sản phẩm
-                </span>
-              </div>
-            </div>
-          </Col>
-          <Col xs={24} sm={12} md={8}>
-            <div
-              className="category-overlay-card"
-              onClick={() => handleCategoryClick("home-decoration")}
-            >
-              <img
-                alt="Trang Trí Nhà Cửa"
-                src="https://tinyurl.com/msrmhyry"
-                className="category-overlay-image"
-              />
-              <div className="category-overlay-text">
-                Nội thất
-                <span className="category-product-count">
-                  {categoryCounts["home-decoration"]} Sản phẩm
-                </span>
-              </div>
-            </div>
-          </Col>
-          <Col xs={24} sm={12} md={8}>
-            <div
-              className="category-overlay-card"
-              onClick={() => handleCategoryClick("fragrances")}
-            >
-              <img
-                alt="Nước Hoa"
-                src="https://tinyurl.com/nhkc6wve"
-                className="category-overlay-image"
-              />
-              <div className="category-overlay-text">
-                Nước Hoa
-                <span className="category-product-count">
-                  {categoryCounts.fragrances} Sản phẩm
-                </span>
-              </div>
-            </div>
-          </Col>
+            </Col>
+          ))}
         </Row>
       </div>
 
       {/* ------------------------------------------- */}
       {/* --------- KHÁM PHÁ DANH MỤC (BUTTONS) -------- */}
       {/* ------------------------------------------- */}
-      <Divider orientation="left">
-        <Title level={4}>🏷️ Bạn muốn mua gì ?</Title>
-      </Divider>
-      <div style={{ textAlign: "center", marginBottom: "40px" }}>
-        <Space size={[12, 16]} wrap>
+      <div className="category-section-header">
+        <Title level={4} style={{ margin: 0 }}>
+          <span role="img" aria-label="tag" style={{ marginRight: 8 }}>🏷️</span> 
+          Bạn muốn mua gì ?
+        </Title>
+      </div>
+      
+      {/* Container Grid hiện đại (Wrap Layout) */}
+      <div className="category-filter-container">
+        <div className="category-filter-wrapper">
           <Button
             key="all"
             type={selectedCategorySlug === null ? "primary" : "default"}
             onClick={() => handleCategoryClick(null)}
-            style={{ textTransform: "capitalize", minWidth: "150px" }}
+            className={`category-pill ${selectedCategorySlug === null ? 'active' : ''}`}
           >
             Tất Cả Sản Phẩm
           </Button>
@@ -346,240 +296,113 @@ function Product() {
                 selectedCategorySlug === category.slug ? "primary" : "default"
               }
               onClick={() => handleCategoryClick(category.slug)}
-              style={{
-                textTransform: "capitalize",
-                minWidth: "150px",
-              }}
+              className={`category-pill ${selectedCategorySlug === category.slug ? 'active' : ''}`}
             >
               {category.name || category.slug.replace(/-/g, " ")}
             </Button>
           ))}
-        </Space>
-      </div>
-
-      
-      {/* ------------------------------------------- */}
-      {/* --------- FLASH SALE SECTION -------- */}
-      {/* ------------------------------------------- */}
-      <div className="flash-sale-section-wrapper">
-        <div className="flash-sale-banner">
-          <Title
-            className="flash-sale-title"
-            level={2}
-            style={{ color: "white", margin: 0 }}
-          >
-            <ThunderboltOutlined style={{ marginRight: 8, color: "yellow" }} />{" "}
-            Flash Sale Hôm Nay
-          </Title>
-          <div className="flash-sale-timer">
-            Thời gian còn lại:
-            {formatTime(timeLeft)
-              .split(":")
-              .map((t, i) => (
-                <div key={i} className="time-box">
-                  {t}
-                </div>
-              ))}
-          </div>
-
-          <Row gutter={10} justify="center" className="flash-sale-row">
-            <Col xs={24} md={8}>
-              <img
-                src="https://cdn.hstatic.net/files/1000003969/file/img_2197_c22e8ec7f8624198b610bfdd4c36654c.jpeg"
-                alt="Deal Sốc 1"
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
-            </Col>
-            <Col xs={24} md={8}>
-              <img
-                src="https://cdn.hstatic.net/files/1000003969/file/img_2198_9bed97b1dffd4949b7c6803fcf6e5e99.jpeg"
-                alt="Deal Sốc 2"
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
-            </Col>
-            <Col xs={24} md={8}>
-              <img
-                src="https://cdn.hstatic.net/files/1000003969/file/img_2199_aeb9ad30d0cf4d2c8cf765cca6798035.jpeg"
-                alt="Deal Sốc 3"
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
-            </Col>
-          </Row>
-        </div>
-
-        {/* Flash Sale Products Carousel */}
-        <div className="flash-sale-products" style={{ marginTop: 20 }}>
-          <Carousel
-            dots={false}
-            slidesToShow={5}
-            slidesToScroll={1}
-            autoplay
-            autoplaySpeed={3000}
-            responsive={[
-              { breakpoint: 1200, settings: { slidesToShow: 4 } },
-              { breakpoint: 992, settings: { slidesToShow: 3 } },
-              { breakpoint: 768, settings: { slidesToShow: 2 } },
-              { breakpoint: 576, settings: { slidesToShow: 1 } },
-            ]}
-          >
-            {products
-              .filter((p) => p.discountPercentage > 15)
-              .map((product) => {
-                const originalPrice = product.price;
-                const salePrice = (
-                  product.price *
-                  (1 - product.discountPercentage / 100)
-                ).toFixed(2);
-
-                return (
-                  <div key={product.id} className="flash-sale-card-wrapper">
-                    <div className="flash-sale-label">SỐC</div>
-                    <Card
-                      hoverable
-                      onClick={() => handleProductClick(product)}
-                      cover={
-                        <img
-                          src={product.thumbnail}
-                          alt={product.title}
-                          style={{ height: 160, objectFit: "cover" }}
-                        />
-                      }
-                      className="flash-sale-product-card"
-                    >
-                      <Meta
-                        title={
-                          <div className="flash-sale-title-text">
-                            {product.title}
-                          </div>
-                        }
-                      />
-                      <div style={{ marginTop: 8, textAlign: "left" }}>
-                        <div className="flash-sale-price-group">
-                          <div className="flash-sale-current-price">
-                            ${salePrice}
-                          </div>
-                          <div className="flash-sale-original-price">
-                            ${originalPrice}
-                          </div>
-                        </div>
-                        <div className="flash-sale-sold">
-                          <div className="progress-bar-container">
-                            <div
-                              className="progress-bar"
-                              style={{
-                                width: `${Math.min(
-                                  100,
-                                  (product.stock / 50) * 100
-                                )}%`,
-                              }}
-                            ></div>
-                          </div>
-                          <span className="sold-text">
-                            Đã bán {Math.floor(Math.random() * 40 + 1)} sản phẩm
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flash-sale-actions">
-                        <Button
-                          type="primary"
-                          size="small"
-                          style={{ flexGrow: 1 }}
-                          onClick={(e) => handleBuyNow(e, product)}
-                        >
-                          Mua ngay
-                        </Button>
-                        <Tooltip title="Thêm vào giỏ hàng">
-                          <ShoppingCartOutlined
-                            className="add-to-cart-icon"
-                            onClick={(e) => handleAddToCartClick(e, product)}
-                            style={{ marginLeft: 8 }}
-                          />
-                        </Tooltip>
-                      </div>
-                    </Card>
-                  </div>
-                );
-              })}
-          </Carousel>
         </div>
       </div>
-      {/* ------------------------------------------- */}
 
       
-      {/* ========= KHU VỰC BỘ LỌC (CÓ HIỆU ỨNG) ========= */}
+
+
       
-      {/* --- NÚT BẬT/TẮT BỘ LỌC --- */}
-      <div style={{ margin: "20px 0", textAlign: "right" }}>
-        <Button
-          type={showFilters ? "primary" : "default"} // Đổi màu khi đang bật
-          icon={<FilterOutlined />}
-          onClick={() => setShowFilters(!showFilters)} // Hàm bật/tắt
-        >
-          {showFilters ? "Ẩn bộ lọc" : "Hiển thị bộ lọc"}
-        </Button>
-      </div>
-
-      {/* --- THAY ĐỔI LOGIC: ---
-        Sử dụng className 'expanded' để CSS kích hoạt hiệu ứng
-      */}
-      <Card className={`filter-bar-card ${showFilters ? 'expanded' : ''}`}> 
-        <Row gutter={[24, 20]} align="middle">
-          
-          {/* --- CỘT TÌM KIẾM --- */}
-          <Col xs={24} md={8} className="filter-col">
-            <Typography.Text strong className="filter-label">
-              Tìm theo tên:
-            </Typography.Text>
-            <Input.Search
-              placeholder="Nhập tên sản phẩm..."
-              allowClear
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              disabled={loading}
-              style={{ width: "100%" }} 
+      {/* ========= KHU VỰC BỘ LỌC HIỆN ĐẠI (REDESIGNED) ========= */}
+      <div className="modern-filter-bar">
+        <div className="filter-search-wrapper">
+            <SearchOutlined className="search-icon" />
+            <Input 
+                placeholder="Tìm kiếm sản phẩm..." 
+                bordered={false} 
+                className="modern-search-input"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
             />
-          </Col>
-
-          {/* --- CỘT LỌC GIÁ --- */}
-          <Col xs={24} md={8} className="filter-col">
-            <Typography.Text strong className="filter-label">
-              Lọc theo giá ($):
-            </Typography.Text>
-            <Slider
-              range
-              min={0}
-              max={maxPrice}
-              value={priceRange}
-              onChange={setPriceRange} 
-              tipFormatter={(value) => `$${value}`}
-              disabled={loading}
-            />
-            <div className="price-range-display">
-              Từ: <strong>${priceRange[0]}</strong> - Đến:{" "}
-              <strong>${priceRange[1]}</strong>
-            </div>
-          </Col>
-
-          {/* --- CỘT LỌC RATING --- */}
-          <Col xs={24} md={8} className="filter-col">
-            <Typography.Text strong className="filter-label">
-              Lọc theo đánh giá (từ):
-            </Typography.Text>
-            <Rate
-              allowClear={true} 
-              value={minRating}
-              onChange={setMinRating} 
-              disabled={loading}
-              style={{ marginTop: "4px" }} 
-            />
-            {minRating > 0 && (
-              <span className="rating-display-text">
-                (từ {minRating} sao trở lên)
-              </span>
+            {searchQuery && (
+                <CloseCircleFilled 
+                    className="clear-search-icon" 
+                    onClick={() => setSearchQuery("")}
+                />
             )}
-          </Col>
-        </Row>
-      </Card>
+        </div>
+
+        <div className="filter-actions">
+            {/* PRICE FILTER POPOVER */}
+            <Popover
+                trigger="click"
+                placement="bottomRight"
+                content={
+                    <div className="filter-popup-content">
+                        <div className="filter-popup-header">
+                            <span>Khoảng giá</span>
+                            <span className="price-values">${priceRange[0]} - ${priceRange[1]}</span>
+                        </div>
+                        <Slider
+                            range
+                            min={0}
+                            max={maxPrice}
+                            value={priceRange}
+                            onChange={setPriceRange}
+                            tooltip={{ formatter: (value) => `$${value}` }}
+                            className="modern-slider"
+                        />
+                    </div>
+                }
+            >
+                <Button 
+                    className={`filter-pill-btn ${priceRange[0] > 0 || priceRange[1] < maxPrice ? 'active' : ''}`}
+                    icon={<DollarOutlined />}
+                >
+                    Giá bán
+                    {(priceRange[0] > 0 || priceRange[1] < maxPrice) && <span className="filter-dot"></span>}
+                </Button>
+            </Popover>
+
+            {/* RATING FILTER POPOVER */}
+            <Popover
+                trigger="click"
+                placement="bottomRight"
+                content={
+                    <div className="filter-popup-content">
+                        <div className="filter-popup-header">
+                            <span>Đánh giá tối thiểu</span>
+                            <span>{minRating} sao</span>
+                        </div>
+                        <Rate 
+                            value={minRating} 
+                            onChange={setMinRating} 
+                            className="modern-rate"
+                        />
+                    </div>
+                }
+            >
+                <Button 
+                    className={`filter-pill-btn ${minRating > 0 ? 'active' : ''}`}
+                    icon={<StarOutlined />}
+                >
+                    Đánh giá
+                    {minRating > 0 && <span className="filter-dot"></span>}
+                </Button>
+            </Popover>
+
+            {/* RESET BUTTON */}
+            {(searchQuery || minRating > 0 || (priceRange[0] > 0 || priceRange[1] < maxPrice)) && (
+                <Button 
+                    type="text" 
+                    danger 
+                    className="reset-filter-btn"
+                    onClick={() => {
+                        setSearchQuery("");
+                        setMinRating(0);
+                        setPriceRange([0, maxPrice]);
+                    }}
+                >
+                    Xóa lọc
+                </Button>
+            )}
+        </div>
+      </div>
       {/* ========= KẾT THÚC BỘ LỌC ========= */}
 
 
@@ -619,7 +442,7 @@ function Product() {
           </Col>
         ) : (
           // Case 4: Có sản phẩm để hiển thị
-          displayProducts.map((product) => ( // <-- Lặp qua DISPLAY PRODUCTS
+          currentProducts.map((product) => ( // <-- Lặp qua CURRENT PRODUCTS (đã phân trang)
             <Col key={product.id} xs={24} sm={12} md={8} lg={6}>
               <Card
                 hoverable
@@ -691,6 +514,161 @@ function Product() {
           ))
         )}
       </Row>
+
+      {/* --- PAGINATION --- */}
+      {displayProducts.length > 0 && (
+        <div className="custom-pagination">
+          <Pagination
+            current={currentPage}
+            pageSize={pageSize}
+            total={displayProducts.length}
+            onChange={handlePageChange}
+            showSizeChanger
+            pageSizeOptions={['4', '8', '12', '24', '48']}
+            onShowSizeChange={handlePageChange}
+          />
+        </div>
+      )}
+
+      {/* ------------------------------------------- */}
+      {/* --------- FLASH SALE SECTION (REDESIGNED) -------- */}
+      {/* ------------------------------------------- */}
+      <div className="flash-sale-container">
+        <div className="flash-sale-sidebar">
+            <div className="flash-sale-brand">
+                <ThunderboltFilled className="flash-icon" />
+                <h2>FLASH<br/>SALE</h2>
+            </div>
+            
+            <div className="flash-countdown">
+                <p>Kết thúc trong</p>
+                <div className="timer-display">
+                    {formatTime(timeLeft).split(":").map((t, i) => (
+                        <React.Fragment key={i}>
+                            <div className="time-unit">{t}</div>
+                            {i < 2 && <span className="colon">:</span>}
+                        </React.Fragment>
+                    ))}
+                </div>
+            </div>
+
+            <Button type="primary" size="large" className="view-all-flash-btn">
+                Xem Tất Cả <ArrowRightOutlined />
+            </Button>
+        </div>
+
+        <div className="flash-sale-content">
+            {products.length > 0 ? (
+            <Carousel
+                dots={false}
+                arrows={true}
+                slidesToShow={4}
+                slidesToScroll={1}
+                autoplay
+                autoplaySpeed={3000}
+                className="flash-product-carousel"
+                responsive={[
+                { breakpoint: 1400, settings: { slidesToShow: 3 } },
+                { breakpoint: 992, settings: { slidesToShow: 2 } },
+                { breakpoint: 576, settings: { slidesToShow: 1 } },
+                ]}
+            >
+                {(products.filter((p) => p.discountPercentage > 5).length > 0 
+                    ? products.filter((p) => p.discountPercentage > 5) 
+                    : products.slice(0, 10))
+                .map((product) => {
+                    const discount = product.discountPercentage || Math.floor(Math.random() * 20 + 10); // Fallback discount if 0
+                    const originalPrice = product.price;
+                    const salePrice = (product.price * (1 - discount / 100)).toFixed(2);
+                    const soldPercent = Math.min(100, (product.stock / 50) * 100);
+
+                    return (
+                    <div key={product.id} className="flash-card-wrapper">
+                        <div className="flash-card">
+                            <div className="flash-badge">
+                                <FireFilled /> -{Math.round(discount)}%
+                            </div>
+                            
+                            <div className="flash-img-box" onClick={() => handleProductClick(product)}>
+                                <img src={product.thumbnail} alt={product.title} />
+                            </div>
+
+                            <div className="flash-info">
+                                <div className="flash-price">
+                                    <span className="current">${salePrice}</span>
+                                    <span className="original">${originalPrice}</span>
+                                </div>
+                                
+                                <div className="flash-progress">
+                                    <div className="progress-track">
+                                        <div className="progress-bar-fire" style={{ width: `${soldPercent}%` }}></div>
+                                    </div>
+                                    <span className="sold-text">Đã bán {Math.floor(Math.random() * 40 + 1)}</span>
+                                </div>
+
+                                <div className="flash-action-group">
+                                    <Button 
+                                        type="primary" 
+                                        danger 
+                                        className="flash-buy-btn"
+                                        onClick={(e) => handleBuyNow(e, product)}
+                                    >
+                                        Mua Ngay
+                                    </Button>
+                                    <Tooltip title="Thêm vào giỏ hàng">
+                                        <div className="flash-cart-icon-wrapper" onClick={(e) => handleAddToCartClick(e, product)}>
+                                            <ShoppingCartOutlined />
+                                        </div>
+                                    </Tooltip>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    );
+                })}
+            </Carousel>
+            ) : (
+                <div style={{ width: '100%', height: '300px', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+                    <Spin size="large" />
+                    <p style={{ marginTop: 10, color: '#999' }}>Đang tải ưu đãi...</p>
+                </div>
+            )}
+        </div>
+      </div>
+      {/* ------------------------------------------- */}
+
+      {/* ------------------------------------------- */}
+      {/* --------- BEST SELLERS SECTION -------- */}
+      {/* ------------------------------------------- */}
+      <BestSellers 
+        products={products} 
+        onProductClick={handleProductClick}
+        onAddToCart={handleAddToCartClick}
+      />
+      {/* ------------------------------------------- */}
+
+      {/* ------------------------------------------- */}
+      {/* --------- HOT DEAL SECTION -------- */}
+      {/* ------------------------------------------- */}
+      <HotDeal 
+        products={products} 
+        onProductClick={handleProductClick}
+        onBuyNow={handleBuyNow}
+        onAddToCart={handleAddToCartClick}
+      />
+      {/* ------------------------------------------- */}
+
+      {/* ------------------------------------------- */}
+      {/* --------- TOP RATED SECTION -------- */}
+      {/* ------------------------------------------- */}
+      <TopRated 
+        products={products} 
+        onProductClick={handleProductClick}
+        onBuyNow={handleBuyNow}
+        onAddToCart={handleAddToCartClick}
+      />
+      {/* ------------------------------------------- */}
+
     </div>
   );
 }

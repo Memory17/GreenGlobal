@@ -1,65 +1,31 @@
+/* src/style/Categories.css */
+
+/* Container chính cho dropdown - Modern Grid Layout */
 .categories-dropdown {
-  position: fixed;
-  top: 64px; /* hoặc chỉnh theo chiều cao header */
-  left: 0;
-  width: 100vw;
-  background: rgba(255, 255, 255, 0.5); /* trắng trong suốt hơn một chút */
-  padding: 24px 60px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 80px;
-  border-radius: 0;
-  z-index: 1000;
-  backdrop-filter: blur(8px);
-  animation: slideDown 0.35s ease forwards;
-  transform-origin: top center;
+  position: relative; /* Thay đổi từ fixed sang relative để nằm trong flow của Header */
+  width: 100%;
+  background: #ffffff;
+  padding: 40px 5%; /* Padding rộng rãi hơn */
+  
+  /* Grid Layout tự động chia cột */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 30px;
+  
+  /* Đảm bảo không bị tràn màn hình */
+  max-height: 80vh;
+  overflow-y: auto;
+  
+  /* Animation xuất hiện */
+  opacity: 0;
+  animation: fadeInSlide 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
 }
 
-.category-item {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  min-width: 150px;
-}
-
-.category-title {
-  font-weight: 600;
-  font-size: 16px;
-  color: #1677ff;
-  margin-bottom: 10px;
-  transition: color 0.2s ease;
-}
-
-.category-title:hover {
-  color: #0958d9;
-}
-
-.category-products {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.category-product {
-  font-size: 14px;
-  color: #333;
-  margin-bottom: 6px;
-  cursor: pointer;
-  transition: all 0.25s ease;
-}
-
-.category-product:hover {
-  color: #1677ff;
-  transform: translateX(4px);
-}
-
-/* 🌟 Hiệu ứng hiện xuống mượt */
-@keyframes slideDown {
+/* Animation keyframes */
+@keyframes fadeInSlide {
   from {
     opacity: 0;
-    transform: translateY(-15px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -67,34 +33,126 @@
   }
 }
 
-/* --- DÁN PHẦN NÀY VÀO CUỐI FILE Categories.css --- */
+/* Từng cột danh mục */
+.category-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 16px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  background-color: transparent;
+  border: 1px solid transparent;
+}
 
+/* Hiệu ứng khi hover vào cả cột */
+.category-item:hover {
+  background-color: #f8faff; /* Nền xanh rất nhạt */
+  border-color: #e6f4ff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+/* Tiêu đề danh mục */
+.category-title {
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-weight: 800; /* Tăng độ đậm */
+  font-size: 16px; /* Tăng kích thước một chút */
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #000000 !important; /* Màu đen tuyệt đối và ưu tiên cao nhất */
+  text-shadow: none; /* Loại bỏ bóng nếu có */
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  width: 100%;
+  border-bottom: 2px solid #e0e0e0; /* Đậm hơn chút */
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+/* Gạch chân động cho tiêu đề */
+.category-title::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #1677ff;
+  transition: width 0.3s ease;
+}
+
+.category-item:hover .category-title {
+  color: #1677ff;
+  border-bottom-color: transparent;
+}
+
+.category-item:hover .category-title::after {
+  width: 40px;
+}
+
+/* Danh sách sản phẩm */
 .category-products {
- 
+  list-style: none;
   padding: 0;
   margin: 0;
-  margin-top: 10px; /* Khoảng cách với tiêu đề */
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
+/* Từng sản phẩm */
 .category-product {
- font-size: 14px;
-  color: #333;
+  font-size: 14px;
+  color: #666;
+  padding: 8px 12px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: all 0.25s ease;
-  padding: 6px 0; /* Dùng padding thay vì margin-bottom */
-  /* === 4 DÒNG MỚI ĐỂ THÊM "..." === */
-  width: 90%; /* Giới hạn chiều rộng của chữ */
-  white-space: nowrap; /* Ngăn không cho xuống dòng */
-  overflow: hidden; /* Ẩn phần chữ bị thừa */
-  text-overflow: ellipsis; /* Hiện dấu "..." */
+  transition: all 0.2s ease;
+  
+  /* Xử lý text dài */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  
+  display: flex;
+  align-items: center;
 }
 
-
+/* Hover vào sản phẩm */
 .category-product:hover {
-  color: #1677ff; /* Màu xanh khi hover */
+  color: #1677ff;
+  background-color: #e6f7ff;
+  padding-left: 16px; /* Hiệu ứng trượt nhẹ */
+  font-weight: 500;
 }
+
+/* Loading spinner */
 .category-product-loading {
-  list-style-type: none;
-  padding: 10px 0;
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+  color: #1677ff;
+}
+
+/* Center the spinner inside the product list */
+.category-products .ant-spin {
+  align-self: center;
+  margin: 10px 0;
+}
+
+/* Scrollbar tùy chỉnh */
+.categories-dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+.categories-dropdown::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+.categories-dropdown::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+.categories-dropdown::-webkit-scrollbar-thumb:hover {
+  background: #999;
 }

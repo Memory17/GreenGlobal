@@ -110,14 +110,17 @@ const AppHeader = () => {
       const userNotifications = allReviews
         .filter(review => (review.user === currentUser.username || review.user === currentUser.email) && Array.isArray(review.adminReplies))
         .flatMap(review => 
-          review.adminReplies.map(reply => ({
-            ...reply,
-            productTitle: review.productTitle,
-            productImage: review.productImage,
-            productId: review.productId,
-            reviewId: review.id,
-            isNew: new Date(reply.date).getTime() > lastReadTimestamp,
-          }))
+          review.adminReplies
+            // ⭐️ SỬA: Lọc bỏ các phản hồi do chính người dùng tạo ra
+            .filter(reply => reply.user !== (currentUser.username || currentUser.email))
+            .map(reply => ({
+              ...reply,
+              productTitle: review.productTitle,
+              productImage: review.productImage,
+              productId: review.productId,
+              reviewId: review.id,
+              isNew: new Date(reply.date).getTime() > lastReadTimestamp,
+            }))
         )
         .sort((a, b) => new Date(b.date) - new Date(a.date)); // Sắp xếp mới nhất lên đầu
   

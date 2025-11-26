@@ -1,5 +1,6 @@
 // src/pages/Categories.js
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Spin } from "antd";
 import {
   getProductCategories,
@@ -16,6 +17,7 @@ const CategoryColumnItem = ({ category }) => {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasFetched, setHasFetched] = useState(false); // Tránh gọi API liên tục
+  const navigate = useNavigate();
 
   // Hàm này sẽ được gọi khi di chuột VÀO cột
   const handleMouseEnter = async () => {
@@ -59,7 +61,11 @@ const CategoryColumnItem = ({ category }) => {
         {isLoading && <Spin size="small" />}
         {products.map((product) => (
           // Sử dụng className="category-product" (sẽ thêm CSS ở bước 3)
-          <li key={product.id} className="category-product">
+          <li 
+            key={product.id} 
+            className="category-product"
+            onClick={() => navigate(`/product/${product.id}`, { state: product })}
+          >
             {product.title}
           </li>
         ))}

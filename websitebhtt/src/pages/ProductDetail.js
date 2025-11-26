@@ -18,6 +18,7 @@ import {
   Form,      // 👈 THÊM
   Input,     // 👈 THÊM
   Spin,      // 👈 THÊM
+  Select,    // 👈 THÊM
 } from "antd";
 import React, { useState, useEffect, useRef } from "react";
 import { 
@@ -29,7 +30,7 @@ import {
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useCart } from "../context/CartContext"; 
 import { useAuth } from "../context/AuthContext"; // 👈 THÊM
-import { useOrderHistory } from "../context/OrderHistoryContext"; // 👈 THÊM
+// import { useOrderHistory } from "../context/OrderHistoryContext"; // 👈 BỎ: Không dùng nữa
 
 // 🐞 FIX: getProductById was not found in '../API'. Adding a mock implementation here.
 // You can replace this with your actual API call.
@@ -45,7 +46,7 @@ const ProductDetail = () => {
   const location = useLocation(); 
   const { id: productId } = useParams(); // 👈 Lấy ID từ URL
   const { currentUser } = useAuth(); // 👈 Lấy thông tin user
-  const { addAdminReply } = useOrderHistory(); // 👈 Lấy hàm trả lời
+  // const { addAdminReply } = useOrderHistory(); // 👈 BỎ: Tự xử lý reply tại đây để hỗ trợ cả user thường
   
   const [product, setProduct] = useState(null); // ⭐️ SỬA: Luôn bắt đầu với null
   const [loading, setLoading] = useState(true); // ⭐️ SỬA: Luôn bắt đầu với loading
@@ -59,6 +60,13 @@ const ProductDetail = () => {
   const [replyingTo, setReplyingTo] = useState(null); // 👈 State cho form trả lời
   const [replyContent, setReplyContent] = useState("");
   const [submittingReply, setSubmittingReply] = useState(false);
+  const [filterRating, setFilterRating] = useState('all'); // 👈 State lọc đánh giá
+  
+  // State cho đánh giá mới
+  const [newRating, setNewRating] = useState(5);
+  const [newReviewContent, setNewReviewContent] = useState("");
+  const [submittingReview, setSubmittingReview] = useState(false);
+
   const reviewRefs = useRef({}); // 👈 Ref để cuộn đến bình luận
   
   const { addToCart } = useCart(); 
@@ -143,23 +151,99 @@ const ProductDetail = () => {
     }
   }, [product]); // Chạy lại khi sản phẩm thay đổi
 
-  // ⭐️ HÀM MỚI: Xử lý gửi trả lời của admin
+  // ⭐️ HÀM MỚI: Xử lý gửi trả lời (Admin & User)
   const handleReplySubmit = async (reviewId) => {
+    if (!currentUser) {
+      message.warning("Vui lòng đăng nhập để trả lời.");
+      navigate('/login');
+      return;
+    }
     if (!replyContent.trim()) {
       message.warning("Vui lòng nhập nội dung trả lời.");
       return;
     }
+    
     setSubmittingReply(true);
-    const success = await addAdminReply(reviewId, replyContent, currentUser);
-    if (success) {
+    try {
+      const GLOBAL_REVIEWS_KEY = 'app_reviews_v1';
+      const storedReviews = localStorage.getItem(GLOBAL_REVIEWS_KEY);
+      let allReviews = storedReviews ? JSON.parse(storedReviews) : [];
+
+      const updatedReviews = allReviews.map(review => {
+        if (String(review.id) === String(reviewId)) {
+          const newReply = {
+            id: `rep_${new Date().getTime()}`,
+            user: currentUser.username || currentUser.email || 'User',
+            userAvatar: currentUser.image || null, // Lưu avatar nếu có
+            comment: replyContent,
+            date: new Date().toISOString(),
+            role: currentUser.role // Lưu role để hiển thị (nếu cần)
+          };
+          
+          const currentReplies = Array.isArray(review.adminReplies) ? review.adminReplies : [];
+          return { ...review, adminReplies: [...currentReplies, newReply] };
+        }
+        return review;
+      });
+
+      localStorage.setItem(GLOBAL_REVIEWS_KEY, JSON.stringify(updatedReviews));
       message.success("Đã gửi câu trả lời.");
-      loadReviews(productId); // Tải lại danh sách bình luận
-      setReplyingTo(null); // Đóng form
+      loadReviews(productId); // Tải lại danh sách
+      setReplyingTo(null);
       setReplyContent("");
-    } else {
-      message.error("Không thể gửi câu trả lời.");
+    } catch (error) {
+      console.error("Lỗi khi trả lời:", error);
+      message.error("Có lỗi xảy ra.");
+    } finally {
+      setSubmittingReply(false);
     }
-    setSubmittingReply(false);
+  };
+
+  // ⭐️ HÀM MỚI: Xử lý gửi đánh giá mới
+  const handleReviewSubmit = async () => {
+    if (!currentUser) {
+      message.warning("Vui lòng đăng nhập để viết đánh giá.");
+      navigate('/login');
+      return;
+    }
+    if (!newReviewContent.trim()) {
+      message.warning("Vui lòng nhập nội dung đánh giá.");
+      return;
+    }
+
+    setSubmittingReview(true);
+    try {
+      const GLOBAL_REVIEWS_KEY = 'app_reviews_v1';
+      const storedReviews = localStorage.getItem(GLOBAL_REVIEWS_KEY);
+      const allReviews = storedReviews ? JSON.parse(storedReviews) : [];
+
+      const newReview = {
+        id: `rev_${new Date().getTime()}`,
+        productId: productId,
+        productTitle: product.title, // 👈 THÊM: Tên sản phẩm
+        productImage: product.thumbnail, // 👈 THÊM: Ảnh sản phẩm
+        user: currentUser.username || currentUser.email || 'User',
+        userAvatar: currentUser.image || null,
+        rating: newRating,
+        comment: newReviewContent,
+        date: new Date().toISOString(),
+        read: false, // 👈 THÊM: Trạng thái chưa đọc (cho thông báo)
+        adminReplies: []
+      };
+
+      allReviews.unshift(newReview); // Thêm vào đầu danh sách
+      localStorage.setItem(GLOBAL_REVIEWS_KEY, JSON.stringify(allReviews));
+      
+      message.success("Cảm ơn bạn đã đánh giá sản phẩm!");
+      loadReviews(productId);
+      setNewReviewContent("");
+      setNewRating(5);
+    } catch (error) {
+      console.error("Lỗi khi gửi đánh giá:", error);
+      message.error("Có lỗi xảy ra.");
+    } finally {
+      setSubmittingReview(false);
+    }
   };
 
   if (loading) {
@@ -209,6 +293,20 @@ const ProductDetail = () => {
     message.info('Đang chuyển hướng đến trang thanh toán...');
     navigate('/checkout'); 
   };
+
+  // Lọc danh sách đánh giá
+  const filteredReviews = reviews.filter(review => {
+    if (filterRating === 'all') return true;
+    return Number(review.rating) === Number(filterRating);
+  });
+
+  // Tính số lượng đánh giá cho từng mức sao
+  const reviewCounts = reviews.reduce((acc, review) => {
+    const rating = Number(review.rating);
+    acc[rating] = (acc[rating] || 0) + 1;
+    return acc;
+  }, {});
+
   // ==========================================
 
 
@@ -360,11 +458,65 @@ const ProductDetail = () => {
       <Row style={{ marginTop: '40px' }}>
         <Col span={24}>
           <Divider />
+          
+          {/* FORM VIẾT ĐÁNH GIÁ */}
+          <div style={{ marginBottom: 40, padding: 24, background: '#f9f9f9', borderRadius: 8 }}>
+            <Title level={4}>Viết đánh giá của bạn</Title>
+            {currentUser ? (
+              <Space direction="vertical" style={{ width: '100%' }}>
+                <Space>
+                  <Text>Đánh giá:</Text>
+                  <Rate value={newRating} onChange={setNewRating} />
+                </Space>
+                <TextArea 
+                  rows={4} 
+                  placeholder="Chia sẻ cảm nhận của bạn về sản phẩm..." 
+                  value={newReviewContent}
+                  onChange={(e) => setNewReviewContent(e.target.value)}
+                />
+                <Button 
+                  type="primary" 
+                  onClick={handleReviewSubmit}
+                  loading={submittingReview}
+                  icon={<SendOutlined />}
+                >
+                  Gửi đánh giá
+                </Button>
+              </Space>
+            ) : (
+              <Space>
+                <Text>Vui lòng <Button type="link" onClick={() => navigate('/login')} style={{ padding: 0 }}>đăng nhập</Button> để viết đánh giá.</Text>
+              </Space>
+            )}
+          </div>
+
           <Title level={4}>Đánh giá từ khách hàng ({reviews.length})</Title>
+          
+          {/* Bộ lọc đánh giá */}
+          <div style={{ marginBottom: 20 }}>
+            <Space>
+              <span style={{ fontWeight: 500 }}>Lọc theo:</span>
+              <Select
+                value={filterRating}
+                bordered={false}
+                style={{ width: 150, backgroundColor: 'transparent' }}
+                onChange={(value) => setFilterRating(value)}
+                options={[
+                  { value: 'all', label: `Tất cả (${reviews.length})` },
+                  { value: 5, label: `5 Sao (${reviewCounts[5] || 0})` },
+                  { value: 4, label: `4 Sao (${reviewCounts[4] || 0})` },
+                  { value: 3, label: `3 Sao (${reviewCounts[3] || 0})` },
+                  { value: 2, label: `2 Sao (${reviewCounts[2] || 0})` },
+                  { value: 1, label: `1 Sao (${reviewCounts[1] || 0})` },
+                ]}
+              />
+            </Space>
+          </div>
+
           <List
             itemLayout="horizontal"
-            dataSource={reviews}
-            locale={{ emptyText: "Chưa có đánh giá nào cho sản phẩm này." }}
+            dataSource={filteredReviews}
+            locale={{ emptyText: "Chưa có đánh giá nào phù hợp." }}
             renderItem={(review) => {
               const isFocus = location.state?.reviewToFocus === review.id;
               return (
@@ -409,15 +561,16 @@ const ProductDetail = () => {
                   />
                 </List.Item>
 
-                {/* PHẦN TRẢ LỜI CỦA ADMIN */}
+                {/* PHẦN TRẢ LỜI (ADMIN & USER) */}
                 {/* ⭐ THAY ĐỔI: Lặp qua mảng adminReplies để hiển thị tất cả phản hồi */}
                 {Array.isArray(review.adminReplies) && review.adminReplies.map((reply, index) => (
                   <div key={index} style={{ marginLeft: 54, paddingBottom: 16, paddingTop: index > 0 ? 10 : 0 }}>
                      <List.Item.Meta
-                       avatar={<Avatar src="https://api.dicebear.com/7.x/adventurer/svg?seed=Admin" icon={<UserOutlined />} />}
+                       avatar={<Avatar src={reply.userAvatar || "https://api.dicebear.com/7.x/adventurer/svg?seed=User"} icon={<UserOutlined />} />}
                        title={
                         <Space>
-                           <Text strong>Doãn Bá Min</Text>
+                           <Text strong>{reply.user || 'Người dùng'}</Text>
+                           {reply.role === 'admin' && <Text type="secondary" style={{ fontSize: 12, border: '1px solid #ccc', padding: '0 4px', borderRadius: 4 }}>QTV</Text>}
                            <Text type="secondary" style={{ fontSize: 12 }}>
                              {new Date(reply.date).toLocaleString('vi-VN')}
                            </Text>
@@ -428,16 +581,16 @@ const ProductDetail = () => {
                    </div>
                 ))}
 
-                {/* NÚT VÀ FORM TRẢ LỜI CHO ADMIN */}
-                {/* ⭐ THAY ĐỔI: Bỏ điều kiện !review.adminReply để admin luôn có thể trả lời */}
-                {currentUser?.role === 'admin' && (
+                {/* NÚT VÀ FORM TRẢ LỜI CHO TẤT CẢ USER */}
+                {/* ⭐ THAY ĐỔI: Cho phép mọi user đã đăng nhập trả lời */}
+                {currentUser && (
                   <div style={{ marginLeft: 54, paddingBottom: 16 }}>
                     {replyingTo !== review.id ? (
                       <Button type="link" onClick={() => {
                         setReplyingTo(review.id);
                         setReplyContent(""); // Đảm bảo ô input luôn trống khi bắt đầu
                       }}>
-                        Thêm trả lời
+                        Trả lời
                       </Button>
                     ) : (
                       <Form onFinish={() => handleReplySubmit(review.id)}>
