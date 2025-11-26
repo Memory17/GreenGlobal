@@ -1,0 +1,373 @@
+/* LuckyWheel.css */
+
+/* Bubble Button */
+.lucky-wheel-bubble {
+  position: fixed;
+  bottom: 158px;
+  right: 3px;
+  width: 60px;
+  height: 60px;
+  z-index: 999;
+  cursor: pointer;
+  
+  /* Shape & Border (Outer Casing) */
+  border-radius: 50%;
+  background: #FF6F00; /* Orange casing behind */
+  border: 2px solid #fff; /* White outer rim */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  
+  /* Float Animation */
+  animation: gentleFloat 3s ease-in-out infinite;
+  transition: transform 0.3s ease;
+  
+  /* Flex to center content */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The Wheel Face (Segments) */
+.lucky-wheel-bubble::before {
+  content: '';
+  position: absolute;
+  top: 3px; left: 3px; right: 3px; bottom: 3px; /* Inside the casing */
+  border-radius: 50%;
+  background: conic-gradient(
+    #FDD835 0% 12.5%,
+    #00BCD4 12.5% 25%,
+    #FFFFFF 25% 37.5%,
+    #9C27B0 37.5% 50%,
+    #2196F3 50% 62.5%,
+    #FFEB3B 62.5% 75%,
+    #FF5722 75% 87.5%,
+    #E040FB 87.5% 100%
+  );
+  border: 2px solid #FFD700; /* Gold inner rim */
+  box-sizing: border-box;
+}
+
+/* The Center Knob */
+.lucky-wheel-bubble::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: radial-gradient(circle, #FFEB3B 40%, #FF9800 100%);
+  border-radius: 50%;
+  border: 2px solid #FFF;
+  z-index: 2;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+/* Define gentleFloat locally if not available globally, or to be safe */
+@keyframes gentleFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.lucky-wheel-bubble:hover {
+  transform: scale(1.1) translateY(-5px); /* Lift up */
+}
+
+.lucky-wheel-bubble:hover::before {
+  animation: spin 2s linear infinite; /* Spin the wheel face */
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.lucky-wheel-bubble .bubble-icon {
+  display: none;
+}
+
+@keyframes slow-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Modal Overlay */
+.lucky-wheel-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7); /* Dark dimming */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  backdrop-filter: blur(5px);
+}
+
+.lucky-wheel-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Wheel Container */
+.lucky-wheel-container {
+  position: relative;
+  width: 400px;
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pop-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes pop-in {
+  0% { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Wrapper for idle animation */
+.wheel-wrapper {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 50%;
+}
+
+.wheel-wrapper.idle-spin {
+  animation: slow-rotate-idle 20s linear infinite;
+}
+
+@keyframes slow-rotate-idle {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* The Wheel */
+.the-wheel {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 10px solid #fff;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+  position: relative;
+  overflow: hidden;
+  transition: transform 5s cubic-bezier(0.25, 0.1, 0.25, 1); /* Ease-out for spinning */
+  background: #fff;
+}
+
+.wheel-segment {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 50%;
+  height: 50%;
+  transform-origin: 0% 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: background-color 0.3s ease, filter 0.3s ease;
+}
+
+.wheel-segment:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+  filter: brightness(1.2);
+}
+
+/* Pause idle animation on hover */
+.wheel-wrapper:hover {
+  animation-play-state: paused;
+}
+
+.wheel-segment span {
+  position: absolute;
+  left: -100%;
+  width: 200%;
+  top: 40px;
+  text-align: center;
+  transform: rotate(45deg); /* Adjust based on segment count */
+  font-size: 12px;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+  padding: 0 20px;
+}
+
+/* Pointer */
+.wheel-pointer {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 50px;
+  background: #ff4d4f;
+  clip-path: polygon(50% 100%, 0 0, 100% 0);
+  z-index: 10;
+  filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
+}
+
+/* Spin Button */
+.spin-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(circle at 30% 30%, #ff6b6b, #ff4757);
+  border-radius: 50%;
+  border: 4px solid #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: #fff;
+  cursor: pointer;
+  z-index: 11;
+  box-shadow: 0 5px 15px rgba(255, 71, 87, 0.4), inset 0 5px 10px rgba(255,255,255,0.2);
+  font-size: 18px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  animation: pulse-btn 2s infinite;
+}
+
+.spin-button:hover {
+  transform: translate(-50%, -50%) scale(1.05);
+  box-shadow: 0 8px 20px rgba(255, 71, 87, 0.6), inset 0 5px 10px rgba(255,255,255,0.4);
+}
+
+.spin-button:active {
+  transform: translate(-50%, -50%) scale(0.95);
+}
+
+.spin-button:disabled {
+  background: #bdc3c7;
+  border-color: #ecf0f1;
+  color: #7f8c8d;
+  cursor: not-allowed;
+  animation: none;
+  box-shadow: none;
+}
+
+@keyframes pulse-btn {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 15px rgba(255, 71, 87, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 71, 87, 0);
+  }
+}
+
+/* Close Button */
+.close-wheel-btn {
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 30px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.close-wheel-btn:hover {
+  transform: scale(1.2);
+}
+
+/* Fireworks Canvas */
+.fireworks-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2001; /* Above overlay */
+}
+
+/* Result Modal/Popup inside */
+.result-popup {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.95);
+  padding: 30px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+  z-index: 2002; /* Above fireworks */
+  min-width: 300px;
+  animation: pop-in-bounce 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  backdrop-filter: blur(10px);
+  border: 2px solid #fff;
+}
+
+@keyframes pop-in-bounce {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+  80% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+.result-popup h3 {
+  color: #ff4757;
+  margin-bottom: 15px;
+  font-size: 24px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.result-icon {
+  font-size: 60px;
+  margin: 10px 0;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+  animation: float-icon 3s ease-in-out infinite;
+}
+
+@keyframes float-icon {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.result-text {
+  font-size: 22px;
+  font-weight: 800;
+  margin: 10px 0 20px;
+  background: linear-gradient(45deg, #FF6B6B, #FF8E53);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.result-popup button {
+  margin-top: 10px;
+  padding: 12px 30px;
+  background: linear-gradient(to right, #11998e, #38ef7d);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  box-shadow: 0 4px 15px rgba(56, 239, 125, 0.4);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.result-popup button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(56, 239, 125, 0.6);
+}
+
+.result-popup button:active {
+  transform: translateY(1px);
+}

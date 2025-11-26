@@ -94,7 +94,7 @@
   font-size: 28px;
   font-weight: 600;
   color: #1677ff;
-  width: 420px;
+  width: 100%; /* Changed from fixed width */
   padding-top: 20px;
   padding-left: 10px;
   padding-right: 10px;
@@ -114,6 +114,38 @@
   font-weight: bold !important;
   font-size: 30px !important;
   color: var(--title-color) !important;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 992px) {
+  .login-row {
+    width: 90%;
+  }
+  
+  .title-left {
+    font-size: 40px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .login {
+    padding: 40px 15px;
+    align-items: flex-start;
+  }
+
+  .login-row {
+    width: 100%;
+    margin-top: 0;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+  
+  .login-col-right {
+    padding: 30px 20px;
+  }
+  
+  .login-title {
+    font-size: 24px !important;
+  }
 }
 
 /* --- HIỆU ỨNG INPUT (MỚI) --- */

@@ -22,6 +22,7 @@ import {
     Avatar,
     Tag,
     message,
+    Switch,
 } from "antd";
 import {
     TagsOutlined,
@@ -33,9 +34,13 @@ import {
     DeleteOutlined,
     CloseCircleOutlined,
     CarOutlined,
+    GiftOutlined,
+    DollarCircleFilled,
+    GiftFilled,
 } from "@ant-design/icons";
 import { useCart } from "../context/CartContext";
 import { useOrderHistory } from "../context/OrderHistoryContext";
+import { useAuth } from "../context/AuthContext";
 
 import { getAllCoupons } from "../data/discountServiceUser.js";
 import { getAllShippingDiscounts } from "../data/shippingServiceUser.js";
@@ -73,6 +78,7 @@ const parseCurrency = (value) => {
 
 const CartProducts = () => {
     const navigate = useNavigate();
+    const { currentUser } = useAuth();
     const [selectAll, setSelectAll] = useState(false);
     const { cartItems, removeFromCart, updateQuantity, clearCart } = useCart();
     // Thêm 'addReview' từ context (Giả định context của bạn cung cấp hàm này)
@@ -90,6 +96,59 @@ const CartProducts = () => {
     const [appliedShippingRule, setAppliedShippingRule] = useState(null);
     const [shippingDiscountValue, setShippingDiscountValue] = useState(0);
 
+    // --- State cho Lucky Rewards ---
+    const [isLuckyRewardsModalVisible, setIsLuckyRewardsModalVisible] = useState(false);
+    const [luckyRewards, setLuckyRewards] = useState([]);
+    const [useLuckyCoins, setUseLuckyCoins] = useState(false);
+    const [appliedLuckyCoupon, setAppliedLuckyCoupon] = useState(null);
+
+    // Logic xử lý hiển thị phần thưởng (UI Only)
+    const { totalCoins, groupedCoupons } = React.useMemo(() => {
+        let coins = 0;
+        const couponsMap = {};
+
+        luckyRewards.forEach(reward => {
+            if (reward.type === 'coin') {
+                coins += Number(reward.value);
+            } else if (reward.type === 'coupon') {
+                // Group by ID or Label/Value combination
+                const key = reward.id || `${reward.label}-${reward.value}`;
+                if (couponsMap[key]) {
+                    couponsMap[key].quantity += 1;
+                } else {
+                    couponsMap[key] = { ...reward, quantity: 1 };
+                }
+            }
+        });
+
+        return {
+            totalCoins: coins,
+            groupedCoupons: Object.values(couponsMap)
+        };
+    }, [luckyRewards]);
+
+    const handleShowLuckyRewardsModal = () => {
+        try {
+            const storageKey = currentUser ? `lucky_wheel_rewards_${currentUser.id || currentUser.email}` : 'lucky_wheel_rewards_guest';
+            const savedRewards = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            setLuckyRewards(savedRewards);
+        } catch (e) {
+            setLuckyRewards([]);
+        }
+        setIsLuckyRewardsModalVisible(true);
+    };
+
+    // Reset rewards when user changes
+    useEffect(() => {
+        setLuckyRewards([]);
+        setAppliedLuckyCoupon(null);
+        setUseLuckyCoins(false);
+    }, [currentUser]);
+
+    const handleCloseLuckyRewardsModal = () => {
+        setIsLuckyRewardsModalVisible(false);
+    };
+
     // --- State cho Modal Đánh giá ---
     const [isReviewModalVisible, setIsReviewModalVisible] = useState(false);
     const [reviewingItem, setReviewingItem] = useState(null); // Sẽ lưu { orderId, product }
@@ -105,7 +164,40 @@ const CartProducts = () => {
 
     const baseDeliveryFee = subtotal > 0 ? 20 : 0;
     const finalDeliveryFee = Math.max(0, baseDeliveryFee - shippingDiscountValue);
-    const total = subtotal - discountAmount + finalDeliveryFee;
+    
+    // Tính toán giảm giá từ Lucky Wheel
+    const luckyDiscountAmount = React.useMemo(() => {
+        let discount = 0;
+        
+        // 1. Giảm giá từ Xu (1 xu = 1 đơn vị tiền tệ)
+        if (useLuckyCoins) {
+            discount += totalCoins;
+        }
+
+        // 2. Giảm giá từ Coupon may mắn
+        if (appliedLuckyCoupon) {
+            const valStr = String(appliedLuckyCoupon.value);
+            if (valStr.includes('%')) {
+                const percent = parseFloat(valStr.replace('%', ''));
+                if (!isNaN(percent)) {
+                    discount += (subtotal * percent) / 100;
+                }
+            } else if (valStr === 'Freeship') {
+                discount += finalDeliveryFee; 
+            } else {
+                // Giả sử là số tiền cố định
+                const amount = parseFloat(valStr);
+                if (!isNaN(amount)) {
+                    discount += amount;
+                }
+            }
+        }
+
+        // Đảm bảo không giảm quá subtotal + shipping
+        return Math.min(discount, subtotal + finalDeliveryFee);
+    }, [useLuckyCoins, totalCoins, appliedLuckyCoupon, subtotal, finalDeliveryFee]);
+
+    const total = Math.max(0, subtotal - discountAmount + finalDeliveryFee - luckyDiscountAmount);
 
     const calculateProductDiscount = useCallback((coupon, currentSubtotal) => {
         if (!coupon || !coupon.discount) return 0;
@@ -281,12 +373,15 @@ const CartProducts = () => {
         navigate("/checkout", {
             state: {
                 subtotal,
-                discountAmount,
+                discountAmount, // Normal coupon discount
+                luckyDiscountAmount, // Lucky wheel discount
                 shippingDiscountValue,
                 finalDeliveryFee,
                 total,
                 appliedCouponName: appliedCoupon ? appliedCoupon.name : null,
                 appliedShippingRuleName: appliedShippingRule ? appliedShippingRule.ruleName : null,
+                appliedLuckyCoupon: appliedLuckyCoupon,
+                useLuckyCoins: useLuckyCoins,
             },
         });
     };
@@ -469,11 +564,11 @@ const CartProducts = () => {
             </div>
 
             {/* Trạng thái Đơn hàng (giả định) */}
-            <Row gutter={16} className="order-status-shopping">
-                <Col className="order-confirm" span={3}>
+            <Row gutter={[16, 16]} className="order-status-shopping">
+                <Col className="order-confirm" xs={24} lg={3}>
                     <Text className="order-status-title">Trạng thái Đơn hàng: </Text>
                 </Col>
-                <Col className="order-confirm" span={3}>
+                <Col className="order-confirm" xs={12} sm={8} md={4} lg={3}>
                     <div
                         className="checkpoint-col"
                         onClick={() => openStatusModal('confirming')}
@@ -486,7 +581,7 @@ const CartProducts = () => {
                         <span className="checkpoint" />
                     </div>
                 </Col>
-                    <Col className="order-confirm" span={3}>
+                    <Col className="order-confirm" xs={12} sm={8} md={4} lg={3}>
                         <div className="checkpoint-col" onClick={() => openStatusModal('confirmed')} style={{ cursor: 'pointer' }}>
                             <Badge count={Array.isArray(orderHistory) ? orderHistory.filter(o => STATUS_MAP.confirmed.match(o.status)).length : 0} color="green" offset={[-2, 5]} showZero>
                                 <CheckCircleOutlined style={{ fontSize: 24 }} />
@@ -495,7 +590,7 @@ const CartProducts = () => {
                             <span className="checkpoint" />
                         </div>
                     </Col>
-                    <Col className="order-confirm" span={3}>
+                    <Col className="order-confirm" xs={12} sm={8} md={4} lg={3}>
                         <div className="checkpoint-col" onClick={() => openStatusModal('delivering')} style={{ cursor: 'pointer' }}>
                             <Badge count={Array.isArray(orderHistory) ? orderHistory.filter(o => STATUS_MAP.delivering.match(o.status)).length : 0} color="blue" offset={[-2, 5]} showZero>
                                 <ShoppingCartOutlined style={{ fontSize: 24 }} />
@@ -504,7 +599,7 @@ const CartProducts = () => {
                             <span className="checkpoint" />
                         </div>
                     </Col>
-                    <Col className="order-confirm" span={3}>
+                    <Col className="order-confirm" xs={12} sm={8} md={4} lg={3}>
                         <div className="checkpoint-col" onClick={() => openStatusModal('delivered')} style={{ cursor: 'pointer' }}>
                             {/* ⭐️ THAY ĐỔI: Quay lại logic đếm số ĐƠN HÀNG cho trạng thái "Đã Giao" */}
                             <Badge 
@@ -519,7 +614,7 @@ const CartProducts = () => {
                             <span className="checkpoint" />
                         </div>
                     </Col>
-                    <Col className="order-confirm" span={3}>
+                    <Col className="order-confirm" xs={12} sm={8} md={4} lg={3}>
                         <div className="checkpoint-col" onClick={() => openStatusModal('review')} style={{ cursor: 'pointer' }}>
                             {/* Giữ nguyên logic đếm SẢN PHẨM cho trạng thái "Chờ Đánh giá" */}
                             <Badge 
@@ -531,7 +626,7 @@ const CartProducts = () => {
                             <span className="checkpoint" />
                         </div>
                     </Col>
-                    <Col className="order-confirm" span={3}>
+                    <Col className="order-confirm" xs={12} sm={8} md={4} lg={3}>
                         <div className="checkpoint-col" onClick={() => openStatusModal('cancelled')} style={{ cursor: 'pointer' }}>
                             <Badge count={Array.isArray(orderHistory) ? orderHistory.filter(o => STATUS_MAP.cancelled.match(o.status)).length : 0} color="gray" offset={[-2, 5]} showZero>
                                 <CloseCircleOutlined style={{ fontSize: 24, color: '#888' }} />
@@ -550,8 +645,8 @@ const CartProducts = () => {
             </div>
 
             <div className="shopping-cart-content">
-                <Row className="shopping-cart-content" gutter={32}>
-                    <Col span={15} className="shopping-col-left">
+                <Row className="shopping-cart-content" gutter={[32, 32]}>
+                    <Col xs={24} lg={15} className="shopping-col-left">
                         <div className="select-card">
                             <div className="select-card-item">
                                 <Checkbox className="select-checkbox" checked={selectAll} onChange={(e) => setSelectAll(e.target.checked)}>
@@ -570,11 +665,11 @@ const CartProducts = () => {
                                 ) : (
                                     cartItems.map((item) => (
                                         <React.Fragment key={item.product.id}>
-                                            <Row className="item-cart">
-                                                <Col span={5} className="item-cart-col">
+                                            <Row className="item-cart" gutter={[16, 16]}>
+                                                <Col xs={8} sm={5} className="item-cart-col">
                                                     <img src={item.product.thumbnail} alt={item.product.title} />
                                                 </Col>
-                                                <Col span={10} className="item-cart-col">
+                                                <Col xs={16} sm={10} className="item-cart-col">
                                                     <Text className="item-text">{item.product.title}</Text>
                                                     <br />
                                                     <Text className="item-attribute" ellipsis={{ tooltip: item.product.description }}>
@@ -585,7 +680,7 @@ const CartProducts = () => {
                                                     <br />
                                                     <Text className="item-price">${item.product.price}</Text>
                                                 </Col>
-                                                <Col span={9} className="action-cart">
+                                                <Col xs={24} sm={9} className="action-cart">
                                                     <DeleteOutlined className="delete-icon" style={{ fontSize: "24px" }} onClick={() => removeFromCart(item.product.id)} />
                                                     <Space className="quantity-product-cart">
                                                         <Button onClick={() => updateQuantity(item.product.id, item.quantity - 1)}>-</Button>
@@ -602,7 +697,7 @@ const CartProducts = () => {
                         </div>
                     </Col>
 
-                    <Col span={9} className="shopping-col-right">
+                    <Col xs={24} lg={9} className="shopping-col-right">
                         <div className="sumary-card">
                             <div className="sumary-item">
                                 <Title level={5} className="order-sumary">
@@ -624,6 +719,11 @@ const CartProducts = () => {
                                         Xem tất cả mã giảm giá
                                     </Button>
                                 </div>
+                                <div style={{ width: "100%", textAlign: "right", marginTop: "-10px" }}>
+                                    <Button type="link" onClick={handleShowLuckyRewardsModal} icon={<GiftOutlined />} style={{ paddingRight: "0", color: "#fa8c16" }}>
+                                        Phần thưởng từ vòng quay may mắn
+                                    </Button>
+                                </div>
 
                                 <Row className="price-summary">
                                     <Col span={12} className="price-summary-col">
@@ -631,6 +731,26 @@ const CartProducts = () => {
                                         <br />
                                         <Text className="title-price-summary">{appliedCoupon ? `Giảm giá (${appliedCoupon.name})` : "Giảm giá"}</Text>
                                         <br />
+                                        {/* Hiển thị dòng Phần thưởng vòng quay nếu có giảm giá */}
+                                        {(luckyDiscountAmount > 0) && (
+                                            <>
+                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                    <Text className="title-price-summary" style={{ color: '#fa8c16' }}>
+                                                        Phần thưởng vòng quay
+                                                        {appliedLuckyCoupon ? ` (${appliedLuckyCoupon.label})` : ''}
+                                                        {useLuckyCoins && appliedLuckyCoupon ? ' + Xu' : (useLuckyCoins ? ' (Xu)' : '')}
+                                                    </Text>
+                                                    <CloseCircleOutlined 
+                                                        style={{ color: '#ff4d4f', cursor: 'pointer', marginLeft: '8px' }} 
+                                                        onClick={() => {
+                                                            setAppliedLuckyCoupon(null);
+                                                            setUseLuckyCoins(false);
+                                                        }}
+                                                    />
+                                                </div>
+                                                <br />
+                                            </>
+                                        )}
                                         <Text className="title-price-summary">{appliedShippingRule ? `Phí Giao hàng (${appliedShippingRule.ruleName})` : "Phí Giao hàng"}</Text>
                                     </Col>
                                     <Col span={12} className="value-price-summary">
@@ -638,6 +758,13 @@ const CartProducts = () => {
                                         <br />
                                         <Text className="text-discount">-${discountAmount.toFixed(2)}</Text>
                                         <br />
+                                        {/* Giá trị giảm giá từ vòng quay */}
+                                        {(luckyDiscountAmount > 0) && (
+                                            <>
+                                                <Text className="text-discount" style={{ color: '#fa8c16' }}>-${luckyDiscountAmount.toFixed(2)}</Text>
+                                                <br />
+                                            </>
+                                        )}
                                         <Text className="text-price-summary">
                                             {shippingDiscountValue > 0 && baseDeliveryFee > 0 ? (
                                                 <>
@@ -692,6 +819,103 @@ const CartProducts = () => {
                         <div className="coupon-item-action"><Text className="coupon-item-discount">{item.discountType === "FREE" ? "MIỄN PHÍ SHIP" : item.discountValue}</Text><Tag className="coupon-item-code" color="green">{`Đơn hàng từ ${item.minOrderValue}`}</Tag></div>
                     </List.Item>
                 )} />
+            </Modal>
+
+            {/* === MODAL PHẦN THƯỞNG VÒNG QUAY MAY MẮN === */}
+            <Modal
+                title="Phần thưởng từ vòng quay may mắn"
+                open={isLuckyRewardsModalVisible}
+                onCancel={handleCloseLuckyRewardsModal}
+                footer={[
+                    <Button key="close" onClick={handleCloseLuckyRewardsModal}>
+                        Đóng
+                    </Button>,
+                ]}
+                width={600}
+            >
+                {/* Phần hiển thị Xu tích lũy */}
+                <div style={{ 
+                    background: '#fff7e6', 
+                    padding: '16px', 
+                    borderRadius: '8px', 
+                    marginBottom: '16px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    border: '1px solid #ffd591'
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <Avatar 
+                            style={{ backgroundColor: '#ffec3d', color: '#fff' }} 
+                            icon={<DollarCircleFilled style={{ color: '#fa8c16', fontSize: '20px' }} />} 
+                        />
+                        <div>
+                            <Text strong style={{ fontSize: '16px' }}>Xu tích lũy</Text>
+                            <br/>
+                            <Text type="secondary">Tổng cộng: <span style={{ color: '#fa8c16', fontWeight: 'bold' }}>{useLuckyCoins ? 0 : totalCoins} Xu</span></Text>
+                        </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <Text>Sử dụng ngay</Text>
+                        <Switch 
+                            checked={useLuckyCoins} 
+                            onChange={(checked) => setUseLuckyCoins(checked)} 
+                            disabled={totalCoins === 0}
+                        />
+                    </div>
+                </div>
+
+                <Divider orientation="left">Mã giảm giá của bạn</Divider>
+
+                <List
+                    itemLayout="horizontal"
+                    dataSource={groupedCoupons}
+                    locale={{ emptyText: "Bạn chưa có mã giảm giá nào." }}
+                    renderItem={(item) => {
+                        const isApplied = appliedLuckyCoupon && appliedLuckyCoupon.id === item.id;
+                        const displayQuantity = isApplied ? item.quantity - 1 : item.quantity;
+
+                        // Nếu số lượng hiển thị là 0, ẩn khỏi danh sách
+                        if (displayQuantity === 0) return null;
+
+                        return (
+                            <List.Item
+                                actions={[
+                                    <Button 
+                                        type="primary" 
+                                        size="small"
+                                        onClick={() => {
+                                            if (isApplied) {
+                                                setAppliedLuckyCoupon(null);
+                                            } else {
+                                                setAppliedLuckyCoupon(item);
+                                            }
+                                        }}
+                                    >
+                                        {isApplied ? "Bỏ chọn" : "Áp dụng"}
+                                    </Button>
+                                ]}
+                            >
+                                <List.Item.Meta
+                                    avatar={
+                                        <Badge count={displayQuantity} color="volcano" offset={[0, 5]} showZero>
+                                            <Avatar
+                                                style={{ backgroundColor: "#ff4d4f", color: "#fff" }}
+                                                icon={<GiftFilled />}
+                                            />
+                                        </Badge>
+                                    }
+                                    title={<Text strong>{item.label}</Text>}
+                                    description={
+                                        <Text type="secondary">
+                                            {item.value}
+                                        </Text>
+                                    }
+                                />
+                            </List.Item>
+                        );
+                    }}
+                />
             </Modal>
             
             {/* === MODAL TRẠNG THÁI ĐƠN HÀNG (ĐÃ CHỈNH SỬA) === */}

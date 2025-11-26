@@ -56,6 +56,11 @@ const ReviewOrder = () => {
     totals: { subtotal: 0, discount: 0, shipping: 0, total: 0 },
   };
 
+  // Fallback calculation for lucky discount if missing
+  const luckyDiscountValue = totals.luckyDiscount !== undefined 
+      ? totals.luckyDiscount 
+      : Math.max(0, totals.subtotal + totals.shipping - totals.discount - totals.total);
+
   // State cho Thông tin Giao hàng
   const [currentDelivery, setCurrentDelivery] = useState(initialDelivery);
   const [isShipToModalVisible, setIsShipToModalVisible] = useState(false);
@@ -189,9 +194,9 @@ const ReviewOrder = () => {
       <EnvironmentFilled style={{ color: "green" }} /> <br />
 
       {/* --- HÀNG 1: SHIP TO, PAYMENT, SUMMARY --- */}
-      <Row className="ship-to-payment" gutter={16}>
+      <Row className="ship-to-payment" gutter={[16, 24]}>
         {/* "GIAO HÀNG ĐẾN" */}
-        <Col className="ship-to" span={8}>
+        <Col className="ship-to" xs={24} md={12} lg={8}>
           <Title level={3} className="ship-to-title">
             <span className="title-content-wrapper">
               <TruckFilled style={{ color: "green", marginRight: "10px" }} />
@@ -273,7 +278,7 @@ const ReviewOrder = () => {
         </Col>
 
         {/* "THANH TOÁN" */}
-        <Col className="payment-review" span={9}>
+        <Col className="payment-review" xs={24} md={12} lg={9}>
           <Title level={3} className="ship-to-title">
             <span className="title-content-wrapper">
               <CreditCardOutlined
@@ -315,7 +320,7 @@ const ReviewOrder = () => {
         </Col>
 
         {/* "TÓM TẮT" */}
-        <Col className="summary-review" span={7}>
+        <Col className="summary-review" xs={24} md={24} lg={7}>
           <Title level={3} className="ship-to-title">
             <span className="title-content-wrapper">
               <FileDoneOutlined
@@ -333,12 +338,24 @@ const ReviewOrder = () => {
             </div>
             <div className="shipping">
               <Text className="shipping-text" style={{ color: "red" }}>
-                Giảm giá (-20%)
+                Giảm giá
               </Text>
               <Text className="shipping-value" style={{ color: "red" }}>
                 -${totals.discount.toFixed(2)}
               </Text>
             </div>
+            {(luckyDiscountValue > 0) && (
+                <div className="shipping">
+                  <Text className="shipping-text" style={{ color: "#fa8c16" }}>
+                    Phần thưởng vòng quay
+                    {totals.appliedLuckyCoupon ? ` (${totals.appliedLuckyCoupon.label})` : ''}
+                    {totals.useLuckyCoins && totals.appliedLuckyCoupon ? ' + Xu' : (totals.useLuckyCoins ? ' (Xu)' : '')}
+                  </Text>
+                  <Text className="shipping-value" style={{ color: "#fa8c16" }}>
+                    -${luckyDiscountValue.toFixed(2)}
+                  </Text>
+                </div>
+            )}
             <div className="shipping">
               <Text className="shipping-text">Phí vận chuyển</Text>
               <Text className="shipping-value">
@@ -400,6 +417,7 @@ const ReviewOrder = () => {
                   dataSource={processedData}
                   pagination={false}
                   className="product-table"
+                  scroll={{ x: 'max-content' }}
                 />
               </div>
             </div>

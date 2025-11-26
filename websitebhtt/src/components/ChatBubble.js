@@ -681,26 +681,26 @@ const ChatBubble = () => {
       )}
 
       <FloatButton
+        className="chat-bubble-float-btn messenger-btn"
         icon={isMessengerOpen ? <CloseOutlined /> : <WechatOutlined />}
         type="primary"
         style={{
           right: 24,
-          bottom: 88,
+          bottom: 100,
           zIndex: 1001,
-          transform: 'scale(1.5)'
         }}
         onClick={toggleMessenger}
         tooltip={<div>{isMessengerOpen ? 'Đóng Messenger' : 'Mở Messenger'}</div>}
       />
 
       <FloatButton
+        className="chat-bubble-float-btn support-btn"
         icon={isPopupVisible ? <CloseOutlined /> : <CustomerServiceOutlined />}
         type="primary"
         style={{
           right: 24,
           bottom: 24,
           zIndex: 1001,
-          transform: 'scale(1.5)',
         }}
         onClick={togglePopup}
         tooltip={<div>{isPopupVisible ? 'Đóng hỗ trợ' : 'Mở hỗ trợ'}</div>}

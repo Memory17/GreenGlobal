@@ -50,8 +50,8 @@ const About = () => {
 
       {/* (Phần 3 card dịch vụ giữ nguyên) */}
       <div style={{ paddingLeft: "20px", paddingRight: "20px" }}>
-        <Row className="about-us-service" gutter={16}>
-          <Col className="about-us-service-col" span={8}>
+        <Row className="about-us-service" gutter={[32, 32]}>
+          <Col className="about-us-service-col" xs={24} md={8}>
             <div className="content">
               <img
                 src="https://images.pexels.com/photos/105028/pexels-photo-105028.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
@@ -70,7 +70,7 @@ const About = () => {
               </Button>
             </div>
           </Col>
-          <Col className="about-us-service-col" span={8}>
+          <Col className="about-us-service-col" xs={24} md={8}>
             <div className="content">
               <img
                 src="https://images.pexels.com/photos/4393021/pexels-photo-4393021.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
@@ -89,7 +89,7 @@ const About = () => {
               </Button>
             </div>
           </Col>
-          <Col className="about-us-service-col" span={8}>
+          <Col className="about-us-service-col" xs={24} md={8}>
             <div className="content">
               <img
                 src="https://images.pexels.com/photos/5632398/pexels-photo-5632398.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"

@@ -372,3 +372,82 @@
   color: var(--primary-green) !important;
   border-color: var(--primary-green) !important;
 }
+
+/* --- RESPONSIVE --- */
+@media (max-width: 992px) {
+  .title-left-about {
+    font-size: 2.25rem !important;
+  }
+  
+  .high-quality-col-left .ant-typography-title {
+    font-size: 2.25rem !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .title-about {
+    padding: 3rem 5%;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .title-left-about {
+    font-size: 2rem !important;
+    text-align: center;
+  }
+  
+  .title-right-about {
+    text-align: center;
+    margin: 0 auto;
+  }
+
+  .about-us-service {
+    padding: 2rem 5% !important;
+  }
+  
+  .high-quality {
+    padding: 3rem 5%;
+  }
+
+  .high-quality-col-left {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .high-quality-col-left .ant-typography-title {
+    font-size: 2rem !important;
+  }
+  
+  .big-member-div {
+    padding: 2rem 5% 4rem;
+    gap: 4rem; /* Tăng khoảng cách vì avatar lồi lên */
+  }
+  
+  .member {
+    width: 100%;
+    max-width: 400px;
+    margin-top: 2rem; /* Cho avatar */
+  }
+
+  .welcome-website {
+    padding: 3rem 5%;
+  }
+
+  .welcome-website-content .ant-typography-title {
+    font-size: 2rem !important;
+    text-align: center;
+  }
+  
+  .welcome-website-text {
+    text-align: center;
+  }
+  
+  .button-know {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .button-know .ant-btn {
+    width: 100%;
+  }
+}

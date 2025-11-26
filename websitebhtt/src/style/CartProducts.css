@@ -393,3 +393,72 @@
 .cart-order-cancel-button{
   transform: translateY(6px);
 }
+
+/* --- RESPONSIVE --- */
+@media (max-width: 992px) {
+  .shopping-card-page {
+    padding: 1rem 3%;
+  }
+  
+  .shopping-col-right {
+    position: static;
+    margin-top: 1.5rem;
+  }
+
+  .action-cart {
+    justify-content: space-between;
+    margin-top: 0.5rem;
+  }
+  
+  .item-cart {
+    align-items: flex-start;
+  }
+
+  .checkpoint-col {
+    margin-bottom: 1.5rem;
+  }
+  
+  .order-status-shopping::before {
+    display: none; /* Hide the connecting line on mobile/tablet when items wrap */
+  }
+}
+
+@media (max-width: 576px) {
+  .shopping-cart-title {
+    font-size: 1.5rem !important;
+  }
+  
+  .cart-title-shopping {
+    font-size: 1.2rem !important;
+  }
+  
+  .item-text {
+    font-size: 0.95rem;
+  }
+  
+  .item-price {
+    font-size: 1rem;
+  }
+  
+  .coupon-apply {
+    flex-direction: column;
+  }
+  
+  .coupon-left {
+    width: 100%;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+  }
+  
+  .apply-button {
+    width: 100%;
+  }
+  
+  .select-card {
+    padding: 0.75rem 1rem;
+  }
+  
+  .product-card-shopping {
+    padding: 1rem;
+  }
+}

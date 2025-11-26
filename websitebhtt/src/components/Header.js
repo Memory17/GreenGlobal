@@ -15,6 +15,7 @@ import {
   AutoComplete, // MỚI: Thêm AutoComplete
   List, 
   Typography,
+  Popover, // MỚI: Thêm Popover
 } from "antd";
 import {
   UserOutlined,
@@ -25,9 +26,9 @@ import {
   MenuOutlined,
   BellOutlined, // ⭐️ THÊM: Icon chuông
   SearchOutlined,
-  
+  ArrowRightOutlined, // MỚI: Icon mũi tên
 } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom"; // MỚI: Thêm useLocation
 import logo from "../assets/images/logo2.jpg";
 import "../App.css";
 import React, { useState, useEffect, useCallback } from "react"; // MỚI: Thêm useEffect
@@ -42,6 +43,7 @@ const { Text } = Typography;
 
 const AppHeader = () => {
   const navigate = useNavigate();
+  const location = useLocation(); // MỚI: Hook location
   const [showCategories, setShowCategories] = useState(false);
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -53,6 +55,9 @@ const AppHeader = () => {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   // ⭐️ KẾT THÚC: State cho thông báo
 
+  // ⭐️ MỚI: State cho nhắc nhở giỏ hàng
+  const [cartPopoverOpen, setCartPopoverOpen] = useState(false);
+
   const [options, setOptions] = useState([]);
   const [debouncedSearchValue, setDebouncedSearchValue] = useState(searchValue);
 
@@ -60,6 +65,31 @@ const AppHeader = () => {
   const { isLoggedIn, logout, currentUser } = useAuth();
 
   const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
+
+  // ⭐️ MỚI: Effect nhắc nhở giỏ hàng bị bỏ quên
+  useEffect(() => {
+    let showTimer;
+    let hideTimer;
+
+    // Chỉ hiện nhắc nhở nếu có sản phẩm và không ở trang giỏ hàng/thanh toán
+    if (totalItems > 0 && location.pathname !== '/cart' && location.pathname !== '/checkout') {
+      // Yêu cầu: Vào trang 5-7 giây mới hiện
+      showTimer = setTimeout(() => {
+        setCartPopoverOpen(true);
+        
+        // Hiện xong thì 7 giây sau tự tắt (để không che màn hình mãi)
+        hideTimer = setTimeout(() => {
+          setCartPopoverOpen(false);
+        }, 7000);
+      }, 5000); // Đợi 5 giây
+    }
+
+    return () => {
+      clearTimeout(showTimer);
+      clearTimeout(hideTimer);
+      setCartPopoverOpen(false); // Reset trạng thái khi rời trang hoặc dependencies thay đổi
+    };
+  }, [totalItems, location.pathname]); // Chạy khi số lượng item thay đổi hoặc chuyển trang
 
   // ⭐️ BẮT ĐẦU: Logic tải và quản lý thông báo
   const loadUserNotifications = useCallback(() => {
@@ -277,7 +307,7 @@ const AppHeader = () => {
     onChange={setSearchValue}
     value={searchValue}
     popupClassName="modern-search-dropdown" // Class CSS cho menu gợi ý
-    style={{ width: "100%" }}
+    style={{ width: "100%", bottom:"5px" }}
     backfill
   >
     <Input
@@ -312,15 +342,78 @@ const AppHeader = () => {
             </Badge>
           )}
 
-          <Badge
-            count={totalItems}
-            showZero
-            style={{ cursor: "pointer" }}
-            onClick={() => navigate("/cart")}
-            className="header-cart-badge"
+          <Popover
+            content={
+              <div style={{ maxWidth: '320px', padding: '4px' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', marginBottom: '16px' }}>
+                  <div style={{ 
+                      backgroundColor: '#fff1f0', 
+                      padding: '12px', 
+                      borderRadius: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxShadow: '0 2px 8px rgba(255, 77, 79, 0.15)'
+                  }}>
+                    <ShoppingCartOutlined style={{ fontSize: '24px', color: '#ff4d4f' }} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <Text strong style={{ fontSize: '16px', display: 'block', marginBottom: '4px', color: '#262626' }}>
+                      Đừng quên giỏ hàng!
+                    </Text>
+                    <Text type="secondary" style={{ fontSize: '14px', lineHeight: '1.5' }}>
+                      Bạn đang có <Text strong type="danger" style={{ fontSize: '15px' }}>{totalItems}</Text> sản phẩm đang chờ thanh toán.
+                    </Text>
+                  </div>
+                </div>
+                
+                <Button 
+                  type="primary" 
+                  block 
+                  size="large"
+                  icon={<ArrowRightOutlined />}
+                  style={{ 
+                    background: 'linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%)',
+                    border: 'none',
+                    borderRadius: '12px',
+                    height: '42px',
+                    fontWeight: 600,
+                    boxShadow: '0 4px 12px rgba(255, 77, 79, 0.3)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px'
+                  }}
+                  onClick={() => {
+                    setCartPopoverOpen(false);
+                    navigate("/cart");
+                  }}
+                >
+                  Thanh toán ngay
+                </Button>
+              </div>
+            }
+            title={null}
+            trigger="hover"
+            open={cartPopoverOpen && totalItems > 0}
+            onOpenChange={(visible) => {
+              if (totalItems > 0) {
+                setCartPopoverOpen(visible);
+              }
+            }}
+            placement="bottomRight"
+            overlayStyle={{ paddingTop: '8px' }}
           >
-            <ShoppingCartOutlined style={{ fontSize: "24px" }} />
-          </Badge>
+            <Badge
+              count={totalItems}
+              showZero
+              style={{ cursor: "pointer" }}
+              onClick={() => navigate("/cart")}
+              className="header-cart-badge"
+            >
+              <ShoppingCartOutlined style={{ fontSize: "24px" }} />
+            </Badge>
+          </Popover>
 
           <Dropdown menu={userMenu} trigger={["click"]}>
             <Space style={{ cursor: "pointer" }}>

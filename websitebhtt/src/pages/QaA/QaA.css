@@ -70,3 +70,32 @@
   font-size: 16px;
   margin-bottom: 0; 
 }
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+  .qna-page-container {
+    margin: 20px auto;
+    padding: 15px;
+    width: 95%; /* Đảm bảo không bị sát lề trên màn hình nhỏ */
+  }
+
+  .qna-page-title {
+    font-size: 24px !important;
+    text-align: center; /* Căn giữa tiêu đề trên mobile */
+    margin-bottom: 20px !important;
+  }
+
+  .qna-collapse > .ant-collapse-item {
+    margin-bottom: 15px !important; /* Giảm khoảng cách giữa các câu hỏi */
+  }
+
+  .qna-collapse > .ant-collapse-item > .ant-collapse-header {
+    font-size: 16px; /* Giảm cỡ chữ câu hỏi */
+    padding: 12px 16px !important; /* Điều chỉnh padding */
+  }
+
+  .qna-answer {
+    font-size: 14px; /* Giảm cỡ chữ câu trả lời */
+    line-height: 1.5;
+  }
+}
