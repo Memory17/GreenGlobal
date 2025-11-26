@@ -428,3 +428,44 @@
     color: var(--primary-color) !important;
     font-weight: 500 !important;
 }
+
+/*
+ * ===================================================================
+ * 12. NOTIFICATION DRAWER - Đảm bảo hiển thị rõ ràng
+ * ===================================================================
+ */
+.notification-drawer .ant-drawer-content-wrapper {
+    background: #fff !important;
+}
+
+.notification-drawer .ant-drawer-content {
+    background: #fff !important;
+}
+
+.notification-drawer .ant-drawer-body {
+    background: #fff !important;
+    padding: 0 !important;
+}
+
+.notification-drawer .ant-list-item {
+    background: #fff !important;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.notification-drawer .ant-list-item:hover {
+    background: #f5f5f5 !important;
+}
+
+.notification-drawer .ant-list-item.notification-new {
+    background: #e6f7ff !important;
+    border-left: 3px solid #1890ff;
+}
+
+.notification-drawer .ant-list-item-meta-title {
+    color: #262626 !important;
+}
+
+.notification-drawer .ant-list-item-meta-description {
+    color: #595959 !important;
+}

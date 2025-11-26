@@ -435,6 +435,18 @@ function SideMenu({ isSideMenuOpen = false, toggleSideMenu, collapsed = undefine
                         label: (
                             <div className="menu-item-wrapper">
                                 <div className="menu-icon-wrapper">
+                                    <span style={{ fontSize: '18px' }}>💬</span>
+                                </div>
+                                <span className="menu-text">Messages</span>
+                            </div>
+                        ),
+                        icon: null,
+                        key: "/admin/messages",
+                    },
+                    {
+                        label: (
+                            <div className="menu-item-wrapper">
+                                <div className="menu-icon-wrapper">
                                     <span style={{ fontSize: '18px' }}>🔥</span>
                                 </div>
                                 <span className="menu-text">{t("help") || "Hỗ trợ"}</span>

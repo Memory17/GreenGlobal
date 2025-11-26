@@ -759,6 +759,7 @@ function Orders() {
                                 (option?.label?.toLowerCase() ?? '').includes(input.toLowerCase())
                             }
                             options={customerOptions}
+                            getPopupContainer={(triggerNode) => triggerNode.parentNode}
                         >
                         </Select>
                     </Form.Item>
@@ -774,7 +775,10 @@ function Orders() {
                         <InputNumber min={1} style={{ width: "100%" }} placeholder={t("orders_placeholder_qty")} />
                     </Form.Item>
                     <Form.Item name="status" label={t("orders_col_status")} rules={[{ required: true, message: t('orders_msg_status_required') }]}>
-                        <Select placeholder={t("orders_placeholder_select_status")}>
+                        <Select 
+                            placeholder={t("orders_placeholder_select_status")}
+                            getPopupContainer={(triggerNode) => triggerNode.parentNode}
+                        >
                             <Option value="Processing">{t('orders_tag_Processing', 'Đang Xác nhận')}</Option>
                             <Option value="Confirmed">{t('orders_tag_Confirmed', 'Đã Xác nhận')}</Option> 
                             <Option value="Shipping">{t('orders_tag_Shipping', 'Đang Giao hàng')}</Option> 

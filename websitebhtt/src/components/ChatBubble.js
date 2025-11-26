@@ -11,44 +11,66 @@ import {
   CustomerServiceOutlined,
   
 } from '@ant-design/icons';
+import { useAuth } from '../context/AuthContext';
+import messageService from '../data/messageService';
 
 import '../style/ChatBubble.css';
 
 const { Text, Title } = Typography;
 
 const channel = new BroadcastChannel('chat_channel');
+// eslint-disable-next-line no-unused-vars
 const LOCAL_CHAT_KEY = 'local_chat_messages_v1';
 
 const ChatBubble = () => {
+  const { currentUser } = useAuth();
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [isMessengerOpen, setIsMessengerOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    { 
-      id: 1, 
-      sender: 'admin', 
-      type: 'text', 
-      text: 'Xin chào! Tôi là hỗ trợ. Bạn cần giúp gì?',
-      timestamp: new Date(Date.now() - 300000),
-      isRead: true
-    },
-  ]);
-  // load persisted messages if any
+  const [messages, setMessages] = useState([]);
+  
+  // Load tin nhắn từ messageService
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(LOCAL_CHAT_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored).map((m) => ({ ...m, timestamp: new Date(m.timestamp) }));
-        setMessages(parsed);
+    if (currentUser) {
+      const conversation = messageService.getConversation(currentUser.id);
+      if (conversation && conversation.messages) {
+        setMessages(conversation.messages);
+      } else {
+        // Tin nhắn chào mừng mặc định
+        const welcomeMsg = {
+          id: 1,
+          sender: 'admin',
+          text: 'Xin chào! Tôi là hỗ trợ. Bạn cần giúp gì?',
+          timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+          date: new Date().toLocaleDateString('vi-VN'),
+          read: false
+        };
+        setMessages([welcomeMsg]);
       }
-    } catch (e) {}
-  }, []);
+    }
+  }, [currentUser]);
 
-  // persist messages to localStorage whenever they change
+  // Lắng nghe tin nhắn mới từ admin
   useEffect(() => {
-    try {
-      localStorage.setItem(LOCAL_CHAT_KEY, JSON.stringify(messages));
-    } catch (e) {}
-  }, [messages]);
+    if (!currentUser) return;
+
+    // Load tin nhắn ban đầu
+    const loadMessages = () => {
+      const conversation = messageService.getConversation(currentUser.id);
+      if (conversation && conversation.messages) {
+        setMessages(conversation.messages);
+      }
+    };
+
+    loadMessages();
+
+    // Đăng ký listener để nhận tin nhắn real-time
+    messageService.onUpdate(loadMessages);
+
+    // Không destroy service khi unmount vì service là singleton
+    return () => {
+      // Chỉ cleanup listener, không destroy toàn bộ service
+    };
+  }, [currentUser]);
   const [inputValue, setInputValue] = useState('');
   const [isAdminTyping, setIsAdminTyping] = useState(false);
   const messagesContainerRef = useRef(null);
@@ -60,6 +82,7 @@ const ChatBubble = () => {
   const [systemStatusTopOffset, setSystemStatusTopOffset] = useState(0);
   const [floatBtnHeight, setFloatBtnHeight] = useState(56);
   // Small manual nudge (in px) to ensure no overlap after collision calc
+  // eslint-disable-next-line no-unused-vars
   const [manualNudge, setManualNudge] = useState(0);
 
   const location = useLocation();
@@ -182,7 +205,14 @@ const ChatBubble = () => {
     });
   };
 
-  const formatTime = (date) => {
+  const formatTime = (timestamp) => {
+    // Xử lý trường hợp timestamp là string
+    if (typeof timestamp === 'string') {
+      return timestamp; // Đã được format sẵn
+    }
+    
+    // Xử lý trường hợp timestamp là Date object
+    const date = timestamp instanceof Date ? timestamp : new Date(timestamp);
     const now = new Date();
     const diff = now - date;
     const minutes = Math.floor(diff / 60000);
@@ -199,22 +229,21 @@ const ChatBubble = () => {
 
   const handleSendMessage = () => {
     const text = inputValue && inputValue.trim();
-    if (!text) return;
+    if (!text || !currentUser) return;
 
-    const newMsg = { 
-      id: Date.now(), 
-      sender: currentUserRole, 
-      type: 'text', 
+    // Gửi tin nhắn qua messageService
+    messageService.sendMessage(
+      currentUser.id,
+      currentUser.username || currentUser.email || 'Khách hàng',
       text,
-      timestamp: new Date(),
-      isRead: currentUserRole === 'admin' ? true : false
-    };
+      'user'
+    );
     
-    setMessages((prev) => [...prev, newMsg]);
-    channel.postMessage(newMsg);
-    
-    // Stop typing indicator when message sent
-    channel.postMessage({ type: 'typing', isTyping: false, sender: currentUserRole });
+    // Cập nhật local state
+    const conversation = messageService.getConversation(currentUser.id);
+    if (conversation && conversation.messages) {
+      setMessages(conversation.messages);
+    }
     
     setInputValue('');
   };

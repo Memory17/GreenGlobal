@@ -645,9 +645,12 @@ export default function Staffs() {
                         name="role"
                         rules={[{ required: true, message: t("staffs_msg_role_required") }]}
                     >
-                        <Select>
-                            <Option value="staff">{t("staffs_filter_staff")}</Option>
-                            <Option value="admin">{t("staffs_filter_admin")}</Option>
+                        <Select 
+                            placeholder="Chọn vai trò"
+                            getPopupContainer={(triggerNode) => triggerNode.parentNode}
+                        >
+                            <Option value="admin">Admin</Option>
+                            <Option value="staff">Nhân viên</Option>
                         </Select>
                     </Form.Item>
                     <Form.Item label={t("staffs_col_status")} name="status" valuePropName="checked">

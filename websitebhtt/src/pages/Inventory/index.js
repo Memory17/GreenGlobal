@@ -117,9 +117,7 @@ function Inventory() {
     const handleSort = (value) => {
         setSortOption(value);
     };
-    const filterLowStock = () => {
-        setFilterCategory("low_stock");
-    };
+
     const processedData = useMemo(() => {
         let ds = [...dataSource];
         if (searchText) {
@@ -661,7 +659,11 @@ function Inventory() {
                     </Form.Item>
                     <Form.Item name="category" label="Danh mục">
                         {/* ⭐ SỬA LỖI: Dùng danh mục động từ state 'categories' */}
-                        <Select placeholder="Chọn danh mục" options={categories} />
+                        <Select 
+                            placeholder="Chọn danh mục" 
+                            options={categories} 
+                            getPopupContainer={(triggerNode) => triggerNode.parentNode}
+                        />
                     </Form.Item>
                     <Form.Item name="thumbnail" label="Link ảnh">
                         <Input placeholder="Dán link ảnh sản phẩm" />

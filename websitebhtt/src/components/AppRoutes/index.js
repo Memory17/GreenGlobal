@@ -6,6 +6,7 @@ import Orders from "../../pages/Orders";
 import Help  from "../../pages/Help";
 import Staffs from "../../pages/Staffs";
 import Promotion from "../../pages/Promotion";
+import Messages from "../../pages/Messages";
 
 
 
@@ -20,6 +21,7 @@ function AppRoutes() {
       <Route path="/help" element={<Help />}></Route>
       <Route path="/staffs" element={<Staffs />}></Route>
       <Route path="/promotion" element={<Promotion />}></Route>
+      <Route path="/messages" element={<Messages />}></Route>
     </Routes>
   );
 }

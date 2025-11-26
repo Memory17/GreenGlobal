@@ -117,7 +117,6 @@ function AdminLayout() {
         />
         <PageContent />
       </div>
-      <ChatBubble />
       <AppFooter />
       <div className={`menu-overlay ${isSideMenuOpen ? 'open' : ''}`} onClick={toggleSideMenu} />
     </div>

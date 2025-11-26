@@ -1278,6 +1278,13 @@ padding-right: "20px"; */
   overflow-x: hidden;
   transition: transform 0.28s ease, margin-left 0.28s ease;
 }
+
+/* Messages page không có padding và overflow */
+.PageContent:has(.messages-container) {
+  padding: 0;
+  overflow: hidden;
+}
+
 .PageContent > * { width: 100%; }
 .PageContent .ant-table { width: 100%; }
 .PageContent .ant-card { width: 100%; }

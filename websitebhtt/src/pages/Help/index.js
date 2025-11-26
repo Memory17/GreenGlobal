@@ -637,12 +637,16 @@ const TicketManagementTab = ({ onTicketsLoaded }) => {
               <Text>{selectedTicket.description}</Text>
             </Form.Item>
             <Form.Item name="assigned" label={t('help_form_assigned_label')}>
-              <Select allowClear placeholder={t('help_form_assigned_auto')}>
+              <Select 
+                allowClear 
+                placeholder={t('help_form_assigned_auto')}
+                getPopupContainer={(triggerNode) => triggerNode.parentNode}
+              >
                 {staffOptions.map(s => <Select.Option key={s.id} value={s.name}>{s.name}</Select.Option>)}
               </Select>
             </Form.Item>
             <Form.Item name="status" label={t('help_col_status')}>
-              <Select>
+              <Select getPopupContainer={(triggerNode) => triggerNode.parentNode}>
                 <Select.Option value="Mới">Mới</Select.Option>
                 <Select.Option value="Đang Xử lý">Đang Xử lý</Select.Option>
                 <Select.Option value="Chờ Phản hồi">Chờ Phản hồi</Select.Option>
@@ -1546,6 +1550,7 @@ const AutomationSettingsTab = () => {
             <Select
               placeholder="Chọn điều kiện kích hoạt"
               size="large"
+              getPopupContainer={(triggerNode) => triggerNode.parentNode}
               options={[
                 { label: 'Tiêu đề chứa từ khóa', value: 'Tiêu đề chứa từ khóa' },
                 { label: 'Nguồn là Email', value: 'Nguồn là Email' },
@@ -1563,6 +1568,7 @@ const AutomationSettingsTab = () => {
             <Select
               placeholder="Chọn hành động tự động"
               size="large"
+              getPopupContainer={(triggerNode) => triggerNode.parentNode}
               options={[
                 { label: 'Gán cho Trần B', value: 'Gán cho Trần B' },
                 { label: 'Gán cho Nguyễn K', value: 'Gán cho Nguyễn K' },
@@ -1635,6 +1641,7 @@ const AutomationSettingsTab = () => {
             <Select
               placeholder="Chọn điều kiện kích hoạt"
               size="large"
+              getPopupContainer={(triggerNode) => triggerNode.parentNode}
               options={[
                 { label: 'Tiêu đề chứa từ khóa', value: 'Tiêu đề chứa từ khóa' },
                 { label: 'Nguồn là Email', value: 'Nguồn là Email' },
@@ -1652,6 +1659,7 @@ const AutomationSettingsTab = () => {
             <Select
               placeholder="Chọn hành động tự động"
               size="large"
+              getPopupContainer={(triggerNode) => triggerNode.parentNode}
               options={[
                 { label: 'Gán cho Trần B', value: 'Gán cho Trần B' },
                 { label: 'Gán cho Nguyễn K', value: 'Gán cho Nguyễn K' },
