@@ -1,0 +1,604 @@
+.terms-container {
+  padding: 40px 20px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  font-family: 'Roboto', sans-serif;
+}
+
+.terms-wrapper {
+  max-width: 1000px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  animation: fadeIn 0.6s ease-out;
+}
+
+.terms-header {
+  background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%);
+  padding: 60px 40px;
+  text-align: center;
+  color: white;
+  position: relative;
+}
+
+.terms-header h1 {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.terms-header p {
+  font-size: 16px;
+  opacity: 0.9;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.terms-content {
+  padding: 40px;
+}
+
+.terms-section {
+  margin-bottom: 40px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 30px;
+}
+
+.terms-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.terms-section h2 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.terms-section h2 svg {
+  color: #00b09b;
+}
+
+.terms-section p {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #555;
+  margin-bottom: 15px;
+  text-align: justify;
+}
+
+.terms-section ul {
+  list-style-type: none;
+  padding-left: 20px;
+}
+
+.terms-section ul li {
+  position: relative;
+  padding-left: 25px;
+  margin-bottom: 10px;
+  color: #555;
+  line-height: 1.6;
+}
+
+.terms-section ul li::before {
+  content: "•";
+  color: #00b09b;
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+  font-size: 20px;
+  line-height: 1;
+  top: 2px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .terms-header {
+    padding: 40px 20px;
+  }
+
+  .terms-header h1 {
+    font-size: 28px;
+  }
+
+  .terms-content {
+    padding: 20px;
+  }
+
+  .terms-section h2 {
+    font-size: 20px;
+  }
+}
+
+/* --- New Sections Styling --- */
+
+/* Section 6: Grid Layout */
+.terms-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.terms-card {
+  background: #f9f9f9;
+  padding: 25px;
+  border-radius: 12px;
+  border: 1px solid #eee;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.terms-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+  border-color: #00b09b;
+}
+
+.terms-card h3 {
+  font-size: 18px;
+  color: #00b09b;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+  font-weight: 700;
+}
+
+/* Section 8: Process Steps */
+.process-steps {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 40px 0;
+  flex-wrap: wrap;
+  gap: 15px;
+  position: relative;
+}
+
+.step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 80px;
+  z-index: 2;
+}
+
+.step-number {
+  width: 45px;
+  height: 45px;
+  background: linear-gradient(135deg, #00b09b, #96c93d);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
+  box-shadow: 0 4px 15px rgba(0, 176, 155, 0.3);
+  transition: transform 0.3s ease;
+}
+
+.step-item:hover .step-number {
+  transform: scale(1.1);
+}
+
+.step-item span {
+  font-size: 14px;
+  font-weight: 600;
+  color: #444;
+  text-align: center;
+}
+
+.step-arrow {
+  color: #ddd;
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: -25px;
+}
+
+.complaint-box {
+  background: #fff1f0;
+  border-left: 4px solid #ff4d4f;
+  padding: 20px 25px;
+  border-radius: 8px;
+  margin-top: 30px;
+}
+
+.complaint-box h3 {
+  color: #ff4d4f;
+  font-size: 18px;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+/* Section 10: Contact Info */
+.contact-info-box {
+  background: #f0f9ff;
+  padding: 30px;
+  border-radius: 16px;
+  border: 1px dashed #1890ff;
+  position: relative;
+}
+
+.contact-info-box p {
+  margin-bottom: 12px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Section 11: VIP Terms */
+.vip-terms-section {
+  background: linear-gradient(to right bottom, #fff, #fffbf0);
+  border: 1px solid #ffd700;
+  border-radius: 16px;
+  padding: 35px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(255, 215, 0, 0.1);
+}
+
+.vip-terms-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(135deg, transparent 50%, rgba(255, 215, 0, 0.2) 50%);
+}
+
+.vip-terms-section h2 {
+  color: #d4b106;
+}
+
+.vip-terms-section h2 svg {
+  color: #d4b106;
+}
+
+.vip-terms-content ul li::before {
+  color: #d4b106;
+}
+
+/* --- Section 1: Privacy Grid --- */
+.privacy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 25px;
+  margin-top: 20px;
+}
+
+.privacy-item {
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+  border: 1px solid #f0f0f0;
+  transition: all 0.3s ease;
+}
+
+.privacy-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+  border-color: #00b09b;
+}
+
+.privacy-icon {
+  font-size: 40px;
+  color: #00b09b;
+  margin-bottom: 15px;
+  background: rgba(0, 176, 155, 0.1);
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.privacy-item h4 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.privacy-item p {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.6;
+  margin: 0;
+  text-align: center;
+}
+
+/* --- Section 2: Terms Rules --- */
+.terms-rules-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+  margin-top: 20px;
+}
+
+.rule-box {
+  padding: 25px;
+  border-radius: 12px;
+  border-left: 5px solid;
+}
+
+.rule-box.allowed {
+  background: #f6ffed;
+  border-color: #52c41a;
+}
+
+.rule-box.forbidden {
+  background: #fff1f0;
+  border-color: #ff4d4f;
+}
+
+.rule-box h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rule-box.allowed h3 { color: #52c41a; }
+.rule-box.forbidden h3 { color: #ff4d4f; }
+
+.rule-box ul {
+  padding-left: 20px;
+  margin: 0;
+}
+
+.rule-box ul li {
+  margin-bottom: 8px;
+  color: #555;
+}
+
+.rule-box ul li::before {
+  content: none;
+}
+
+/* --- Section 3: Return Policy --- */
+.return-policy-banner {
+  background: linear-gradient(to right, #f0f9ff, #e6fffb);
+  border-radius: 16px;
+  padding: 30px;
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  margin-top: 20px;
+  border: 1px dashed #00b09b;
+}
+
+.return-badge {
+  background: #fff;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 20px rgba(0, 176, 155, 0.2);
+  border: 4px solid #00b09b;
+  flex-shrink: 0;
+}
+
+.return-badge .days {
+  font-size: 40px;
+  font-weight: 800;
+  color: #00b09b;
+  line-height: 1;
+}
+
+.return-badge .text {
+  font-size: 12px;
+  font-weight: 600;
+  color: #555;
+  text-align: center;
+}
+
+.return-details {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.return-step {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-size: 16px;
+  color: #444;
+  font-weight: 500;
+}
+
+.return-step svg {
+  color: #52c41a;
+  font-size: 20px;
+}
+
+.return-note {
+  margin-top: 15px;
+  font-style: italic;
+  color: #888;
+  text-align: center;
+}
+
+/* --- Section 4: Payment Grid --- */
+.payment-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.payment-card {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  transition: all 0.3s ease;
+  cursor: default;
+}
+
+.payment-card:hover {
+  border-color: #1890ff;
+  box-shadow: 0 5px 15px rgba(24, 144, 255, 0.15);
+  transform: translateY(-3px);
+}
+
+.pay-icon {
+  font-size: 36px;
+  color: #1890ff;
+  margin-bottom: 10px;
+}
+
+.payment-card h4 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.payment-card p {
+  font-size: 13px;
+  color: #888;
+  margin: 0;
+  text-align: center;
+}
+
+/* --- Section 5: Shipping Info --- */
+.shipping-container {
+  margin-top: 20px;
+}
+
+.shipping-info {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+  margin-bottom: 20px;
+}
+
+.shipping-icon-wrapper {
+  width: 70px;
+  height: 70px;
+  background: linear-gradient(135deg, #ff7a45, #ff4d4f);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 32px;
+  box-shadow: 0 8px 15px rgba(255, 77, 79, 0.3);
+}
+
+.shipping-text h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.shipping-text p {
+  font-size: 16px;
+  color: #666;
+  margin: 0;
+  text-align: left;
+}
+
+.freeship-banner {
+  background: linear-gradient(90deg, #fff1f0, #fff);
+  border: 1px dashed #ff4d4f;
+  padding: 15px 20px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #ff4d4f;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.freeship-banner svg {
+  font-size: 20px;
+}
+
+/* Responsive for new sections 1-5 */
+@media (max-width: 768px) {
+  .terms-rules-container {
+    grid-template-columns: 1fr;
+  }
+
+  .return-policy-banner {
+    flex-direction: column;
+    text-align: center;
+    gap: 20px;
+  }
+
+  .return-details {
+    align-items: center;
+  }
+
+  .shipping-info {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .shipping-text p {
+    text-align: center;
+  }
+  
+  .terms-grid-2 {
+    grid-template-columns: 1fr;
+  }
+  
+  .process-steps {
+    flex-direction: column;
+    gap: 25px;
+  }
+  
+  .step-arrow {
+    transform: rotate(90deg);
+    margin-top: 0;
+  }
+  
+  .vip-terms-section {
+    padding: 20px;
+  }
+}

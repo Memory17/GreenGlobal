@@ -1,0 +1,191 @@
+/* src/style/BankLinkModal.css */
+
+.bank-link-modal .ant-modal-content {
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+}
+
+.bank-link-modal .ant-modal-header {
+  border-bottom: none;
+  padding: 24px 24px 0;
+  background: transparent;
+}
+
+.bank-link-modal .ant-modal-title {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.bank-link-modal .ant-modal-body {
+  padding: 24px;
+}
+
+/* Virtual Card Styles */
+.virtual-card-container {
+  perspective: 1000px;
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: center;
+}
+
+.virtual-card {
+  width: 100%;
+  max-width: 360px;
+  height: 220px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+  position: relative;
+  padding: 25px;
+  color: white;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  transition: all 0.5s ease;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.virtual-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.card-chip {
+  width: 50px;
+  height: 35px;
+  background: linear-gradient(135deg, #ffd700 0%, #b8860b 100%);
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-chip::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: rgba(0,0,0,0.3);
+}
+
+.card-chip::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  background: rgba(0,0,0,0.3);
+}
+
+.card-bank-logo {
+  height: 40px;
+  object-fit: contain;
+  background: white;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.card-number {
+  font-size: 22px;
+  letter-spacing: 2px;
+  font-family: 'Courier New', monospace;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  margin-top: 20px;
+}
+
+.card-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.card-holder-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  opacity: 0.7;
+  margin-bottom: 4px;
+}
+
+.card-holder-name {
+  font-size: 16px;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.card-brand {
+  font-size: 24px;
+  font-weight: bold;
+  font-style: italic;
+  opacity: 0.8;
+}
+
+/* Form Styles */
+.modern-form .ant-form-item-label > label {
+  font-weight: 600;
+  color: #555;
+}
+
+.modern-input {
+  border-radius: 8px;
+  padding: 8px 11px;
+  border: 1px solid #d9d9d9;
+  transition: all 0.3s;
+}
+
+.modern-input:hover, .modern-input:focus {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+}
+
+.modern-select .ant-select-selector {
+  border-radius: 8px !important;
+  height: 45px !important;
+  display: flex;
+  align-items: center;
+}
+
+.submit-btn-gradient {
+  height: 50px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  background: linear-gradient(90deg, #1890ff 0%, #096dd9 100%);
+  border: none;
+  box-shadow: 0 10px 20px rgba(24, 144, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.submit-btn-gradient:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 25px rgba(24, 144, 255, 0.4);
+  background: linear-gradient(90deg, #40a9ff 0%, #1890ff 100%);
+}
+
+.security-note {
+  background: #f0f5ff;
+  border: 1px dashed #adc6ff;
+  padding: 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}

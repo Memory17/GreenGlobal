@@ -29,6 +29,8 @@ import dayjs from "dayjs";
 // Đưa tất cả các import lên trên cùng
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { useAuth } from "../context/AuthContext"; // <-- THÊM IMPORT AUTH
+import { useNavigate } from "react-router-dom";
+import BankLinkModal from "../components/BankLinkModal"; // Import BankLinkModal
 
 // === CẤU HÌNH DAYJS SAU CÁC IMPORT ===
 dayjs.extend(customParseFormat);
@@ -66,8 +68,10 @@ const Profile = () => {
   const [form] = Form.useForm();
   // === THAY ĐỔI: Lấy thêm updateUser từ context ===
   const { currentUser, logout, updateUser } = useAuth();
+  const navigate = useNavigate();
 
   const [avatarSrc, setAvatarSrc] = useState(null);
+  const [isBankModalOpen, setIsBankModalOpen] = useState(false); // State for Bank Modal
 
   // 4. TẢI DỮ LIỆU (GIỮ NGUYÊN LOGIC)
   useEffect(() => {
@@ -151,40 +155,85 @@ const Profile = () => {
     }
   };
 
+  // Helper function to compress image
+  const compressImage = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 300; // Resize to max 300px width
+          const MAX_HEIGHT = 300;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          // Compress to JPEG with 0.7 quality
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+          resolve(dataUrl);
+        };
+        img.onerror = (error) => reject(error);
+      };
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
   // 6. HÀM XỬ LÝ UPLOAD AVATAR
-  const handleAvatarUpload = ({ file, onSuccess, onError }) => {
-    const reader = new FileReader();
-    if (file.size > 5 * 1024 * 1024) { // Giới hạn 5MB
-      message.error('Kích thước ảnh không được vượt quá 5MB!');
-      onError("File size too large");
+  const handleAvatarUpload = async ({ file, onSuccess, onError }) => {
+    if (!currentUser) {
+      message.error("Vui lòng đăng nhập để thực hiện chức năng này!");
+      onError("User not logged in");
       return;
     }
 
-    reader.readAsDataURL(file);
+    // Check file type
+    if (!file.type.startsWith('image/')) {
+      message.error('Bạn chỉ có thể tải lên file ảnh!');
+      onError("Invalid file type");
+      return;
+    }
 
-    reader.onload = () => {
-      const base64String = reader.result;
+    try {
+      // Compress the image before saving
+      const compressedBase64 = await compressImage(file);
 
-      try {
-        // 1. Lưu vào "user_profiles" với key là 'avatar'
-        saveProfileByUsername(currentUser.username, { avatar: base64String });
+      // 1. Lưu vào "user_profiles" với key là 'avatar'
+      saveProfileByUsername(currentUser.username, { avatar: compressedBase64 });
 
-        // 2. Đồng bộ hóa với "userData" (dùng key 'image' cho nhất quán)
-        updateUser({ image: base64String });
+      // 2. Đồng bộ hóa với "userData" (dùng key 'image' cho nhất quán)
+      updateUser({ image: compressedBase64 });
 
-        setAvatarSrc(base64String); // Cập nhật UI ngay lập tức
-        message.success("Cập nhật ảnh đại diện thành công!");
-        onSuccess("ok");
-      } catch (error) {
-        message.error("Lỗi khi lưu ảnh đại diện!");
-        onError(error);
+      setAvatarSrc(compressedBase64); // Cập nhật UI ngay lập tức
+      message.success("Cập nhật ảnh đại diện thành công!");
+      onSuccess("ok");
+    } catch (error) {
+      console.error("Lỗi khi lưu ảnh đại diện:", error);
+      if (error.name === 'QuotaExceededError' || error.code === 22) {
+        message.error("Bộ nhớ trình duyệt đầy. Vui lòng xóa bớt dữ liệu duyệt web hoặc thử ảnh khác.");
+      } else {
+        message.error("Lỗi khi xử lý ảnh: " + (error.message || "Lỗi không xác định"));
       }
-    };
-
-    reader.onerror = (error) => {
-      message.error("Lỗi khi đọc file ảnh!");
       onError(error);
-    };
+    }
   };
 
   // HÀM LOGOUT (GIỮ NGUYÊN)
@@ -199,13 +248,12 @@ const Profile = () => {
     <div className="profile-page">
       <div className="profile-page-title">
         <Title className="title-profile" level={1}>
-          Xin chào {currentUser ? currentUser.firstName || currentUser.username : "Người dùng"}
+          XIN CHÀO, <span className="greeting-highlight">{currentUser ? currentUser.firstName || currentUser.username : "NGƯỜI DÙNG"}</span>
         </Title>
-        <Text className="text-profile">
-          Xin chào và chào mừng đến với trang web của chúng tôi! Chúng tôi rất vui được chia sẻ thế giới của mình với bạn,
-          <br /> để bạn khám phá mọi thứ chúng tôi đã xây dựng bằng đam mê và sự quan tâm.
-        </Text>
-        <br />
+        <div className="text-profile">
+          "Xin chào và chào mừng đến với trang web của chúng tôi! Chúng tôi rất vui được chia sẻ thế giới của mình với bạn, 
+          để bạn khám phá mọi thứ chúng tôi đã xây dựng bằng <strong>đam mê</strong> và <strong>sự quan tâm</strong>."
+        </div>
         <Button className="edit-profile-button" type="primary">
           Chỉnh sửa Hồ sơ
         </Button>
@@ -335,6 +383,8 @@ const Profile = () => {
               className="connect-bank-row"
               gutter={16}
               justify="space-between"
+              onClick={() => setIsBankModalOpen(true)} // Open modal on click
+              style={{ cursor: "pointer" }}
             >
               <Col className="connect-bank-col" span={12}>
                 Liên kết ngân hàng
@@ -348,6 +398,8 @@ const Profile = () => {
               className="connect-bank-row"
               gutter={16}
               justify="space-between"
+              onClick={() => navigate('/vip-packages')}
+              style={{ cursor: "pointer" }}
             >
               <Col className="connect-bank-col" span={12}>
                 Kho gói V.I.P
@@ -361,6 +413,8 @@ const Profile = () => {
               className="connect-bank-row"
               gutter={16}
               justify="space-between"
+              onClick={() => navigate('/terms-and-policies')}
+              style={{ cursor: "pointer" }}
             >
               <Col className="connect-bank-col" span={15}>
                 Điều khoản và chính sách
@@ -374,6 +428,8 @@ const Profile = () => {
               className="connect-bank-row"
               gutter={16}
               justify="space-between"
+              onClick={() => navigate('/contact')}
+              style={{ cursor: "pointer" }}
             >
               <Col className="connect-bank-col" span={15}>
                 Liên hệ với chúng tôi
@@ -400,6 +456,13 @@ const Profile = () => {
           </div>
         </div>
       </div>
+      
+      {/* Bank Link Modal */}
+      <BankLinkModal 
+        visible={isBankModalOpen} 
+        onClose={() => setIsBankModalOpen(false)} 
+      />
+      
       {/* <div className="banner-footer"></div> */}
     </div>
   );

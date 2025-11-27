@@ -47,11 +47,28 @@
   
 }
 
-.contact-header p {
-  font-size: 1.125rem;
-  color: var(--text-light);
-  max-width: 60rem;
+.contact-subtitle {
+  display: block;
+  font-size: 1.25rem !important;
+  color: #64748b;
+  max-width: 40rem;
   margin: 0 auto;
+  line-height: 1.6;
+  font-weight: 500;
+  position: relative;
+  padding-bottom: 1.5rem;
+}
+
+.contact-subtitle::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(90deg, #3b82f6, #06b6d4);
+  border-radius: 2px;
 }
 
 /* --- Bố cục chính --- */
@@ -292,13 +309,14 @@ a.contact-value:hover {
   font-weight: 500;
 }
 
-/* Thẻ Mạng Xã Hội */
+/* Thẻ Mạng Xã Hội - Highlighted */
 .contact-social-card {
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%) !important;
-  border: 1px solid #bae6fd;
+  background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%) !important; /* Vibrant Blue to Cyan */
+  border: none;
   padding: 2.5rem !important;
   overflow: hidden;
   position: relative;
+  box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.3), 0 8px 10px -6px rgba(59, 130, 246, 0.3);
 }
 
 .social-header {
@@ -309,16 +327,15 @@ a.contact-value:hover {
 .contact-social-card h4.ant-typography {
   font-size: 1.5rem;
   font-weight: 800;
-  color: var(--text-dark);
+  color: #ffffff !important;
   margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  background: none;
+  -webkit-text-fill-color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .contact-social-card .ant-typography {
-  color: #64748b;
+  color: #e0f2fe !important;
   font-size: 1rem;
 }
 
@@ -340,16 +357,18 @@ a.contact-value:hover {
   width: 3.5rem;
   height: 3.5rem;
   border-radius: 1rem;
-  background: #f8fafc;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.5rem;
-  color: #64748b;
+  color: #ffffff;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   position: relative;
   z-index: 1;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .social-icon-wrapper::before {
@@ -357,7 +376,7 @@ a.contact-value:hover {
   position: absolute;
   inset: 0;
   border-radius: 1rem;
-  background: var(--social-color);
+  background: #ffffff;
   opacity: 0;
   transform: scale(0.8);
   transition: all 0.3s ease;
@@ -365,9 +384,9 @@ a.contact-value:hover {
 }
 
 .social-link-item:hover .social-icon-wrapper {
-  color: white;
+  color: var(--social-color);
   transform: translateY(-5px);
-  box-shadow: 0 10px 20px -5px var(--social-shadow);
+  box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.2);
 }
 
 .social-link-item:hover .social-icon-wrapper::before {
@@ -378,12 +397,12 @@ a.contact-value:hover {
 .social-name {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #64748b;
+  color: #e0f2fe;
   transition: color 0.3s ease;
 }
 
 .social-link-item:hover .social-name {
-  color: var(--social-color);
+  color: #ffffff;
 }
 
 @media (max-width: 480px) {
@@ -392,30 +411,137 @@ a.contact-value:hover {
   }
 }
 
-/* Thẻ Giờ Làm Việc */
+/* Thẻ Giờ Làm Việc - Redesigned - Soft Dark Mode */
 .contact-hours-card {
-  background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+  background: linear-gradient(135deg, #475569 0%, #334155 100%); /* Softer Slate Gradient */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+  padding: 2rem !important;
+  color: #f8fafc;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
 }
 
-.contact-hours-card h3 {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--text-dark);
-  margin-bottom: 1rem;
+.contact-hours-card::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 150px;
+  height: 150px;
+  background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
+  border-radius: 50%;
+  z-index: 0;
+  opacity: 0.05;
 }
 
-.contact-hours-card .space-y-2 > * + * {
-  margin-top: 0.75rem;
-}
-
-.contact-hours-card p {
+.hours-header {
   display: flex;
-  justify-content: space-between;
-  color: var(--text-light);
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 1;
 }
 
-.contact-hours-card p span:first-child {
+.hours-icon-wrapper {
+  width: 3rem;
+  height: 3rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: #93c5fd;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(4px);
+}
+
+.contact-hours-card h4.ant-typography {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #f8fafc !important;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.hours-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  position: relative;
+  z-index: 1;
+}
+
+.hours-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.05); /* Glassy effect */
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+
+.hours-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transform: translateX(4px);
+}
+
+.day-label {
+  font-weight: 600;
+  color: #cbd5e1;
+  font-size: 0.95rem;
+}
+
+.time-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 2rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+}
+
+.time-badge.open {
+  background: rgba(22, 163, 74, 0.2);
+  color: #4ade80;
+  border: 1px solid rgba(74, 222, 128, 0.2);
+}
+
+.time-badge.partial {
+  background: rgba(202, 138, 4, 0.2);
+  color: #facc15;
+  border: 1px solid rgba(250, 204, 21, 0.2);
+}
+
+.time-badge.closed {
+  background: rgba(220, 38, 38, 0.2);
+  color: #f87171;
+  border: 1px solid rgba(248, 113, 113, 0.2);
+}
+
+.hours-note {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px dashed #334155;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #94a3b8;
+  font-size: 0.9rem;
   font-weight: 500;
+  position: relative;
+  z-index: 1;
+}
+
+.hours-note .anticon {
+  color: #34d399;
+  font-size: 1rem;
 }
 
 /* --- Map Section --- */
@@ -501,6 +627,11 @@ a.contact-value:hover {
     right: 1rem;
     max-width: none;
   }
+}
+
+/* --- Left Column --- */
+.contact-left-column > * + * {
+  margin-top: 2rem;
 }
 
 /* Hiệu ứng Animation */

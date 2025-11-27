@@ -44,6 +44,8 @@ import ShoppingCart from "./pages/ShoppingCart";
 import ReviewOrder from "./pages/ReviewOrder";
 import Blog from "./pages/Blog";
 import OrderHistory from "./pages/OrderHistory/OrderHistory"; // <-- THÊM MỚI (trang lịch sử)
+import TermsAndPolicies from "./pages/TermsAndPolicies/TermsAndPolicies";
+import VipPackages from "./pages/VipPackages/VipPackages";
 
 const DARK_MODE_KEY = "app_dark_mode";
 
@@ -74,6 +76,8 @@ function UserLayout() {
         <Route path="/revieworder" element={<ReviewOrder />} />
         <Route path="/blog" element={<Blog />} /> 
         <Route path="/order-history" element={<OrderHistory />} /> {/* <-- THÊM MỚI (route cho trang lịch sử) */}
+        <Route path="/terms-and-policies" element={<TermsAndPolicies />} />
+        <Route path="/vip-packages" element={<VipPackages />} />
       </Routes>
       <ChatBubble />
       <LuckyWheel />

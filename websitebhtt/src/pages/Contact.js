@@ -22,6 +22,8 @@ import {
   GithubOutlined,
   FacebookOutlined,
   SendOutlined,
+  ClockCircleOutlined,
+  CheckCircleOutlined,
 } from "@ant-design/icons";
 const { Title, Text } = Typography;
 
@@ -101,11 +103,12 @@ const Contact = () => {
       <div className="contact-container">
         <div className="contact-header">
           <Title level={1}>Liên Hệ</Title>
-          <Text>Bạn có câu hỏi hoặc muốn hợp tác? Chúng tôi rất mong nhận được phản hồi từ bạn.</Text>
+          <Text className="contact-subtitle">Bạn có câu hỏi hoặc muốn hợp tác? Chúng tôi rất mong nhận được phản hồi từ bạn.</Text>
         </div>
 
         <div className="contact-main-grid">
-          <div className="contact-card contact-form-card">
+          <div className="contact-left-column">
+            <div className="contact-card contact-form-card">
             <div className="form-header">
               <Title level={3}>Gửi tin nhắn cho chúng tôi</Title>
               <Text type="secondary">Chúng tôi sẽ phản hồi sớm nhất có thể</Text>
@@ -149,6 +152,35 @@ const Contact = () => {
             </Form>
           </div>
 
+          <div className="contact-card contact-social-card">
+            <div className="social-header">
+              <Title level={4}>Kết nối với chúng tôi</Title>
+              <Text>Theo dõi để không bỏ lỡ những ưu đãi hấp dẫn nhất</Text>
+            </div>
+            <div className="contact-social-grid">
+              {socialLinks.map((social, index) => {
+                const Icon = social.icon;
+                return (
+                  <a 
+                    key={index} 
+                    href={social.href} 
+                    className="social-link-item"
+                    style={{ 
+                      '--social-color': social.color,
+                      '--social-shadow': social.shadow
+                    }}
+                  >
+                    <div className="social-icon-wrapper">
+                      <Icon />
+                    </div>
+                    <span className="social-name">{social.label}</span>
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
           <div className="contact-info-column">
             <div className="contact-card contact-info-card">
               <Title level={4}>Thông tin liên hệ</Title>
@@ -178,40 +210,34 @@ const Contact = () => {
               </div>
             </div>
 
-            <div className="contact-card contact-social-card">
-              <div className="social-header">
-                <Title level={4}>Kết nối với chúng tôi</Title>
-                <Text>Theo dõi để không bỏ lỡ những ưu đãi hấp dẫn nhất</Text>
-              </div>
-              <div className="contact-social-grid">
-                {socialLinks.map((social, index) => {
-                  const Icon = social.icon;
-                  return (
-                    <a 
-                      key={index} 
-                      href={social.href} 
-                      className="social-link-item"
-                      style={{ 
-                        '--social-color': social.color,
-                        '--social-shadow': social.shadow
-                      }}
-                    >
-                      <div className="social-icon-wrapper">
-                        <Icon />
-                      </div>
-                      <span className="social-name">{social.label}</span>
-                    </a>
-                  );
-                })}
-              </div>
-            </div>
+
 
             <div className="contact-card contact-hours-card">
-              <Title level={5}>Giờ làm việc</Title>
-              <div>
-                <p><b>Thứ Hai - Thứ Sáu:</b> 9:00 SÁNG - 6:00 TỐI</p>
-                <p><b>Thứ Bảy:</b> 10:00 SÁNG - 4:00 CHIỀU</p>
-                <p><b>Chủ Nhật:</b> Đóng cửa</p>
+              <div className="hours-header">
+                <div className="hours-icon-wrapper">
+                  <ClockCircleOutlined />
+                </div>
+                <Title level={4}>Giờ làm việc</Title>
+              </div>
+              
+              <div className="hours-list">
+                <div className="hours-item">
+                  <span className="day-label">Thứ Hai - Thứ Sáu</span>
+                  <span className="time-badge open">09:00 - 18:00</span>
+                </div>
+                <div className="hours-item">
+                  <span className="day-label">Thứ Bảy</span>
+                  <span className="time-badge partial">10:00 - 16:00</span>
+                </div>
+                <div className="hours-item">
+                  <span className="day-label">Chủ Nhật</span>
+                  <span className="time-badge closed">Đóng cửa</span>
+                </div>
+              </div>
+
+              <div className="hours-note">
+                <CheckCircleOutlined />
+                <span>Hỗ trợ trực tuyến 24/7 qua Email</span>
               </div>
             </div>
           </div>

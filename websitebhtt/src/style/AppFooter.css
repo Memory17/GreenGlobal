@@ -214,9 +214,11 @@
 
 /* Grid cho thẻ thanh toán */
 .payment-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  display: grid !important;
+  grid-template-columns: repeat(5, 1fr) !important;
   gap: 10px;
+  width: fit-content;
+  margin-top: 10px;
 }
 
 /* Hiệu ứng Glassmorphism cho thẻ Card */

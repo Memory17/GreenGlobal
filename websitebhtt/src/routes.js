@@ -21,6 +21,7 @@ import Inventory from "./pages/Inventory";
 import Messages from "./pages/Messages";
 import AdminHeader from "./components/AppHeader";
 import AdminFooter from "./components/AdminFooter";
+import { useAuth } from "./context/AuthContext";
 
 // ============ Layout người dùng ============
 function UserLayout({ children }) {
@@ -53,7 +54,6 @@ function AdminLayout({ children }) {
 }
 
 // ============ Middleware: Admin Guard ============
-import { useAuth } from "./context/AuthContext";
 
 function RequireAdminAuth({ children }) {
   const { isLoggedIn, currentUser } = useAuth();

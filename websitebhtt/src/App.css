@@ -127,7 +127,7 @@ body {
 }
 
 /* Ensure modality (modals/drawers) stacks above ChatBubble & footer (prevent footer covering forms) */
-.ant-modal-root, .ant-modal-wrap, .ant-modal, .ant-modal-mask, .ant-drawer, .ant-drawer-mask {
+.ant-modal-root, .ant-modal-wrap, .ant-modal, .ant-modal-mask, .ant-drawer, .ant-drawer-mask, .ant-drawer-content-wrapper {
   z-index: 4000 !important;
 }
 

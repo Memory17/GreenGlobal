@@ -13,7 +13,7 @@ import {
   Drawer,
   Divider,
   AutoComplete, // MỚI: Thêm AutoComplete
-  List, 
+  List,
   Typography,
   Popover, // MỚI: Thêm Popover
 } from "antd";
@@ -64,7 +64,10 @@ const AppHeader = () => {
   const { cartItems } = useCart();
   const { isLoggedIn, logout, currentUser } = useAuth();
 
-  const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
+  const totalItems = cartItems.reduce(
+    (total, item) => total + item.quantity,
+    0
+  );
 
   // ⭐️ MỚI: Effect nhắc nhở giỏ hàng bị bỏ quên
   useEffect(() => {
@@ -72,11 +75,15 @@ const AppHeader = () => {
     let hideTimer;
 
     // Chỉ hiện nhắc nhở nếu có sản phẩm và không ở trang giỏ hàng/thanh toán
-    if (totalItems > 0 && location.pathname !== '/cart' && location.pathname !== '/checkout') {
+    if (
+      totalItems > 0 &&
+      location.pathname !== "/cart" &&
+      location.pathname !== "/checkout"
+    ) {
       // Yêu cầu: Vào trang 5-7 giây mới hiện
       showTimer = setTimeout(() => {
         setCartPopoverOpen(true);
-        
+
         // Hiện xong thì 7 giây sau tự tắt (để không che màn hình mãi)
         hideTimer = setTimeout(() => {
           setCartPopoverOpen(false);
@@ -93,40 +100,50 @@ const AppHeader = () => {
 
   // ⭐️ BẮT ĐẦU: Logic tải và quản lý thông báo
   const loadUserNotifications = useCallback(() => {
-      if (!currentUser) {
-        setNotifications([]);
-        setUnreadCount(0);
-        return;
-      }
-  
-      const GLOBAL_REVIEWS_KEY = 'app_reviews_v1';
-      const NOTIFICATION_READ_KEY = `user_notifications_read_${currentUser.username || currentUser.email}`;
-  
-      const storedReviews = localStorage.getItem(GLOBAL_REVIEWS_KEY);
-      const allReviews = storedReviews ? JSON.parse(storedReviews) : [];
-  
-      const lastReadTimestamp = localStorage.getItem(NOTIFICATION_READ_KEY) || 0;
-  
-      const userNotifications = allReviews
-        .filter(review => (review.user === currentUser.username || review.user === currentUser.email) && Array.isArray(review.adminReplies))
-        .flatMap(review => 
-          review.adminReplies
-            // ⭐️ SỬA: Lọc bỏ các phản hồi do chính người dùng tạo ra
-            .filter(reply => reply.user !== (currentUser.username || currentUser.email))
-            .map(reply => ({
-              ...reply,
-              productTitle: review.productTitle,
-              productImage: review.productImage,
-              productId: review.productId,
-              reviewId: review.id,
-              isNew: new Date(reply.date).getTime() > lastReadTimestamp,
-            }))
-        )
-        .sort((a, b) => new Date(b.date) - new Date(a.date)); // Sắp xếp mới nhất lên đầu
-  
-      setNotifications(userNotifications);
-      setUnreadCount(userNotifications.filter(n => n.isNew).length);
-    }, [currentUser]);
+    if (!currentUser) {
+      setNotifications([]);
+      setUnreadCount(0);
+      return;
+    }
+
+    const GLOBAL_REVIEWS_KEY = "app_reviews_v1";
+    const NOTIFICATION_READ_KEY = `user_notifications_read_${
+      currentUser.username || currentUser.email
+    }`;
+
+    const storedReviews = localStorage.getItem(GLOBAL_REVIEWS_KEY);
+    const allReviews = storedReviews ? JSON.parse(storedReviews) : [];
+
+    const lastReadTimestamp = localStorage.getItem(NOTIFICATION_READ_KEY) || 0;
+
+    const userNotifications = allReviews
+      .filter(
+        (review) =>
+          (review.user === currentUser.username ||
+            review.user === currentUser.email) &&
+          Array.isArray(review.adminReplies)
+      )
+      .flatMap((review) =>
+        review.adminReplies
+          // ⭐️ SỬA: Lọc bỏ các phản hồi do chính người dùng tạo ra
+          .filter(
+            (reply) =>
+              reply.user !== (currentUser.username || currentUser.email)
+          )
+          .map((reply) => ({
+            ...reply,
+            productTitle: review.productTitle,
+            productImage: review.productImage,
+            productId: review.productId,
+            reviewId: review.id,
+            isNew: new Date(reply.date).getTime() > lastReadTimestamp,
+          }))
+      )
+      .sort((a, b) => new Date(b.date) - new Date(a.date)); // Sắp xếp mới nhất lên đầu
+
+    setNotifications(userNotifications);
+    setUnreadCount(userNotifications.filter((n) => n.isNew).length);
+  }, [currentUser]);
 
   useEffect(() => {
     loadUserNotifications();
@@ -135,8 +152,9 @@ const AppHeader = () => {
       loadUserNotifications();
     };
 
-    window.addEventListener('reviews_updated', handleReviewUpdate);
-    return () => window.removeEventListener('reviews_updated', handleReviewUpdate);
+    window.addEventListener("reviews_updated", handleReviewUpdate);
+    return () =>
+      window.removeEventListener("reviews_updated", handleReviewUpdate);
   }, [currentUser, loadUserNotifications]);
 
   const handleOpenNotifications = () => {
@@ -144,7 +162,9 @@ const AppHeader = () => {
     setUnreadCount(0);
     // Chỉ cập nhật nếu có currentUser
     if (currentUser) {
-      const NOTIFICATION_READ_KEY = `user_notifications_read_${currentUser.username || currentUser.email}`;
+      const NOTIFICATION_READ_KEY = `user_notifications_read_${
+        currentUser.username || currentUser.email
+      }`;
       localStorage.setItem(NOTIFICATION_READ_KEY, new Date().getTime());
     }
   };
@@ -172,13 +192,26 @@ const AppHeader = () => {
             value: product.title, // Giá trị sẽ điền vào input
             label: (
               // JSX hiển thị trong dropdown
-              <div style={{ display: "flex", alignItems: "center", padding: "5px 0" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  padding: "5px 0",
+                }}
+              >
                 <img
                   src={product.thumbnail}
                   alt={product.title}
-                  style={{ width: 40, height: 40, marginRight: 10, objectFit: "cover" }}
+                  style={{
+                    width: 40,
+                    height: 40,
+                    marginRight: 10,
+                    objectFit: "cover",
+                  }}
                 />
-                <span>{product.title} - ${product.price}</span>
+                <span>
+                  {product.title} - ${product.price}
+                </span>
               </div>
             ),
             key: product.id, // Lưu ID sản phẩm để điều hướng
@@ -223,7 +256,8 @@ const AppHeader = () => {
   const onSelectSuggestion = (value, option) => {
     // option có thể chứa trường `data` (product) do chúng ta gán khi tạo options
     // nếu có, dùng product đó và truyền qua location.state để `ProductDetail` nhận được
-    const selectedProduct = (option && option.data) || options.find((o) => o.value === value)?.data;
+    const selectedProduct =
+      (option && option.data) || options.find((o) => o.value === value)?.data;
 
     if (selectedProduct) {
       // Ứng với route ở App.js: /product/:id
@@ -233,7 +267,7 @@ const AppHeader = () => {
       navigate(`/product/${option.key}`);
     } else {
       // Nếu không rõ, chuyển về trang products
-      navigate('/products');
+      navigate("/products");
     }
 
     setSearchValue(value); // Cập nhật giá trị input
@@ -242,14 +276,14 @@ const AppHeader = () => {
 
   // ... (menuItems, userMenu, showDrawer, closeDrawer, handleDrawerNavigate giữ nguyên) ...
   // Menu cho desktop
-// Menu cho desktop
+  // Menu cho desktop
   const menuItems = [
     { key: "home", label: "Trang Chủ", onClick: () => navigate("/") },
     {
       key: "product",
       // SỬA: Label giờ chỉ còn là văn bản
-      label: "Sản Phẩm", 
-      
+      label: "Sản Phẩm",
+
       // SỬA: Chuyển các sự kiện ra ngoài làm thuộc tính của Menu.Item
       onClick: () => navigate("/products"),
       onMouseEnter: () => setShowCategories(true),
@@ -258,33 +292,32 @@ const AppHeader = () => {
     { key: "about", label: "Giới Thiệu", onClick: () => navigate("/about") },
     { key: "contact", label: "Liên Hệ", onClick: () => navigate("/contact") },
     { key: "blog", label: "Blog", onClick: () => navigate("/blog") },
-  
-    
-  ];
+  ]; // Dropdown cho user (dùng chung)
 
-  // Dropdown cho user (dùng chung)
-  const userMenu = {
-    items: [
-      { key: "1", label: "Hồ Sơ", onClick: () => navigate("/profile") },
-      { key: "2", label: "Đăng xuất", onClick: handleLogout },
-      { key: "3", label: "Lịch sử mua sắm", onClick: () => navigate("/order-history") },
-    ],
-  };
+  const userMenu = {
+    items: [
+      { key: "1", label: "Hồ Sơ", onClick: () => navigate("/profile") },
+      { key: "2", label: "Đăng xuất", onClick: handleLogout },
+      {
+        key: "3",
+        label: "Lịch sử mua sắm",
+        onClick: () => navigate("/order-history"),
+      },
+    ],
+  }; // Hàm xử lý đóng/mở Drawer
 
-  // Hàm xử lý đóng/mở Drawer
-  const showDrawer = () => {
-    setDrawerVisible(true);
-  };
+  const showDrawer = () => {
+    setDrawerVisible(true);
+  };
 
-  const closeDrawer = () => {
-    setDrawerVisible(false);
-  };
+  const closeDrawer = () => {
+    setDrawerVisible(false);
+  }; // Hàm xử lý điều hướng từ Drawer (để đóng Drawer sau khi click)
 
-  // Hàm xử lý điều hướng từ Drawer (để đóng Drawer sau khi click)
-  const handleDrawerNavigate = (path) => {
-    navigate(path);
-    closeDrawer();
-  };
+  const handleDrawerNavigate = (path) => {
+    navigate(path);
+    closeDrawer();
+  };
 
   return (
     <>
@@ -301,42 +334,45 @@ const AppHeader = () => {
 
         {/* --- RIGHT SIDE DESKTOP --- */}
         <div className="header-right-desktop">
-          
           {/* --- PHẦN THANH TÌM KIẾM MỚI (MODERN UI) --- */}
-<div className="modern-search-wrapper">
-  <AutoComplete
-    options={options}
-    onSelect={onSelectSuggestion}
-    onChange={setSearchValue}
-    value={searchValue}
-    popupClassName="modern-search-dropdown" // Class CSS cho menu gợi ý
-    style={{ width: "100%", bottom:"5px" }}
-    backfill
-  >
-    <Input
-      className="modern-search-input"
-      placeholder="Tìm kiếm sản phẩm..."
-      // Icon kính lúp nằm bên trái
-      
-      // Nút tìm kiếm tùy chỉnh nằm bên phải
-      suffix={
-        <div 
-          className="search-btn-custom"
-          onClick={() => handleSearch(searchValue)}
-        >
-          <SearchOutlined /> 
-        </div>
-      }
-      allowClear
-      onPressEnter={(e) => handleSearch(e.target.value)} // Giữ logic Enter
-    />
-  </AutoComplete>
-</div>
-{/* --- HẾT PHẦN TÌM KIẾM --- */}
-          
+          <div className="modern-search-wrapper">
+            <AutoComplete
+              options={options}
+              onSelect={onSelectSuggestion}
+              onChange={setSearchValue}
+              value={searchValue}
+              popupClassName="modern-search-dropdown" // Class CSS cho menu gợi ý
+              style={{ width: "100%", bottom: "5px" }}
+              backfill
+            >
+              <Input
+                className="modern-search-input"
+                placeholder="Tìm kiếm sản phẩm..."
+                // Icon kính lúp nằm bên trái
+
+                // Nút tìm kiếm tùy chỉnh nằm bên phải
+                suffix={
+                  <div
+                    className="search-btn-custom"
+                    onClick={() => handleSearch(searchValue)}
+                  >
+                    <SearchOutlined />
+                  </div>
+                }
+                allowClear
+                onPressEnter={(e) => handleSearch(e.target.value)} // Giữ logic Enter
+              />
+            </AutoComplete>
+          </div>
+          {/* --- HẾT PHẦN TÌM KIẾM --- */}
+
           {/* ⭐️ THÊM: Icon chuông thông báo */}
           {isLoggedIn && (
-            <Badge count={unreadCount} style={{ cursor: "pointer" }} onClick={handleOpenNotifications}>
+            <Badge
+              count={unreadCount}
+              style={{ cursor: "pointer" }}
+              onClick={handleOpenNotifications}
+            >
               <BellOutlined
                 style={{ fontSize: "24px", color: "black", cursor: "pointer" }}
                 onClick={handleOpenNotifications}
@@ -347,45 +383,72 @@ const AppHeader = () => {
 
           <Popover
             content={
-              <div style={{ maxWidth: '320px', padding: '4px' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', marginBottom: '16px' }}>
-                  <div style={{ 
-                      backgroundColor: '#fff1f0', 
-                      padding: '12px', 
-                      borderRadius: '16px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      boxShadow: '0 2px 8px rgba(255, 77, 79, 0.15)'
-                  }}>
-                    <ShoppingCartOutlined style={{ fontSize: '24px', color: '#ff4d4f' }} />
+              <div style={{ maxWidth: "320px", padding: "4px" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    gap: "16px",
+                    marginBottom: "16px",
+                  }}
+                >
+                  <div
+                    style={{
+                      backgroundColor: "#fff1f0",
+                      padding: "12px",
+                      borderRadius: "16px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      boxShadow: "0 2px 8px rgba(255, 77, 79, 0.15)",
+                    }}
+                  >
+                    <ShoppingCartOutlined
+                      style={{ fontSize: "24px", color: "#ff4d4f" }}
+                    />
                   </div>
                   <div style={{ flex: 1 }}>
-                    <Text strong style={{ fontSize: '16px', display: 'block', marginBottom: '4px', color: '#262626' }}>
+                    <Text
+                      strong
+                      style={{
+                        fontSize: "16px",
+                        display: "block",
+                        marginBottom: "4px",
+                        color: "#262626",
+                      }}
+                    >
                       Đừng quên giỏ hàng!
                     </Text>
-                    <Text type="secondary" style={{ fontSize: '14px', lineHeight: '1.5' }}>
-                      Bạn đang có <Text strong type="danger" style={{ fontSize: '15px' }}>{totalItems}</Text> sản phẩm đang chờ thanh toán.
+                    <Text
+                      type="secondary"
+                      style={{ fontSize: "14px", lineHeight: "1.5" }}
+                    >
+                      Bạn đang có{" "}
+                      <Text strong type="danger" style={{ fontSize: "15px" }}>
+                        {totalItems}
+                      </Text>{" "}
+                      sản phẩm đang chờ thanh toán.
                     </Text>
                   </div>
                 </div>
-                
-                <Button 
-                  type="primary" 
-                  block 
+
+                <Button
+                  type="primary"
+                  block
                   size="large"
                   icon={<ArrowRightOutlined />}
-                  style={{ 
-                    background: 'linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%)',
-                    border: 'none',
-                    borderRadius: '12px',
-                    height: '42px',
+                  style={{
+                    background:
+                      "linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%)",
+                    border: "none",
+                    borderRadius: "12px",
+                    height: "42px",
                     fontWeight: 600,
-                    boxShadow: '0 4px 12px rgba(255, 77, 79, 0.3)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '8px'
+                    boxShadow: "0 4px 12px rgba(255, 77, 79, 0.3)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px",
                   }}
                   onClick={() => {
                     setCartPopoverOpen(false);
@@ -405,7 +468,7 @@ const AppHeader = () => {
               }
             }}
             placement="bottomRight"
-            overlayStyle={{ paddingTop: '8px' }}
+            overlayStyle={{ paddingTop: "8px" }}
           >
             <Badge
               count={totalItems}
@@ -471,6 +534,9 @@ const AppHeader = () => {
         />
       </Header>
 
+      {/* Spacer to prevent content overlap due to fixed header */}
+      <div style={{ height: 'var(--header-height, 68px)' }} />
+
       {/* ⭐️ THÊM: Drawer hiển thị thông báo */}
       <Drawer
         title={`Thông báo (${notifications.length})`}
@@ -478,6 +544,7 @@ const AppHeader = () => {
         onClose={() => setIsNotificationsOpen(false)}
         open={isNotificationsOpen}
         width={400}
+        zIndex={9999}
       >
         <List
           itemLayout="horizontal"
@@ -486,30 +553,49 @@ const AppHeader = () => {
           renderItem={(item) => (
             <List.Item
               style={{
-                backgroundColor: item.isNew ? '#e6f7ff' : 'transparent',
-                borderLeft: item.isNew ? '3px solid #1890ff' : 'none',
-                padding: '12px 16px',
-                transition: 'background-color 0.3s'
+                backgroundColor: item.isNew ? "#e6f7ff" : "transparent",
+                borderLeft: item.isNew ? "3px solid #1890ff" : "none",
+                padding: "12px 16px",
+                transition: "background-color 0.3s",
+                cursor: "pointer",
               }}
               onClick={() => {
-                navigate(`/product/${item.productId}`, { state: { reviewToFocus: item.reviewId } });
+                navigate(`/product/${item.productId}`, {
+                  state: { reviewToFocus: item.reviewId },
+                });
                 setIsNotificationsOpen(false);
               }}
             >
               <List.Item.Meta
-                avatar={<Avatar src="https://api.dicebear.com/7.x/adventurer/svg?seed=Admin" />}
+                avatar={
+                  <Avatar src="https://api.dicebear.com/7.x/adventurer/svg?seed=Admin" />
+                }
                 title={
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
                     <Text strong>Admin đã trả lời bạn</Text>
                     <Text type="secondary" style={{ fontSize: 12 }}>
-                      {new Date(item.date).toLocaleDateString('vi-VN')}
+                      {new Date(item.date).toLocaleDateString("vi-VN")}
                     </Text>
                   </div>
                 }
                 description={
                   <>
-                    <Text>về đánh giá cho sản phẩm <b>{item.productTitle}</b></Text>
-                    <p style={{ fontStyle: 'italic', marginTop: 4, color: '#555' }}>
+                    <Text>
+                      về đánh giá cho sản phẩm <b>{item.productTitle}</b>
+                    </Text>
+                    <p
+                      style={{
+                        fontStyle: "italic",
+                        marginTop: 4,
+                        color: "#555",
+                      }}
+                    >
                       "{item.comment}"
                     </p>
                   </>
@@ -529,36 +615,46 @@ const AppHeader = () => {
         onClose={closeDrawer}
         open={drawerVisible}
         styles={{ body: { padding: 0 } }}
+        zIndex={9999}
       >
-        <div style={{ padding: '12px 16px' }}>
-          <Input.Search 
-            placeholder="Tìm sản phẩm..." 
-            allowClear 
-            onSearch={handleDrawerSearch} 
-            className="drawer-search" 
+        <div style={{ padding: "12px 16px" }}>
+          <Input.Search
+            placeholder="Tìm sản phẩm..."
+            allowClear
+            onSearch={handleDrawerSearch}
+            className="drawer-search"
           />
         </div>
         <Menu mode="vertical" style={{ borderRight: 0 }}>
           <Menu.Item key="home" onClick={() => handleDrawerNavigate("/")}>
             Trang Chủ
           </Menu.Item>
-          <Menu.Item key="product" onClick={() => handleDrawerNavigate("/products")}>
+          <Menu.Item
+            key="product"
+            onClick={() => handleDrawerNavigate("/products")}
+          >
             Sản Phẩm
           </Menu.Item>
           <Menu.Item key="about" onClick={() => handleDrawerNavigate("/about")}>
             Giới Thiệu
           </Menu.Item>
-          <Menu.Item key="contact" onClick={() => handleDrawerNavigate("/contact")}>
+          <Menu.Item
+            key="contact"
+            onClick={() => handleDrawerNavigate("/contact")}
+          >
             Liên Hệ
           </Menu.Item>
           <Menu.Item key="blog" onClick={() => handleDrawerNavigate("/blog")}>
             Blog
           </Menu.Item>
         </Menu>
-        
+
         <Divider style={{ margin: "16px 0" }} />
 
-        <Space direction="vertical" style={{ width: "100%", padding: "0 24px" }}>
+        <Space
+          direction="vertical"
+          style={{ width: "100%", padding: "0 24px" }}
+        >
           <Button
             icon={<ShoppingCartOutlined />}
             onClick={() => handleDrawerNavigate("/cart")}
