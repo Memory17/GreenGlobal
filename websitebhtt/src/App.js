@@ -16,6 +16,7 @@ import { OrderHistoryProvider } from "./context/OrderHistoryContext"; // <-- TH�
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ChatBubble from "./components/ChatBubble";
+import LuckyWheel from "./components/LuckyWheel";
 import Banner from "./components/Banner";
 
 // 🧩 --- ADMIN COMPONENTS ---
@@ -74,6 +75,7 @@ function UserLayout() {
         <Route path="/order-history" element={<OrderHistory />} /> {/* <-- THÊM MỚI (route cho trang lịch sử) */}
       </Routes>
       <ChatBubble />
+      <LuckyWheel />
       <Footer />
     </>
   );

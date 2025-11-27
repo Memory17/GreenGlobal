@@ -79,7 +79,7 @@ const Login = () => {
     <div className="login">
       <Row className="login-row">
         {/* --- CỘT BÊN TRÁI (HÌNH ẢNH VÀ TEXT) --- */}
-        <Col span={15} className="login-col-left">
+        <Col xs={0} md={12} lg={15} className="login-col-left">
           <div>
             <Title level={1} className="title-left">
               Chào mừng đến với L-M Fashion
@@ -91,7 +91,7 @@ const Login = () => {
         </Col>
 
         {/* --- CỘT BÊN PHẢI (FORM ĐĂNG NHẬP) --- */}
-        <Col span={9} className="login-col-right">
+        <Col xs={24} md={12} lg={9} className="login-col-right">
           <div className="login-form-container">
             <Title level={2} className="login-title">
               Đăng nhập

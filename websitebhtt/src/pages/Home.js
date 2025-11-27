@@ -7,7 +7,7 @@ const { Content } = Layout;
 const Home = () => {
   return (
     <Layout>
-      <Content className="page-content" style={{ padding: "0" }}>
+      <Content style={{ padding: "0" }}>
         <ProductsList />
         <Divider />
         <QaA />

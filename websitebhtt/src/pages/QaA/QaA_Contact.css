@@ -1,0 +1,121 @@
+
+/* Contact Section Styling */
+.qna-contact-section {
+  max-width: 1000px;
+  margin: 60px auto 20px;
+  padding: 0 20px;
+}
+
+.qna-contact-card {
+  background: linear-gradient(to right, #f0f9ff, #ffffff);
+  padding: 30px 40px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(24, 144, 255, 0.1);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  border: 1px solid #e6f7ff;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.qna-contact-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 35px rgba(24, 144, 255, 0.15);
+  border-color: #bae7ff;
+}
+
+/* Decorative left border */
+.qna-contact-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 100%;
+  background: #1890ff;
+}
+
+.qna-contact-content-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex: 1;
+  text-align: left;
+}
+
+.qna-contact-icon {
+  font-size: 32px;
+  color: #1890ff;
+  background: white;
+  padding: 16px;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  flex-shrink: 0;
+  margin-bottom: 0;
+}
+
+.qna-contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.qna-contact-title {
+  margin: 0 !important;
+  color: #003a8c !important; /* Darker blue for better contrast */
+  font-size: 20px !important;
+}
+
+.qna-contact-text {
+  color: #595959;
+  font-size: 15px;
+  margin: 0;
+  max-width: 100%;
+}
+
+.qna-contact-btn {
+  border-radius: 30px;
+  padding: 0 32px;
+  height: 46px;
+  font-size: 15px;
+  font-weight: 600;
+  background: #1890ff;
+  border-color: #1890ff;
+  box-shadow: 0 4px 15px rgba(24, 144, 255, 0.3);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.qna-contact-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(24, 144, 255, 0.4);
+  background: #40a9ff;
+  border-color: #40a9ff;
+}
+
+@media (max-width: 768px) {
+  .qna-contact-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 30px 20px;
+  }
+  
+  .qna-contact-content-wrapper {
+    flex-direction: column;
+    text-align: center;
+    gap: 16px;
+  }
+  
+  .qna-contact-card::before {
+    width: 100%;
+    height: 6px;
+  }
+
+  .qna-contact-btn {
+    width: 100%;
+  }
+}

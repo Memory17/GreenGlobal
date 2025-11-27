@@ -21,6 +21,7 @@ import {
   TwitterOutlined,
   GithubOutlined,
   FacebookOutlined,
+  SendOutlined,
 } from "@ant-design/icons";
 const { Title, Text } = Typography;
 
@@ -59,16 +60,40 @@ const Contact = () => {
 
   // Contact info and social links for the redesigned UI
   const contactInfo = [
-    { icon: MailOutlined, label: 'Email:', value: 'hello@company.com', href: 'mailto:hello@company.com' },
-    { icon: PhoneOutlined, label: 'Điện thoại:', value: '+1 (555) 123-4567', href: 'tel:+15551234567' },
-    { icon: EnvironmentOutlined, label: 'Địa chỉ:', value: '279 Mai Dang Chon, Hoa Quy, Da Nang City', href: null }
+    { 
+      icon: MailOutlined, 
+      label: 'Email Hỗ Trợ', 
+      value: 'hello@company.com', 
+      href: 'mailto:hello@company.com',
+      description: 'Gửi email cho chúng tôi bất cứ lúc nào!',
+      color: '#3b82f6',
+      bgColor: '#eff6ff'
+    },
+    { 
+      icon: PhoneOutlined, 
+      label: 'Hotline Tư Vấn', 
+      value: '+1 (555) 123-4567', 
+      href: 'tel:+15551234567',
+      description: 'Hỗ trợ 24/7 từ thứ 2 đến thứ 6',
+      color: '#10b981',
+      bgColor: '#ecfdf5'
+    },
+    { 
+      icon: EnvironmentOutlined, 
+      label: 'Văn Phòng Chính', 
+      value: '279 Mai Dang Chon, Hoa Quy, Da Nang City', 
+      href: null,
+      description: 'Ghé thăm văn phòng của chúng tôi',
+      color: '#f43f5e',
+      bgColor: '#fff1f2'
+    }
   ];
 
   const socialLinks = [
-    { icon: LinkedinOutlined, href: '#', label: 'LinkedIn' },
-    { icon: TwitterOutlined, href: '#', label: 'Twitter' },
-    { icon: GithubOutlined, href: '#', label: 'Github' },
-    { icon: FacebookOutlined, href: '#', label: 'Facebook' }
+    { icon: FacebookOutlined, href: '#', label: 'Facebook', color: '#1877F2', shadow: 'rgba(24, 119, 242, 0.5)' },
+    { icon: TwitterOutlined, href: '#', label: 'Twitter', color: '#1DA1F2', shadow: 'rgba(29, 161, 242, 0.5)' },
+    { icon: LinkedinOutlined, href: '#', label: 'LinkedIn', color: '#0A66C2', shadow: 'rgba(10, 102, 194, 0.5)' },
+    { icon: GithubOutlined, href: '#', label: 'Github', color: '#333333', shadow: 'rgba(51, 51, 51, 0.5)' },
   ];
 
   return (
@@ -81,40 +106,45 @@ const Contact = () => {
 
         <div className="contact-main-grid">
           <div className="contact-card contact-form-card">
-            <Title level={3}>Gửi tin nhắn cho chúng tôi</Title>
-            <Form layout="vertical" className="contact-form" onFinish={handleSubmit}>
-              <Row gutter={16}>
+            <div className="form-header">
+              <Title level={3}>Gửi tin nhắn cho chúng tôi</Title>
+              <Text type="secondary">Chúng tôi sẽ phản hồi sớm nhất có thể</Text>
+            </div>
+            <Form layout="vertical" className="contact-form" onFinish={handleSubmit} requiredMark={false}>
+              <Row gutter={24}>
                 <Col xs={24} sm={12}>
                   <Form.Item name="name" label="Họ và Tên" rules={[{ required: true, message: 'Vui lòng nhập tên' }]}>
-                    <Input placeholder="Nguyễn Văn A" prefix={<UserOutlined />} size="large" />
+                    <Input placeholder="Nguyễn Văn A" prefix={<UserOutlined className="input-icon" />} size="large" />
                   </Form.Item>
                 </Col>
                 <Col xs={24} sm={12}>
                   <Form.Item name="email" label="Địa chỉ Email" rules={[{ required: true, message: 'Vui lòng nhập email' }, { type: 'email', message: 'Email không hợp lệ' }]}>
-                    <Input placeholder="john@example.com" prefix={<MailOutlined />} size="large" />
+                    <Input placeholder="john@example.com" prefix={<MailOutlined className="input-icon" />} size="large" />
                   </Form.Item>
                 </Col>
               </Row>
 
-              <Row gutter={16}>
+              <Row gutter={24}>
                 <Col xs={24} sm={12}>
                   <Form.Item name="phone" label="Số Điện Thoại" rules={[{ required: true, message: 'Vui lòng nhập số điện thoại' }]}>
-                    <Input placeholder="0912 345 678" prefix={<PhoneOutlined />} size="large" />
+                    <Input placeholder="0912 345 678" prefix={<PhoneOutlined className="input-icon" />} size="large" />
                   </Form.Item>
                 </Col>
                 <Col xs={24} sm={12}>
                   <Form.Item name="subject" label="Chủ đề" rules={[{ required: true, message: 'Vui lòng nhập chủ đề' }]}>
-                    <Input placeholder="Chúng tôi có thể giúp gì cho bạn?" prefix={<MessageOutlined />} size="large" />
+                    <Input placeholder="Chúng tôi có thể giúp gì cho bạn?" prefix={<MessageOutlined className="input-icon" />} size="large" />
                   </Form.Item>
                 </Col>
               </Row>
 
               <Form.Item name="message" label="Tin nhắn" rules={[{ required: true, message: 'Vui lòng nhập tin nhắn' }]}>
-                <Input.TextArea rows={6} placeholder="Hãy cho chúng tôi biết thêm về yêu cầu của bạn..." />
+                <Input.TextArea rows={6} placeholder="Hãy cho chúng tôi biết thêm về yêu cầu của bạn..." showCount maxLength={500} />
               </Form.Item>
 
               <Form.Item>
-                <Button type="primary" htmlType="submit" block size="large" className="contact-submit-btn">Gửi Tin Nhắn</Button>
+                <Button type="primary" htmlType="submit" block size="large" className="contact-submit-btn" icon={<SendOutlined />}>
+                  Gửi Tin Nhắn
+                </Button>
               </Form.Item>
             </Form>
           </div>
@@ -127,10 +157,20 @@ const Contact = () => {
                   const Icon = item.icon;
                   return (
                     <div key={index} className="contact-info-item">
-                      <div className="contact-info-item-icon-wrapper"><Icon className="anticon" /></div>
+                      <div 
+                        className="contact-info-item-icon-wrapper"
+                        style={{ color: item.color, backgroundColor: item.bgColor }}
+                      >
+                        <Icon className="anticon" />
+                      </div>
                       <div className="contact-info-item-content">
-                        <Text strong>{item.label}</Text>
-                        {item.href ? <a href={item.href}>{item.value}</a> : <p style={{ margin: 0 }}>{item.value}</p>}
+                        <Text className="contact-label" style={{ color: item.color }}>{item.label}</Text>
+                        {item.href ? (
+                          <a href={item.href} className="contact-value">{item.value}</a>
+                        ) : (
+                          <p className="contact-value">{item.value}</p>
+                        )}
+                        <p className="contact-desc">{item.description}</p>
                       </div>
                     </div>
                   );
@@ -139,14 +179,27 @@ const Contact = () => {
             </div>
 
             <div className="contact-card contact-social-card">
-              <Title level={4}>Theo dõi chúng tôi</Title>
-              <Text>Giữ kết nối và theo dõi chúng tôi trên mạng xã hội để nhận các bản cập nhật mới nhất.</Text>
-              <div className="contact-social-links" style={{ marginTop: 12 }}>
+              <div className="social-header">
+                <Title level={4}>Kết nối với chúng tôi</Title>
+                <Text>Theo dõi để không bỏ lỡ những ưu đãi hấp dẫn nhất</Text>
+              </div>
+              <div className="contact-social-grid">
                 {socialLinks.map((social, index) => {
                   const Icon = social.icon;
                   return (
-                    <a key={index} href={social.href} aria-label={social.label} style={{ marginRight: 12 }}>
-                      <Icon className="anticon" />
+                    <a 
+                      key={index} 
+                      href={social.href} 
+                      className="social-link-item"
+                      style={{ 
+                        '--social-color': social.color,
+                        '--social-shadow': social.shadow
+                      }}
+                    >
+                      <div className="social-icon-wrapper">
+                        <Icon />
+                      </div>
+                      <span className="social-name">{social.label}</span>
                     </a>
                   );
                 })}
@@ -164,16 +217,22 @@ const Contact = () => {
           </div>
         </div>
 
-        <div style={{ marginTop: 32 }}>
-          <div className="map-container">
+        <div className="contact-map-section">
+          <div className="contact-map-wrapper">
             <iframe
               title="Google Map"
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3723.9315079324944!2d105.81296347596015!3d21.036952280613947!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ab1dbf34b2bb%3A0x4c3d2c6b5d6a10c3!2zMjY2IMSQ4buZaSBD4bqlbiwgTGl4YSBHaWFpLCBCw6AgxJDhuqFpLCBIw6AgTuG7mWkgMTAwMDA!5e0!3m2!1svi!2s!4v1695200100123!5m2!1svi!2s"
               loading="lazy"
               className="contact-map-iframe"
-              style={{ width: '100%', height: 360, border: 0 }}
               allowFullScreen
             />
+            <div className="contact-map-overlay">
+              <EnvironmentOutlined className="map-icon" />
+              <div className="map-text">
+                <h3>Trụ sở chính</h3>
+                <p>279 Mai Dang Chon, Hoa Quy, Da Nang City</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>

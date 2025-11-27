@@ -193,599 +193,6 @@
   align-items: center;
   justify-content: space-between;
   flex: 0 0 auto;
-  padding: 12px;
-  background: linear-gradient(135deg, #1890ff 0%, #1677ff 100%);
-  color: white;
-  border-radius: 12px 12px 0 0;
-}
-
-.messenger-header-left {
-  display: flex;
-  align-items: center;
-}
-
-.messenger-header-left .ant-avatar {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  margin-right: 12px;
-}
-
-.messenger-header-title {
-  padding: 2px 6px 2px 0;
-  color: white;
-}
-
-.messenger-header-title div:first-child {
-  font-weight: 600;
-  color: white;
-}
-
-.messenger-header-title div:last-child {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.messenger-header-right {
-  display: flex;
-  align-items: center;
-  margin-left: 12px;
-}
-
-.messenger-alert-icon {
-  color: white;
-  font-size: 20px;
-  margin-left: 8px;
-  padding: 4px;
-  border-radius: 6px;
-  transition: transform 0.2s ease;
-}
-
-.messenger-alert-icon:hover {
-  transform: scale(1.1);
-}
-
-.messenger-messages {
-  padding: 12px;
-  flex: 1 1 auto;
-  min-height: 140px;
-  overflow-y: auto;
-  background: linear-gradient(180deg, #ffffff 0%, #fbfbff 100%);
-  border-radius: 8px;
-  box-sizing: border-box;
-  max-height: calc(100% - 120px);
-}
-
-/* 👈 MESSAGE ITEM STYLES - PHÂN BIỆT ROLE */
-.message-item {
-  display: flex;
-  margin-bottom: 10px;
-  animation: fadeInScale 0.3s ease-out;
-}
-
-/* Tin nhắn của người hiện tại - XANH (Phải) */
-.message-item.current-user {
-  justify-content: flex-end;
-}
-
-.message-item.current-user .message-bubble {
-  background: #1890ff;
-  color: white;
-  border-radius: 12px 0 12px 12px;
-  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.2);
-}
-
-/* Tin nhắn của người khác - XÁM (Trái) */
-.message-item.other-user {
-  justify-content: flex-start;
-}
-
-.message-item.other-user .message-bubble {
-  background: #e8e8e8;
-  color: #111;
-  border-radius: 0 12px 12px 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.message-bubble {
-  max-width: 75%;
-  padding: 10px 12px;
-  border-radius: 12px;
-  line-height: 1.3;
-  transition: transform 120ms ease, box-shadow 120ms ease;
-  word-break: break-word;
-  overflow-wrap: anywhere;
-  white-space: pre-wrap;
-  font-size: 14px;
-}
-
-.message-bubble:hover {
-  transform: translateY(-2px);
-}
-
-.message-item.current-user .message-bubble:hover {
-  box-shadow: 0 6px 18px rgba(24, 144, 255, 0.3);
-}
-
-.message-item.other-user .message-bubble:hover {
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
-}
-
-.message-image {
-  max-width: 220px;
-  max-height: 240px;
-  display: block;
-  border-radius: 8px;
-}
-
-.messenger-input {
-  padding: 12px;
-  border-top: 1px solid #f0f0f0;
-  background: transparent;
-  position: relative;
-  z-index: 3001;
-  display: flex;
-  gap: 8px;
-  align-items: flex-end;
-  flex: 0 0 auto;
-}
-
-.messenger-input .ant-input-textarea {
-  border-radius: 8px;
-}
-
-.messenger-input .ant-btn,
-.messenger-input .ant-input,
-.messenger-input .ant-input-textarea {
-  position: relative;
-  z-index: 3002;
-}
-
-.messenger-send-row {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 8px;
-  background: transparent;
-  padding: 0;
-}
-
-.messenger-send-row .ant-btn {
-  margin-right: 4px;
-  margin-bottom: 2px;
-}
-
-.messenger-textarea .ant-input-textarea {
-  padding-right: 12px;
-}
-
-.send-icon-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: none;
-  color: #1677ff;
-  font-size: 22px;
-  padding: 8px 10px;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.send-icon-button:active,
-.send-icon-button:focus {
-  outline: none;
-  box-shadow: none;
-}
-
-.send-icon-button:hover {
-  transform: translateY(-2px) scale(1.03);
-}
-
-.send-icon-button .anticon {
-  font-size: 22px;
-  line-height: 1;
-}
-
-.icon-action-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: none;
-  color: #555;
-  font-size: 18px;
-  padding: 6px 8px;
-  cursor: pointer;
-  transition: color 0.2s ease, transform 0.2s ease;
-}
-
-.icon-action-button:hover {
-  transform: translateY(-2px);
-}
-
-.icon-action-button.emoji-button {
-  color: #faad14;
-}
-
-.icon-action-button.emoji-button:hover {
-  color: #d48806;
-}
-
-.icon-action-button.picture-button {
-  color: #13c2c2;
-}
-
-.icon-action-button.picture-button:hover {
-  color: #08979c;
-}
-
-.emoji-picker {
-  position: absolute;
-  bottom: 64px;
-  right: 12px;
-  background: #fff;
-  border: 1px solid #eee;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-  padding: 8px;
-  border-radius: 8px;
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  z-index: 3500;
-}
-
-.emoji-btn {
-  background: transparent;
-  border: none;
-  font-size: 18px;
-  padding: 4px 6px;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.emoji-btn:hover {
-  transform: scale(1.15);
-}
-
-.send-icon-button::-moz-focus-inner {
-  border: 0;
-}
-
-.messenger-textarea {
-  flex: 1 1 auto;
-}
-
-.messenger-textarea .ant-input-textarea {
-  width: 100%;
-  background: #ffffff;
-  border-radius: 8px;
-  resize: none;
-  border: 1px solid #e6e6e6;
-  box-shadow: none;
-}
-
-.messenger-textarea .ant-input {
-  margin-bottom: 0;
-}
-
-.messenger-panel:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
-}
-
-.messenger-messages::-webkit-scrollbar {
-  width: 8px;
-}
-
-.messenger-messages::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.messenger-messages::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.12);
-  border-radius: 6px;
-}
-
-.messenger-messages {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.12) transparent;
-}
-
-@media (max-width: 480px) {
-  .messenger-panel {
-    right: 24px;
-    bottom: 88px;
-    width: calc(100% - 48px);
-    left: 24px;
-    right: 24px;
-  }
-}
-/* ===== TYPING INDICATOR ===== */
-.typing-indicator {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 16px;
-  background: #f0f0f0;
-  border-radius: 18px;
-  width: fit-content;
-  animation: fadeInScale 0.3s ease-out;
-}
-
-.typing-indicator span {
-  width: 10px;
-  height: 10px;
-  background-color: #bbb;
-  border-radius: 50%;
-  animation: typing 1.4s infinite;
-}
-
-.typing-indicator span:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.typing-indicator span:nth-child(3) {
-  animation-delay: 0.4s;
-}
-
-@keyframes typing {
-  0%,
-  60%,
-  100% {
-    transform: translateY(0);
-    opacity: 0.6;
-  }
-  30% {
-    transform: translateY(-12px);
-    opacity: 1;
-  }
-}
-
-/* ===== MESSAGE TIMESTAMPS & READ STATUS ===== */
-.message-footer {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 6px;
-  font-size: 12px;
-  color: #999;
-  padding: 0 4px;
-}
-
-.message-time {
-  font-size: 12px;
-  color: #aaa;
-  font-weight: 400;
-}
-
-.read-status {
-  font-size: 13px;
-  color: #1890ff;
-  font-weight: bold;
-}
-
-.message-item.current-user .read-status {
-  color: #1890ff;
-}
-
-/* ===== ANIMATIONS ===== */
-@keyframes fadeInScale {
-  from {
-    opacity: 0;
-    transform: scale(0.95) translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-/* ===== MESSAGE BUBBLE ===== */
-.message-item {
-  display: flex;
-  margin-bottom: 12px;
-  animation: fadeInScale 0.3s ease-out;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.message-item.current-user {
-  align-items: flex-end;
-}
-
-.message-item.other-user {
-  align-items: flex-start;
-}
-
-.message-bubble {
-  max-width: 72%;
-  padding: 12px 16px;
-  border-radius: 18px;
-  line-height: 1.4;
-  word-break: break-word;
-  overflow-wrap: anywhere;
-  white-space: pre-wrap;
-  font-size: 14px;
-  transition: all 180ms cubic-bezier(0.4, 0, 0.2, 1);
-  animation: fadeInScale 0.3s ease-out;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-}
-
-.message-item.current-user .message-bubble {
-  background: linear-gradient(135deg, #1890ff 0%, #0050b3 100%);
-  color: white;
-  border-radius: 18px 4px 18px 18px;
-  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.25);
-}
-
-.message-item.other-user .message-bubble {
-  background: #f5f5f5;
-  color: #262626;
-  border-radius: 4px 18px 18px 18px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.message-bubble:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
-}
-
-.message-item.current-user .message-bubble:hover {
-  box-shadow: 0 8px 24px rgba(24, 144, 255, 0.35) !important;
-}
-
-.message-image {
-  max-width: 240px;
-  max-height: 280px;
-  display: block;
-  border-radius: 12px;
-  animation: fadeInScale 0.4s ease-out;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-/* ===== PRODUCT CARD ===== */
-.product-card {
-  padding: 0 !important;
-  display: flex;
-  flex-direction: column;
-  border-radius: 16px !important;
-  overflow: hidden;
-  min-width: 200px;
-  background: white !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
-  transition: all 0.3s ease;
-}
-
-.product-card:hover {
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16) !important;
-}
-
-.product-image {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-  background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
-}
-
-.product-info {
-  padding: 14px;
-  background: white;
-}
-
-.product-name {
-  font-weight: 600;
-  color: #262626;
-  margin-bottom: 6px;
-  font-size: 14px;
-  line-height: 1.3;
-}
-
-.product-price {
-  color: #1890ff;
-  font-weight: 700;
-  font-size: 15px;
-}
-
-/* ===== QUICK REPLY BUTTONS ===== */
-.quick-replies {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 14px;
-  background: linear-gradient(135deg, #f8f9fa 0%, #f0f2f5 100%);
-  border-top: 1px solid #eee;
-  animation: fadeInUp 0.3s ease-out;
-}
-
-.quick-reply-btn {
-  padding: 12px 16px;
-  background: white;
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
-  color: #1890ff;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  text-align: left;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
-}
-
-.quick-reply-btn:hover {
-  background: #f0f7ff;
-  border-color: #1890ff;
-  transform: translateX(6px);
-  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.15);
-}
-
-.quick-reply-btn:active {
-  transform: scale(0.97) translateX(6px);
-}
-
-/* ===== MESSENGER PANEL ===== */
-.messenger-panel {
-  position: fixed;
-  z-index: 3000;
-  bottom: 24px;
-  right: 88px;
-  width: 380px;
-  max-height: 500px;
-  display: flex;
-  flex-direction: column;
-  height: 500px;
-  overflow: hidden;
-  border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
-  background: #fff;
-  padding-bottom: 0;
-  animation: fadeInScale 220ms cubic-bezier(0.34, 1.56, 0.64, 1);
-  transition: all 200ms ease;
-  box-sizing: border-box;
-}
-
-.messenger-panel:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.2);
-}
-
-/* ===== HEADER ===== */
-/* >>> ĐÃ NÂNG CẤP PHẦN NÀY <<< */
-.messenger-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex: 0 0 auto;
   padding: 16px;
   color: white;
   border-radius: 16px 16px 0 0;
@@ -1364,4 +771,210 @@
 }
 .chat-area .messenger-input {
   border-radius: 0 0 16px 0; /* Bo góc dưới phải */
+}
+
+/* ========================================================= */
+/* === [SIÊU ĐẸP] CUSTOM FLOAT BUTTONS === */
+/* ========================================================= */
+
+/* Ensure wrapper has no shadow/background - Hiding the "blue block" artifact */
+.chat-bubble-float-btn, 
+.chat-bubble-float-btn .ant-float-btn-content {
+  box-shadow: none !important;
+  background-color: transparent !important;
+}
+
+/* Base style for both buttons */
+.chat-bubble-float-btn .ant-float-btn-body {
+  width: 60px !important;
+  height: 60px !important;
+  border-radius: 50% !important;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important; /* Bouncy transition */
+  border: 2px solid rgba(255, 255, 255, 0.8) !important;
+}
+
+.chat-bubble-float-btn .ant-float-btn-icon {
+  font-size: 28px !important;
+  width: 28px !important;
+  height: 28px !important;
+  line-height: 28px !important;
+  color: #fff !important;
+  transition: transform 0.4s ease !important;
+}
+
+/* --- Messenger Button (Blue Gradient) --- */
+.messenger-btn .ant-float-btn-body {
+  background: linear-gradient(135deg, #00c6fb 0%, #005bea 100%) !important;
+  box-shadow: none !important; /* Hidden as requested */
+}
+
+/* Hover Effect for Messenger */
+.messenger-btn:hover .ant-float-btn-body {
+  transform: scale(1.1) translateY(-5px) !important;
+  box-shadow: none !important; /* Hidden as requested */
+}
+
+.messenger-btn:hover .ant-float-btn-icon {
+  transform: rotate(15deg) scale(1.1) !important;
+}
+
+/* --- Support Button (Orange/Red Gradient) --- */
+.support-btn .ant-float-btn-body {
+  background: linear-gradient(135deg, #ff9966 0%, #ff5e62 100%) !important;
+  box-shadow: none !important; /* Hidden as requested */
+}
+
+/* Hover Effect for Support */
+.support-btn:hover .ant-float-btn-body {
+  transform: scale(1.1) translateY(-5px) !important;
+  box-shadow: none !important; /* Hidden as requested */
+}
+
+.support-btn:hover .ant-float-btn-icon {
+  transform: rotate(-15deg) scale(1.1) !important;
+}
+
+/* --- Gentle Float Animation for Idle State --- */
+@keyframes gentleFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.chat-bubble-float-btn:not(:hover) .ant-float-btn-body {
+  animation: gentleFloat 3s ease-in-out infinite;
+}
+
+/* ========================================================= */
+/* === QUICK REPLIES (Vertical Style - Restored) === */
+/* ========================================================= */
+.quick-replies {
+  display: flex;
+  flex-direction: column; /* Vertical stack */
+  gap: 8px;
+  padding: 12px 16px;
+  background: #fff;
+  border-top: 1px solid #f0f0f0;
+}
+
+.quick-reply-btn {
+  width: 100%;
+  text-align: left;
+  background: #fff;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #1890ff;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-weight: 500;
+}
+
+.quick-reply-btn:hover {
+  border-color: #1890ff;
+  background-color: #e6f7ff;
+  color: #096dd9;
+  transform: translateX(4px); /* Subtle slide effect */
+}
+
+/* ===== MESSAGE BUBBLES (Restored) ===== */
+.message-item {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+  width: 100%;
+}
+
+.message-item.current-user {
+  align-items: flex-end;
+}
+
+.message-item.other-user {
+  align-items: flex-start;
+}
+
+.message-bubble {
+  max-width: 75%;
+  padding: 10px 14px;
+  border-radius: 18px;
+  font-size: 14px;
+  line-height: 1.5;
+  position: relative;
+  word-wrap: break-word;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Style cho tin nhắn của người dùng hiện tại (User/Admin) */
+.message-item.current-user .message-bubble {
+  background: linear-gradient(135deg, #1890ff 0%, #0050b3 100%);
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+/* Style cho tin nhắn của người khác */
+.message-item.other-user .message-bubble {
+  background-color: #f0f2f5;
+  color: #333;
+  border-bottom-left-radius: 4px;
+  border: 1px solid #e8e8e8;
+}
+
+.message-image {
+  max-width: 100%;
+  border-radius: 12px;
+  display: block;
+}
+
+.product-card {
+  padding: 0;
+  overflow: hidden;
+  background: white !important;
+  border: 1px solid #e0e0e0 !important;
+  color: #333 !important;
+}
+
+.product-image {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+}
+
+.message-footer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  font-size: 11px;
+  color: #999;
+  padding: 0 4px;
+}
+
+.read-status {
+  font-weight: bold;
+  color: #1890ff;
+}
+
+.typing-indicator {
+  padding: 12px 16px;
+  background: #f0f2f5;
+  border-radius: 18px;
+  border-bottom-left-radius: 4px;
+  display: inline-flex;
+  gap: 4px;
+}
+
+.typing-indicator span {
+  width: 6px;
+  height: 6px;
+  background: #999;
+  border-radius: 50%;
+  animation: typing 1.4s infinite ease-in-out both;
+}
+
+.typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+.typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes typing {
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1); }
 }

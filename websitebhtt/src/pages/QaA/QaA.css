@@ -1,72 +1,161 @@
-/* src/pages/QaA/QaA.css - PHIÊN BẢN SỬA LỖI */
+/* src/pages/QaA/QaA.css */
 
-.qna-page-container {
-  max-width: 900px; 
-  margin: 40px auto;  
-  padding: 20px;
+.qna-page-wrapper {
+  background-color: #f0f2f5;
+  min-height: 100vh;
+  padding-bottom: 60px;
+}
+
+.qna-header-section {
+  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+  padding: 60px 20px 80px;
+  text-align: center;
+  color: white;
+  border-bottom-left-radius: 30px;
+  border-bottom-right-radius: 30px;
+  margin-bottom: -40px; /* Pull content up */
 }
 
 .qna-page-title {
-  text-align: left; 
-  margin-bottom: 30px !important; 
-  font-weight: 600 !important;
+  color: white !important;
+  margin-bottom: 10px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
 }
 
-/* 1. TÙY CHỈNH KHỐI COLLAPSE CHA */
-.qna-collapse.ant-collapse {
-  background-color: transparent !important; /* Xóa nền trắng của khối cha */
-  border: none !important; /* Xóa viền của khối cha */
+.qna-title-icon {
+  font-size: 32px;
 }
 
-/* 2. SỬA LỖI BO GÓC KHÔNG ĐỒNG ĐỀU */
-/* * Ghi đè lên các quy tắc :first-child và :last-child của Antd 
- * Bằng cách nhắm mục tiêu tất cả các item
- */
-.qna-collapse > .ant-collapse-item,
-.qna-collapse > .ant-collapse-item:first-child,
-.qna-collapse > .ant-collapse-item:last-child {
-  background-color: #ffffff; 
-  border: 1px solid #d9d9d9; 
-  
-  /* Ép tất cả bo góc giống nhau */
-  border-radius: 8px !important; 
-  
-  margin-bottom: 20px !important; 
-  overflow: hidden; 
-}
-
-/* 3. TĂNG CHIỀU CAO VÀ THÊM HOVER CHO HEADER */
-/* * Chúng ta cần nhắm mục tiêu .ant-collapse-header
- * để tăng chiều cao và thêm hiệu ứng hover
- */
-.qna-collapse > .ant-collapse-item > .ant-collapse-header {
-  font-weight: 500; 
-  font-size: 18px; 
-  transition: background-color 0.3s ease;
-
-  /* Thêm !important để ép tăng chiều cao */
-  padding-top: 18px !important;    
-  padding-bottom: 18px !important; 
-}
-
-/* Hiệu ứng hover khi di chuột */
-.qna-collapse > .ant-collapse-item > .ant-collapse-header:hover {
-  background-color: #f7f7f7 !important; /* Thêm !important cho chắc chắn */
-}
-
-
-/* 4. TÙY CHỈNH PHẦN NỘI DUNG TRẢ LỜI */
-.qna-collapse > .ant-collapse-item > .ant-collapse-content {
-  border-top: 1px solid #d9d9d9; 
-}
-
-.qna-collapse > .ant-collapse-item > .ant-collapse-content > .ant-collapse-content-box {
-  background-color: white; 
-}
-
-.qna-answer {
-  color: #333; 
-  line-height: 1.6; 
+.qna-subtitle {
+  color: rgba(255, 255, 255, 0.85);
   font-size: 16px;
-  margin-bottom: 0; 
+  display: block;
+  margin-bottom: 30px;
 }
+
+.qna-search-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.qna-search-input {
+  border-radius: 30px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  border: none;
+  padding: 12px 24px;
+  font-size: 16px;
+}
+
+.qna-search-input:hover, .qna-search-input:focus {
+  box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+}
+
+.qna-content-container {
+  max-width: 1200px; /* Wider container for grid */
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* --- NEW GRID CARD STYLING --- */
+.qna-grid {
+  margin-top: 20px;
+}
+
+.qna-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  height: 100%;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid transparent;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.qna-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+  border-color: #1890ff;
+}
+
+.qna-card.active {
+  border-color: #1890ff;
+  background-color: #f0f9ff; /* Light blue bg when active */
+}
+
+.qna-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.qna-question-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: #262626;
+  margin: 0;
+  line-height: 1.4;
+  flex: 1;
+}
+
+.qna-card.active .qna-question-text {
+  color: #1890ff;
+}
+
+.qna-toggle-icon {
+  font-size: 20px;
+  color: #8c8c8c;
+  transition: transform 0.3s ease;
+  min-width: 24px;
+  text-align: right;
+}
+
+.qna-card.active .qna-toggle-icon {
+  color: #1890ff;
+  transform: rotate(180deg);
+}
+
+.qna-card-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease-out, opacity 0.4s ease-out, margin-top 0.4s ease;
+  opacity: 0;
+}
+
+.qna-card-body.open {
+  max-height: 500px; /* Arbitrary large height */
+  opacity: 1;
+  margin-top: 16px;
+}
+
+.qna-answer-text {
+  color: #595959;
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0,0,0,0.06);
+}
+
+@media (max-width: 768px) {
+  .qna-header-section {
+    padding: 40px 20px 60px;
+  }
+  
+  .qna-page-title {
+    font-size: 24px !important;
+  }
+  
+  .qna-question-text {
+    font-size: 16px;
+  }
+}
+
+/* Import Contact Styles */
+@import './QaA_Contact.css';

@@ -1,0 +1,29 @@
+/* src/style/Banner.css */
+
+.banner-carousel .slick-slide {
+  overflow: hidden;
+}
+
+.banner-image {
+  width: 100%;
+  height: 600px;
+  object-fit: cover;
+  transform: translateY(-45px);
+  transition: height 0.3s ease, transform 0.3s ease;
+}
+
+/* Tablet */
+@media (max-width: 992px) {
+  .banner-image {
+    height: 450px;
+    transform: translateY(-30px); /* Giảm độ dịch chuyển một chút */
+  }
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+  .banner-image {
+    height: 250px;
+    transform: translateY(-20px); /* Giảm nữa trên mobile */
+  }
+}

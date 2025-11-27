@@ -13,6 +13,7 @@ const sampleProducts = [
     stock: 120,
     brand: "LM",
     category: "Clothing",
+    discountPercentage: 20,
   },
   {
     id: 2,
@@ -39,6 +40,7 @@ const sampleProducts = [
     stock: 40,
     brand: "LM",
     category: "Footwear",
+    discountPercentage: 15,
   },
   {
 id: 4,
@@ -52,6 +54,7 @@ id: 4,
     stock: 40,
     brand: "LM",
     category: "Footwear",
+    discountPercentage: 25,
   },
 ];
 
@@ -189,6 +192,7 @@ export async function getMergedProducts({ category = null } = {}) {
     stock: p.stock || 0,
     brand: p.brand || "",
     category: p.category || "",
+    discountPercentage: p.discountPercentage || 0,
     _isLocal: false,
   }));
 

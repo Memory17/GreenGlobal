@@ -73,9 +73,10 @@ const Checkout = () => {
     : 0;
 
   const discount = passedState.discountAmount ?? 0; // default 0 if undefined
+  const luckyDiscount = passedState.luckyDiscountAmount ?? 0;
   const defaultBaseDeliveryFee = subtotal > 0 ? 20 : 0;
   const deliveryFee = (passedState.finalDeliveryFee ?? defaultBaseDeliveryFee);
-  const total = subtotal + deliveryFee - discount;
+  const total = Math.max(0, subtotal + deliveryFee - discount - luckyDiscount);
 
   const discountLabel = passedState.appliedCouponName
     ? `Giảm giá (${passedState.appliedCouponName})`
@@ -119,6 +120,9 @@ const Checkout = () => {
         discount: discount,
         shipping: deliveryFee,
         subtotal: subtotal,
+        luckyDiscount: luckyDiscount, // <-- THÊM MỚI
+        appliedLuckyCoupon: passedState.appliedLuckyCoupon,
+        useLuckyCoins: passedState.useLuckyCoins
       });
       setDeliveryInfo(allFormInfo);
 
@@ -300,6 +304,16 @@ const Checkout = () => {
               <Text>{discountLabel}</Text>
               <Text strong>- ${discount.toFixed(2)}</Text>
             </div>
+            {luckyDiscount > 0 && (
+              <div className="summary-row discount">
+                <Text style={{ color: '#fa8c16' }}>
+                  Phần thưởng vòng quay
+                  {passedState.appliedLuckyCoupon ? ` (${passedState.appliedLuckyCoupon.label})` : ''}
+                  {passedState.useLuckyCoins && passedState.appliedLuckyCoupon ? ' + Xu' : (passedState.useLuckyCoins ? ' (Xu)' : '')}
+                </Text>
+                <Text strong style={{ color: '#fa8c16' }}>- ${luckyDiscount.toFixed(2)}</Text>
+              </div>
+            )}
 
             <Divider className="summary-divider" />
             <div className="summary-row total">

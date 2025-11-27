@@ -63,7 +63,7 @@ const Register = () => {
     <div className="login-page">
       <div className="login">
         <Row className="login-row">
-          <Col className="login-col-left" span={14}>
+          <Col xs={0} md={12} lg={14} className="login-col-left">
             <Space direction="vertical" size="small">
               <Title className="title-left" level={1}>
                 Welcome !!
@@ -75,7 +75,7 @@ const Register = () => {
               </Text>
             </Space>
           </Col>
-          <Col span={10} className="login-col-right">
+          <Col xs={24} md={12} lg={10} className="login-col-right">
             <div>
               <Title className="login-title" level={2}>
                 Register
