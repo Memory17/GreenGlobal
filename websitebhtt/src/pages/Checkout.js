@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Form,
   Input,
@@ -16,6 +16,7 @@ import {
   Result,
   Descriptions,
   message,
+  Tag,
 } from 'antd';
 import {
   UserOutlined,
@@ -26,7 +27,10 @@ import {
   ScheduleOutlined,
   CreditCardOutlined,
   DollarCircleOutlined,
-  WalletOutlined
+  WalletOutlined,
+  CheckCircleOutlined,
+  DisconnectOutlined,
+  LoadingOutlined,
 } from '@ant-design/icons';
 import '../style/Checkout.css'; // Sử dụng file CSS
 
@@ -35,9 +39,17 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext'; // <-- THÊM MỚI
 import { useOrder } from '../context/OrderContext'; // <-- THÊM MỚI (Context đếm count)
 import { useOrderHistory } from '../context/OrderHistoryContext'; // <-- THÊM MỚI (Context lưu lịch sử)
+import { useWeb3 } from '../context/Web3Context'; // <-- THÊM: Web3 Context
+import { useTranslation } from 'react-i18next';
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
+
+// Helper function to format wallet address
+const formatAddress = (address) => {
+  if (!address) return '';
+  return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+};
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -48,10 +60,30 @@ const Checkout = () => {
   const { currentUser } = useAuth(); // <-- THÊM MỚI
   const { addConfirmingOrder } = useOrder(); // <-- THÊM MỚI
   const { addOrderToHistory } = useOrderHistory(); // <-- THÊM MỚI
+  
+  // --- Web3 Context cho MetaMask ---
+  const { 
+    account, 
+    balance, 
+    chainId,
+    isConnecting, 
+    isProcessingPayment,
+    connectWallet, 
+    disconnectWallet, 
+    payWithETH,
+    convertUSDtoETH,
+    convertVNDtoETH,
+    getNetworkName,
+    isUserDisconnected,
+    isMetaMaskInstalled,
+  } = useWeb3();
+  const { i18n } = useTranslation();
+  const currency = i18n.language === 'vi' ? 'VND' : 'USD';
 
   // --- States (giữ nguyên) ---
   const [showSuccess, setShowSuccess] = useState(false);
   const [orderedItems, setOrderedItems] = useState([]);
+  const [walletStatus, setWalletStatus] = useState(Boolean(account && !isUserDisconnected)); // Track wallet status
   const [orderTotals, setOrderTotals] = useState({
     total: 0,
     discount: 0,
@@ -59,6 +91,7 @@ const Checkout = () => {
     subtotal: 0,
   });
   const [deliveryInfo, setDeliveryInfo] = useState(null);
+  const [cryptoTxInfo, setCryptoTxInfo] = useState(null); // Thông tin giao dịch crypto
 
   const [form] = Form.useForm();
   const passedState = location.state || {};
@@ -73,10 +106,9 @@ const Checkout = () => {
     : 0;
 
   const discount = passedState.discountAmount ?? 0; // default 0 if undefined
-  const luckyDiscount = passedState.luckyDiscountAmount ?? 0;
   const defaultBaseDeliveryFee = subtotal > 0 ? 20 : 0;
   const deliveryFee = (passedState.finalDeliveryFee ?? defaultBaseDeliveryFee);
-  const total = Math.max(0, subtotal + deliveryFee - discount - luckyDiscount);
+  const total = subtotal + deliveryFee - discount;
 
   const discountLabel = passedState.appliedCouponName
     ? `Giảm giá (${passedState.appliedCouponName})`
@@ -84,6 +116,92 @@ const Checkout = () => {
   const shippingLabel = passedState.appliedShippingRuleName
     ? `Phí Vận chuyển (${passedState.appliedShippingRuleName})`
     : "Phí Vận chuyển";
+
+  // Track account changes to trigger component re-render
+
+  // --- Estimate gas for payment ---
+  const estimateGasForPayment = async (amount, currency) => {
+    try {
+      if (!account) {
+        return null;
+      }
+      
+      // Convert amount to ETH
+      const ethAmountStr = currency === 'VND' ? convertVNDtoETH(amount) : convertUSDtoETH(amount);
+      const ethAmount = parseFloat(ethAmountStr || '0');
+      
+      // Simple gas estimation (you can enhance this with actual web3 gas estimation)
+      const estimatedGasPrice = 0.00001; // Example gas price in ETH
+      const estimatedGasLimit = 21000; // Standard ETH transfer gas limit
+      const estimatedGasFee = (estimatedGasPrice * estimatedGasLimit);
+      
+      return {
+        ethAmount,
+        gasPrice: estimatedGasPrice,
+        gasLimit: estimatedGasLimit,
+        gasFee: estimatedGasFee,
+        totalCost: ethAmount + estimatedGasFee,
+      };
+    } catch (error) {
+      console.error('[Checkout] Gas estimation error:', error);
+      return null;
+    }
+  };
+
+  // --- Xử lý thanh toán bằng MetaMask (tách ra thành hàm) ---
+  const handleCryptoPayment = async (formValues) => {
+    // Kiểm tra kết nối ví
+    if (!account) {
+      const connected = await connectWallet();
+      if (!connected) return false;
+    }
+
+    // Determine currency (VND if vi, else USD)
+    const currency = i18n.language === 'vi' ? 'VND' : 'USD';
+    // Convert to ETH for pre-check
+    const ethAmountStr = currency === 'VND' ? convertVNDtoETH(total) : convertUSDtoETH(total);
+    const ethAmountNum = parseFloat(ethAmountStr || '0');
+    const walletBalanceNum = parseFloat(balance || '0');
+
+    // If balance insufficient, show a warning
+    if (walletBalanceNum < ethAmountNum) {
+      message.error('Số dư ví không đủ để thanh toán. Vui lòng kiểm tra ví.');
+      return false;
+    }
+
+    // Thực hiện thanh toán
+    const result = await payWithETH(total, currency, {
+      orderId: Date.now(),
+      items: effectiveItems,
+    });
+
+    if (result.success) {
+      setCryptoTxInfo(result);
+      return true;
+    }
+    console.debug('[Checkout] Crypto payment failed ->', result);
+    message.error(result?.error || 'Thanh toán bằng Crypto thất bại.');
+    return false;
+  };
+
+  // --- Finalize order after successful payment or for non-crypto payment ---
+  const finalizeOrder = (allFormInfo) => {
+    addOrderToHistory(effectiveItems, { total, discount, shipping: deliveryFee, subtotal }, allFormInfo); // ⭐ SỬA: Gọi với 3 tham số
+    addConfirmingOrder();           // Tăng số đếm (badge)
+
+    setOrderedItems(Array.isArray(effectiveItems) ? [...effectiveItems] : []);
+    setOrderTotals({
+      total: total,
+      discount: discount,
+      shipping: deliveryFee,
+      subtotal: subtotal,
+    });
+    setDeliveryInfo(allFormInfo);
+    setShowSuccess(true);
+    if (!buyNowItems.length) {
+      clearCart();
+    }
+  };
 
   // --- Xử lý xác nhận đơn hàng (ĐÃ CẬP NHẬT) ---
   const handleConfirmOrder = async () => {
@@ -109,24 +227,22 @@ const Checkout = () => {
         allFormInfo.date = allFormInfo.date.toISOString();
       }
 
-      // 5. GỌI CẢ HAI CONTEXT (THÊM MỚI)
-      addOrderToHistory(effectiveItems, { total, discount, shipping: deliveryFee, subtotal }, allFormInfo); // ⭐ SỬA: Gọi với 3 tham số
-      addConfirmingOrder();           // Tăng số đếm (badge)
-
-      // 6. Lưu state tạm thời để hiển thị popup (giữ nguyên)
-      setOrderedItems(Array.isArray(effectiveItems) ? [...effectiveItems] : []);
-      setOrderTotals({
-        total: total,
-        discount: discount,
-        shipping: deliveryFee,
-        subtotal: subtotal,
-        luckyDiscount: luckyDiscount, // <-- THÊM MỚI
-        appliedLuckyCoupon: passedState.appliedLuckyCoupon,
-        useLuckyCoins: passedState.useLuckyCoins
-      });
-      setDeliveryInfo(allFormInfo);
-
-      setShowSuccess(true); // Hiển thị popup thành công
+      // 4. NẾU CHỌN THANH TOÁN CRYPTO (MetaMask)
+      if (allFormInfo.payment === 'Crypto Payment') {
+        console.log('[Checkout] Processing crypto payment...');
+        const cryptoSuccess = await handleCryptoPayment(allFormInfo);
+        
+        if (cryptoSuccess) {
+          console.log('[Checkout] Crypto payment successful, finalizing order...');
+          finalizeOrder(allFormInfo);
+        } else {
+          console.log('[Checkout] Crypto payment failed or cancelled');
+          return; // Don't finalize if payment failed
+        }
+      } else {
+        // If not crypto, finalize order directly
+        finalizeOrder(allFormInfo);
+      }
       // Nếu đây là checkout từ giỏ hàng, xóa giỏ; nếu là Buy Now, giữ giỏ hàng
       if (!buyNowItems.length) {
         clearCart(); // Xóa giỏ hàng sau khi đặt thành công
@@ -145,6 +261,25 @@ const Checkout = () => {
     setShowSuccess(false);
     navigate("/"); // Chuyển về trang chủ
   };
+
+  // Compute ETH requirement / balance check for UI disabling
+  const getSelectedPayment = () => {
+    try {
+      return form.getFieldValue('payment');
+    } catch (e) {
+      return null;
+    }
+  };
+  const selectedPayment = getSelectedPayment();
+  const requiredEthStr = currency === 'VND' ? convertVNDtoETH(total) : convertUSDtoETH(total);
+  const requiredEth = parseFloat(requiredEthStr || '0');
+  const walletEth = parseFloat(balance || '0');
+  const isBalanceSufficient = walletStatus ? walletEth >= requiredEth : true;
+
+  // Update walletStatus when account or disconnect state changes
+  useEffect(() => {
+    setWalletStatus(Boolean(account && !isUserDisconnected));
+  }, [account, isUserDisconnected]);
 
   /*
   useEffect(() => {
@@ -265,8 +400,158 @@ const Checkout = () => {
                     <Radio value="Cash on Delivery" className="payment-radio">
                       <DollarCircleOutlined /> Thanh toán bằng Tiền mặt (COD)
                     </Radio>
+                    
+                    {/* 🔥 THANH TOÁN CRYPTO - MetaMask */}
+                    <Radio value="Crypto Payment" className="payment-radio crypto-payment-option">
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}>
+                        <img 
+                          src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg" 
+                          alt="MetaMask" 
+                          style={{ width: 24, height: 24 }} 
+                        />
+                        <span>Thanh toán bằng Crypto (MetaMask)</span>
+                        {walletStatus ? (
+                          <Tag color="green" style={{ marginLeft: 'auto' }}>
+                            <CheckCircleOutlined /> Đã kết nối
+                          </Tag>
+                        ) : (
+                          <Tag color="orange" style={{ marginLeft: 'auto' }}>
+                            Chưa kết nối
+                          </Tag>
+                        )}
+                      </div>
+                    </Radio>
                   </Space>
                 </Radio.Group>
+              </Form.Item>
+              
+              {/* Hiển thị thông tin ví khi chọn Crypto */}
+              <Form.Item noStyle shouldUpdate={(prev, curr) => prev.payment !== curr.payment}>
+                {({ getFieldValue }) => 
+                  getFieldValue('payment') === 'Crypto Payment' && (
+                    <Card 
+                      className="crypto-payment-card"
+                      size="small" 
+                      style={{ 
+                        marginTop: 16, 
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        borderRadius: 12,
+                        border: 'none',
+                      }}
+                    >
+                      <div style={{ color: 'white' }}>
+                        <div style={{ marginBottom: 12, fontSize: 16, fontWeight: 600 }}>
+                          <img 
+                            src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg" 
+                            alt="MetaMask" 
+                            style={{ width: 28, height: 28, marginRight: 8, verticalAlign: 'middle' }} 
+                          />
+                          Thanh toán Blockchain
+                        </div>
+                        
+                        {!walletStatus ? (
+                          <Button 
+                            type="default"
+                            size="large"
+                            onClick={connectWallet}
+                            loading={isConnecting}
+                            icon={<WalletOutlined />}
+                            style={{ 
+                              width: '100%', 
+                              borderRadius: 8,
+                              fontWeight: 600,
+                              height: 48,
+                            }}
+                          >
+                            {isConnecting ? 'Đang kết nối...' : 'Kết nối ví MetaMask'}
+                          </Button>
+                        ) : (
+                            <div>
+                            {console.debug('[Checkout] Rendering wallet card. account=', account, 'walletStatus=', walletStatus)}
+                            <div style={{ 
+                              background: 'rgba(255,255,255,0.15)', 
+                              padding: 12, 
+                              borderRadius: 8,
+                              marginBottom: 12,
+                            }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                                <span style={{ opacity: 0.8 }}>Địa chỉ ví:</span>
+                                <span style={{ fontFamily: 'monospace' }}>
+                                  {formatAddress(account)}
+                                </span>
+                              </div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                                <span style={{ opacity: 0.8 }}>Số dư:</span>
+                                <span style={{ fontWeight: 600 }}>{parseFloat(balance).toFixed(4)} ETH</span>
+                              </div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <span style={{ opacity: 0.8 }}>Mạng:</span>
+                                <Tag color="blue">{getNetworkName(chainId)}</Tag>
+                              </div>
+                            </div>
+                            
+                            <div style={{ 
+                              background: total > 0 ? 'rgba(0,255,0,0.15)' : 'rgba(255,193,7,0.2)', 
+                              padding: 12, 
+                              borderRadius: 8,
+                              marginBottom: 12,
+                              textAlign: 'center',
+                            }}>
+                              <div style={{ opacity: 0.8, marginBottom: 4 }}>Số tiền thanh toán:</div>
+                              {walletStatus && total > 0 ? (
+                                <>
+                                  <div style={{ fontSize: 24, fontWeight: 700 }}>
+                                      ≈ {currency === 'VND' ? convertVNDtoETH(total) : convertUSDtoETH(total)} ETH
+                                  </div>
+                                  <div style={{ opacity: 0.7, fontSize: 12 }}>
+                                    ({currency === 'VND' ? total.toLocaleString('vi-VN') + ' VNĐ' : `$${total.toFixed(2)} USD`})
+                                  </div>
+                                </>
+                              ) : (
+                                <div style={{ fontSize: 14, color: '#ffc107' }}>
+                                  ⚠️ Giỏ hàng trống - Vui lòng thêm sản phẩm
+                                </div>
+                              )}
+                            </div>
+                            
+                            <Button 
+                              type="default"
+                              size="small"
+                              onClick={() => {
+                                console.debug('[Checkout] disconnect button clicked');
+                                disconnectWallet();
+                              }}
+                              icon={<DisconnectOutlined />}
+                              style={{ width: '100%', borderRadius: 6 }}
+                            >
+                              Ngắt kết nối ví
+                            </Button>
+                          </div>
+                        )}
+                        
+                        {!isMetaMaskInstalled() && (
+                          <div style={{ 
+                            marginTop: 12, 
+                            textAlign: 'center',
+                            padding: 12,
+                            background: 'rgba(255,193,7,0.2)',
+                            borderRadius: 8,
+                          }}>
+                            <span>⚠️ Chưa cài đặt MetaMask. </span>
+                            <a 
+                              href="https://metamask.io/download/" 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              style={{ color: '#ffd700', textDecoration: 'underline' }}
+                            >
+                              Tải về tại đây
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                    </Card>
+                  )
+                }
               </Form.Item>
             </Card>
 
@@ -304,16 +589,6 @@ const Checkout = () => {
               <Text>{discountLabel}</Text>
               <Text strong>- ${discount.toFixed(2)}</Text>
             </div>
-            {luckyDiscount > 0 && (
-              <div className="summary-row discount">
-                <Text style={{ color: '#fa8c16' }}>
-                  Phần thưởng vòng quay
-                  {passedState.appliedLuckyCoupon ? ` (${passedState.appliedLuckyCoupon.label})` : ''}
-                  {passedState.useLuckyCoins && passedState.appliedLuckyCoupon ? ' + Xu' : (passedState.useLuckyCoins ? ' (Xu)' : '')}
-                </Text>
-                <Text strong style={{ color: '#fa8c16' }}>- ${luckyDiscount.toFixed(2)}</Text>
-              </div>
-            )}
 
             <Divider className="summary-divider" />
             <div className="summary-row total">
@@ -322,15 +597,37 @@ const Checkout = () => {
                 ${total.toFixed(2)}
               </Title>
             </div>
+            
+            {/* Hiển thị giá ETH nếu có ví kết nối */}
+            {/* Hiển thị giá ETH khi có ví kết nối */}
+                        {walletStatus && total > 0 && (
+              <div style={{ 
+                textAlign: 'center', 
+                marginBottom: 12, 
+                padding: 8, 
+                background: 'linear-gradient(135deg, #667eea20 0%, #764ba220 100%)',
+                borderRadius: 8,
+              }}>
+                <Text type="secondary">≈ {currency === 'VND' ? convertVNDtoETH(total) : convertUSDtoETH(total)} ETH</Text>
+              </div>
+            )}
+            
+            {selectedPayment === 'Crypto Payment' && !isBalanceSufficient && (
+              <div style={{ marginBottom: 12, padding: 10, borderRadius: 8, background: 'rgba(255,82,82,0.06)', color: '#ff4d4f', fontWeight: 600 }}>
+                ⚠️ Số dư ví của bạn ({walletEth.toFixed(4)} ETH) không đủ để thanh toán ({requiredEth.toFixed(4)} ETH). Vui lòng nạp thêm hoặc chọn phương thức khác.
+              </div>
+            )}
+
             <Button
               type="primary"
               size="large"
               block
               className="confirm-order-btn"
               onClick={handleConfirmOrder}
-              disabled={cartItems.length === 0}
+              disabled={effectiveItems.length === 0 || isProcessingPayment || (selectedPayment === 'Crypto Payment' && !isBalanceSufficient)}
+              loading={isProcessingPayment}
             >
-              Xác Nhận Đơn Hàng
+              {isProcessingPayment ? 'Đang xử lý thanh toán...' : 'Xác Nhận Đơn Hàng'}
             </Button>
           </Card>
         </Col>
@@ -353,15 +650,65 @@ const Checkout = () => {
               }
               extra={
                 <div className="order-success-details">
-                  <Descriptions column={1} size="default" bordered>
+                  <Descriptions column={1} size="small" bordered>
                     <Descriptions.Item label="Giao hàng dự kiến">
-                      {/* TODO: Tính ngày giao dựa trên ngày đặt */}
                       <b>Thứ Sáu, 30/10/2025</b>
                     </Descriptions.Item>
                     <Descriptions.Item label="Email xác nhận gửi tới">
                       <b>{deliveryInfo?.email || "N/A"}</b>
                     </Descriptions.Item>
                   </Descriptions>
+
+                  {/* 🔗 THÔNG TIN GIAO DỊCH BLOCKCHAIN */}
+                            {cryptoTxInfo && cryptoTxInfo.transactionHash && (
+                    <div style={{ 
+                      marginTop: 12, 
+                      padding: 12, 
+                      background: 'linear-gradient(135deg, #667eea15 0%, #764ba215 100%)',
+                      borderRadius: 8,
+                      border: '1px solid #667eea40',
+                    }}>
+                      <div style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: 6, 
+                        marginBottom: 8,
+                        fontWeight: 600,
+                        fontSize: '0.9rem',
+                        color: '#667eea',
+                      }}>
+                        <img 
+                          src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg" 
+                          alt="MetaMask" 
+                          style={{ width: 20, height: 20 }} 
+                        />
+                        Thanh toán Blockchain thành công!
+                      </div>
+                      
+                      <Descriptions column={1} size="small" style={{ fontSize: '0.85rem' }}>
+                        <Descriptions.Item label="Số tiền">
+                          <b>{cryptoTxInfo.amountETH} ETH</b> (~${cryptoTxInfo.amountUSD})
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Transaction Hash">
+                          <a 
+                            href={`https://etherscan.io/tx/${cryptoTxInfo.transactionHash}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ 
+                              fontFamily: 'monospace', 
+                              fontSize: 10,
+                              wordBreak: 'break-all',
+                            }}
+                          >
+                            {cryptoTxInfo.transactionHash.substring(0, 16)}...
+                          </a>
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Block">
+                          #{cryptoTxInfo.blockNumber}
+                        </Descriptions.Item>
+                      </Descriptions>
+                    </div>
+                  )}
 
                   <Text className="spam-warning">
                     Vui lòng kiểm tra thư mục <b>Spam</b> nếu bạn không thấy
@@ -376,6 +723,7 @@ const Checkout = () => {
                           items: orderedItems,
                           totals: orderTotals,
                           delivery: deliveryInfo,
+                          cryptoTx: cryptoTxInfo,
                         },
                       })
                     }

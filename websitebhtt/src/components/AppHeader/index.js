@@ -4,11 +4,14 @@ import {
     UserOutlined,
     EditOutlined,
     LogoutOutlined,
-    SearchOutlined,    ShoppingCartOutlined,
-
+    SearchOutlined,    
+    ShoppingCartOutlined,
     BulbOutlined,
-    SettingOutlined,    CloseOutlined,
-    
+    SettingOutlined,    
+    CloseOutlined,
+    MenuOutlined,
+    MoreOutlined,
+    PhoneOutlined,
 } from "@ant-design/icons";
 import {
     Badge,
@@ -110,6 +113,14 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
     const [formReply] = Form.useForm();
 
     const PRIMARY_COLOR = "#1677ff";
+    const [isMoreOpen, setIsMoreOpen] = useState(false);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
+    
+    // State cho avatar admin
+    const [adminAvatar, setAdminAvatar] = useState(
+        localStorage.getItem('adminAvatar') || "https://api.dicebear.com/7.x/adventurer/svg?seed=Admin"
+    );
+    const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
     // ✅ (MỚI) Hàm tải đánh giá thật từ localStorage
     const loadAdminReviews = useCallback(() => {
@@ -210,6 +221,41 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
         setAdminOpen(false);
         navigate("/");
     }, [t, navigate]);
+
+    // Hàm xử lý upload avatar
+    const handleAvatarChange = (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // Kiểm tra loại file
+        if (!file.type.startsWith('image/')) {
+            message.error('Vui lòng chọn file ảnh!');
+            return;
+        }
+
+        // Kiểm tra kích thước file (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            message.error('Ảnh không được vượt quá 5MB!');
+            return;
+        }
+
+        setIsUploadingAvatar(true);
+
+        // Đọc file và chuyển thành base64
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            const base64String = reader.result;
+            setAdminAvatar(base64String);
+            localStorage.setItem('adminAvatar', base64String);
+            setIsUploadingAvatar(false);
+            message.success('Cập nhật ảnh đại diện thành công!');
+        };
+        reader.onerror = () => {
+            setIsUploadingAvatar(false);
+            message.error('Lỗi khi tải ảnh lên!');
+        };
+        reader.readAsDataURL(file);
+    };
 
     const onSearch = useCallback(
         (value) => {
@@ -398,7 +444,7 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
                 >
                     <Avatar
                         size={48}
-                        src="https://api.dicebear.com/7.x/adventurer/svg?seed=Admin"
+                        src={adminAvatar}
                     />
                     <div>
                         <Typography.Text strong>Doãn Bá Min</Typography.Text>
@@ -424,7 +470,7 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
                 </List>
             </div>
         ),
-        [t, handleLogout]
+        [t, handleLogout, adminAvatar]
     );
 
     // =================================================================
@@ -441,30 +487,42 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
                 padding: "10px 25px",
             }}
         >
-            {/* LOGO */}
-            <Flex
-                align="center"
-                gap={10}
-                style={{ cursor: "pointer" }}
-                onClick={() => navigate("/dashboard")}
-            >
-                <Typography.Title level={3} style={{ margin: 0 }}>
-                    <img
-                        src="https://i.imgur.com/WadTB6X.png" 
-                        alt="Logo"
-                        style={{ height: 48, objectFit: "contain" }}
-                    />
-                </Typography.Title>
-            </Flex>
+            {/* MENU TOGGLE (MOBILE) */}
+            <div className="header-left">
+                <Button
+                    className="header-menu-toggle"
+                    type="default"
+                    shape="circle"
+                    icon={<MenuOutlined />}
+                    onClick={() => toggleSideMenu && toggleSideMenu()}
+                />
+                {/* LOGO */}
+                <Flex
+                    align="center"
+                    gap={10}
+                    style={{ cursor: "pointer", marginLeft: 8 }}
+                    onClick={() => navigate("/dashboard")}
+                >
+                    <Typography.Title level={3} style={{ margin: 0 }}>
+                        <img
+                            src="https://i.imgur.com/WadTB6X.png" 
+                            alt="Logo"
+                            style={{ height: 40, objectFit: "contain" }}
+                        />
+                    </Typography.Title>
+                </Flex>
+            </div>
 
-            {/* SEARCH */}
+            {/* SEARCH (wrap for responsive hide/show) */}
+            <div className="header-center-search" style={{ flex: '1 1 auto' }}>
             <AutoComplete
-                dropdownMatchSelectWidth={500}
+                dropdownMatchSelectWidth={true}
                 options={currentSearchOptions}
                 style={{ 
-                    width: 450, 
-                    marginRight: 100, 
-                    marginLeft: 'auto' 
+                    width: '100%',
+                    maxWidth: 450,
+                    marginRight: 48,
+                    flex: '1 1 auto'
                 }} 
                 onSelect={onSearch}
             >
@@ -482,10 +540,12 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
                     }}
                 />
             </AutoComplete>
+            </div>
 
             {/* ICONS & LANGUAGE SELECTOR */}
             <Space size={16} align="center"> 
                 <Select
+                    className="header-hide-on-mobile"
                     value={i18n.language}
                     onChange={handleChangeLanguage}
                     style={{ 
@@ -530,6 +590,7 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
                 />
 
                 <Button
+                    className="header-hide-on-mobile"
                     type="default"
                     shape="circle"
                     icon={
@@ -553,7 +614,7 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
                     onMouseLeave={(e) => handleIconHover(e, false, isDarkMode ? "#ffc53d" : "#FFD700")}
                 />
 
-                <Badge count={comments.length}> 
+                <Badge className="header-hide-on-mobile" count={comments.length}> 
                     <Button
                         type="default"
                         shape="circle"
@@ -570,7 +631,7 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
                     />
                 </Badge>
 
-                <Badge count={orderNotifications.length}>
+                <Badge className="header-hide-on-mobile" count={orderNotifications.length}>
                     <Button
                         type="default"
                         shape="circle"
@@ -588,7 +649,7 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
                 </Badge>
 
                 <Popover placement="bottomRight" content={adminPopoverContent} trigger="click">
-                    <Space
+                    <Space className="header-avatar"
                         style={{
                             cursor: "pointer",
                             padding: "4px 4px",
@@ -605,12 +666,26 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
                         onMouseLeave={(e) => (e.currentTarget.style.background = isDarkMode ? "#333" : "#f5f7fa")}
                     >
                         <Avatar
-                            src="https://api.dicebear.com/7.x/adventurer/svg?seed=Admin"
+                            src={adminAvatar}
                             size="default" 
                             icon={<UserOutlined />}
                         />
                     </Space>
                 </Popover>
+                <Button
+                    className="header-more-toggle"
+                    type="default"
+                    shape="circle"
+                    icon={<MoreOutlined />}
+                    onClick={() => setIsMoreOpen(true)}
+                />
+                <Button
+                    className="header-search-toggle"
+                    type="default"
+                    shape="circle"
+                    icon={<SearchOutlined />}
+                    onClick={() => setIsSearchOpen(true)}
+                />
             </Space>
 
             {/* ========================================================== */}
@@ -620,10 +695,12 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
                 title={`${t("new_review")} (${comments.length})`}
                 open={commentsOpen}
                 onClose={() => setCommentsOpen(false)}
-                maskClosable
+                mask={false}
+                maskClosable={false}
                 width={400} 
                 style={{ backgroundColor: isDarkMode ? '#1e1e1e' : '#fff' }} 
-                bodyStyle={{ padding: 0 }} 
+                bodyStyle={{ padding: 0 }}
+                zIndex={1000}
             >
                 <List 
                     dataSource={comments}
@@ -694,6 +771,102 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
                     )}}
                 />
             </Drawer>
+            {/* DRAWER MORE (MOBILE) - Compact actions for small screens */}
+            <Drawer
+                title={t('menu')}
+                open={isMoreOpen}
+                onClose={() => setIsMoreOpen(false)}
+                mask={false}
+                maskClosable={false}
+                width={320}
+                placement="right"
+                bodyStyle={{ padding: 12 }}
+                zIndex={1000}
+            >
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    <div>
+                        <Text strong>{t('language')}</Text>
+                        <div style={{ marginTop: 8 }}>
+                            <Select
+                                value={i18n.language}
+                                onChange={handleChangeLanguage}
+                                style={{ width: '100%' }}
+                                bordered
+                                getPopupContainer={(trigger) => trigger.parentElement}
+                                dropdownStyle={{ zIndex: 1050 }}
+                            >
+                                <Select.Option value="vi">
+                                    <Flex align="center" gap={8}>
+                                        <img
+                                            src="https://upload.wikimedia.org/wikipedia/commons/2/21/Flag_of_Vietnam.svg"
+                                            alt="Vietnamese Flag"
+                                            style={{ width: 20, height: 15, borderRadius: 2 }}
+                                        />
+                                        {t('vietnamese_language')}
+                                    </Flex>
+                                </Select.Option>
+                                <Select.Option value="en">
+                                    <Flex align="center" gap={8}>
+                                        <img
+                                            src="https://upload.wikimedia.org/wikipedia/commons/a/a4/Flag_of_the_United_States.svg"
+                                            alt="English Flag"
+                                            style={{ width: 20, height: 15, borderRadius: 2 }}
+                                        />
+                                        {t('english_language')}
+                                    </Flex>
+                                </Select.Option>
+                            </Select>
+                        </div>
+                    </div>
+                    <div>
+                        <Button block onClick={handleToggleDarkMode} icon={<BulbOutlined />}>
+                            {isDarkMode ? t('switch_to_light') : t('switch_to_dark')}
+                        </Button>
+                    </div>
+                    <div>
+                        <Button block onClick={() => { setCommentsOpen(true); setIsMoreOpen(false); }}>
+                            {t('new_review')} ({comments.length})
+                        </Button>
+                    </div>
+                    <div>
+                        <Button block onClick={() => { setNotifications(true); setIsMoreOpen(false); }}>
+                            {t('order_notification')} ({orderNotifications.length})
+                        </Button>
+                    </div>
+                </div>
+            </Drawer>
+
+            {/* DRAWER SEARCH (MOBILE) */}
+            <Drawer
+                title={t('search')}
+                open={isSearchOpen}
+                onClose={() => setIsSearchOpen(false)}
+                mask={false}
+                maskClosable={false}
+                height={120} /* increase height so input + button not clipped */
+                placement="top"
+                bodyStyle={{ padding: 12 }}
+                zIndex={1000}
+            >
+                <AutoComplete
+                    dropdownMatchSelectWidth={true}
+                    options={currentSearchOptions}
+                    style={{ width: '100%' }}
+                    onSelect={(value)=>{ onSearch(value); setIsSearchOpen(false); }}
+                >
+                    {/* Use Input.Search to provide a visible search button that's easier to click on mobile */}
+                    <Input.Search
+                        prefix={<SearchOutlined />}
+                        placeholder={t('search_placeholder')}
+                        allowClear
+                        enterButton
+                        onSearch={(value) => { onSearch(value); setIsSearchOpen(false); }}
+                        onPressEnter={(e) => { onSearch(e.target.value); setIsSearchOpen(false);} }
+                        className="drawer-search"
+                        style={{ borderRadius: 8 }}
+                    />
+                </AutoComplete>
+            </Drawer>
             
             {/* DRAWER NOTIFICATIONS (Không thay đổi) */}
             {/* ⭐ DRAWER THÔNG BÁO ĐƠN HÀNG (BELL) - ĐÃ THIẾT KẾ LẠI HOÀN TOÀN ⭐ */}
@@ -701,10 +874,12 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
                 title={`${t("order_notification")} (${orderNotifications.length})`}
                 open={notificationsOpen}
                 onClose={() => setNotifications(false)}
-                maskClosable
+                mask={false}
+                maskClosable={false}
                 width={450}
                 style={{ backgroundColor: isDarkMode ? '#1e1e1e' : '#fff' }}
                 bodyStyle={{ padding: 0 }}
+                zIndex={1000}
             >
                 <List
                     dataSource={orderNotifications}
@@ -759,47 +934,242 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
                     )}
                 />
             </Drawer>
-            {/* MODAL ADMIN PROFILE (Không thay đổi) */}
+            {/* MODAL ADMIN PROFILE - REDESIGNED */}
             <Modal
-                title={`👨‍💼 ${t("admin_profile")}`}
+                title={null}
                 open={adminOpen}
                 onCancel={() => setAdminOpen(false)}
                 footer={null}
                 centered
-                bodyStyle={{ backgroundColor: isDarkMode ? '#2c2c2c' : '#fff' }} 
+                width={600}
+                bodyStyle={{ padding: 0 }}
+                closeIcon={
+                    <div style={{
+                        position: 'absolute',
+                        top: 16,
+                        right: 16,
+                        width: 32,
+                        height: 32,
+                        borderRadius: '50%',
+                        background: 'rgba(255, 255, 255, 0.2)',
+                        backdropFilter: 'blur(10px)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        border: '1px solid rgba(255, 255, 255, 0.3)',
+                        transition: 'all 0.3s ease',
+                        zIndex: 10
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.3)';
+                        e.currentTarget.style.transform = 'scale(1.1)';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+                        e.currentTarget.style.transform = 'scale(1)';
+                    }}
+                    >
+                        <CloseOutlined style={{ fontSize: 14, color: '#fff' }} />
+                    </div>
+                }
             >
-                <div style={{ textAlign: "center", marginBottom: 20 }}>
-                    <Avatar
-                        size={90}
-                        src="https://api.dicebear.com/7.x/adventurer/svg?seed=Admin"
-                    />
-                    <Typography.Title level={4} style={{ marginTop: 10, color: isDarkMode ? '#fff' : '#000' }}>
-                        Doãn Bá Min
-                    </Typography.Title>
-                    <Typography.Text type="secondary">{t("system_admin")}</Typography.Text>
+                {/* Header Section with Gradient Background */}
+                <div style={{
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    padding: '40px 30px',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    borderRadius: '8px 8px 0 0'
+                }}>
+                    {/* Avatar Section */}
+                    <div style={{ textAlign: 'center', position: 'relative', zIndex: 2 }}>
+                        <div style={{ position: 'relative', display: 'inline-block' }}>
+                            <Avatar
+                                size={120}
+                                src={adminAvatar}
+                                icon={<UserOutlined />}
+                                style={{
+                                    border: '4px solid rgba(255,255,255,0.9)',
+                                    boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+                                    cursor: 'pointer'
+                                }}
+                            />
+                            {/* Upload Button Overlay */}
+                            <label
+                                htmlFor="avatar-upload"
+                                style={{
+                                    position: 'absolute',
+                                    bottom: 0,
+                                    right: 0,
+                                    background: '#1677ff',
+                                    width: 40,
+                                    height: 40,
+                                    borderRadius: '50%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    cursor: 'pointer',
+                                    border: '3px solid #fff',
+                                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                                    transition: 'all 0.3s ease'
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.transform = 'scale(1.1)';
+                                    e.currentTarget.style.background = '#4096ff';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.transform = 'scale(1)';
+                                    e.currentTarget.style.background = '#1677ff';
+                                }}
+                            >
+                                <EditOutlined style={{ color: '#fff', fontSize: 18 }} />
+                            </label>
+                            <input
+                                id="avatar-upload"
+                                type="file"
+                                accept="image/*"
+                                style={{ display: 'none' }}
+                                onChange={handleAvatarChange}
+                                disabled={isUploadingAvatar}
+                            />
+                        </div>
+                        <Typography.Title
+                            level={3}
+                            style={{
+                                marginTop: 16,
+                                marginBottom: 4,
+                                color: '#fff',
+                                fontWeight: 700
+                            }}
+                        >
+                            Doãn Bá Min
+                        </Typography.Title>
+                        <div style={{
+                            display: 'inline-block',
+                            padding: '4px 16px',
+                            background: 'rgba(255,255,255,0.2)',
+                            borderRadius: 20,
+                            backdropFilter: 'blur(10px)'
+                        }}>
+                            <Typography.Text style={{ color: '#fff', fontSize: 14, fontWeight: 500 }}>
+                                👑 {t("system_admin")}
+                            </Typography.Text>
+                        </div>
+                    </div>
                 </div>
-                <Form layout="vertical">
-                    <Form.Item label={t("username")}>
-                        <Input value="admin_lm" disabled style={{ backgroundColor: isDarkMode ? '#444' : '#f5f5f5', color: isDarkMode ? '#ccc' : '#000' }} />
-                    </Form.Item>
-                    <Form.Item label="Email">
-                        <Input value="admin@lmcompany.com" style={{ backgroundColor: isDarkMode ? '#444' : '#fff', color: isDarkMode ? '#fff' : '#000' }} />
-                    </Form.Item>
-                    <Form.Item label={t("phone_number")}>
-                        <Input value="0909 999 999" style={{ backgroundColor: isDarkMode ? '#444' : '#fff', color: isDarkMode ? '#fff' : '#000' }} />
-                    </Form.Item>
-                    <Form.Item label={t("role")}>
-                        <Input value={t("system_admin")} disabled style={{ backgroundColor: isDarkMode ? '#444' : '#f5f5f5', color: isDarkMode ? '#ccc' : '#000' }} />
-                    </Form.Item>
-                    <Space style={{ display: "flex", justifyContent: "space-between" }}>
-                        <Button type="primary" icon={<EditOutlined />}>
-                            {t("update_info")}
-                        </Button>
-                        <Button danger icon={<LogoutOutlined />} onClick={handleLogout}>
-                            {t("back")}
-                        </Button>
-                    </Space>
-                </Form>
+
+                {/* Body Section */}
+                <div style={{
+                    padding: '30px',
+                    background: isDarkMode ? '#1e1e1e' : '#fff'
+                }}>
+                    <Form layout="vertical">
+                        <Flex gap={16} wrap="wrap">
+                            <Form.Item
+                                label={<Text strong style={{ color: isDarkMode ? '#fff' : '#000' }}>{t("username")}</Text>}
+                                style={{ flex: '1 1 45%', minWidth: 200 }}
+                            >
+                                <Input
+                                    value="admin_lm"
+                                    disabled
+                                    prefix={<UserOutlined style={{ color: '#999' }} />}
+                                    style={{
+                                        backgroundColor: isDarkMode ? '#2c2c2c' : '#f5f5f5',
+                                        color: isDarkMode ? '#ccc' : '#000',
+                                        borderRadius: 8,
+                                        border: 'none'
+                                    }}
+                                />
+                            </Form.Item>
+                            <Form.Item
+                                label={<Text strong style={{ color: isDarkMode ? '#fff' : '#000' }}>Email</Text>}
+                                style={{ flex: '1 1 45%', minWidth: 200 }}
+                            >
+                                <Input
+                                    value="admin@lmcompany.com"
+                                    prefix={<MailOutlined style={{ color: '#999' }} />}
+                                    style={{
+                                        backgroundColor: isDarkMode ? '#2c2c2c' : '#fff',
+                                        color: isDarkMode ? '#fff' : '#000',
+                                        borderRadius: 8,
+                                        borderColor: isDarkMode ? '#444' : '#d9d9d9'
+                                    }}
+                                />
+                            </Form.Item>
+                        </Flex>
+                        <Flex gap={16} wrap="wrap">
+                            <Form.Item
+                                label={<Text strong style={{ color: isDarkMode ? '#fff' : '#000' }}>{t("phone_number")}</Text>}
+                                style={{ flex: '1 1 45%', minWidth: 200 }}
+                            >
+                                <Input
+                                    value="0909 999 999"
+                                    prefix={<PhoneOutlined style={{ color: '#999' }} />}
+                                    style={{
+                                        backgroundColor: isDarkMode ? '#2c2c2c' : '#fff',
+                                        color: isDarkMode ? '#fff' : '#000',
+                                        borderRadius: 8,
+                                        borderColor: isDarkMode ? '#444' : '#d9d9d9'
+                                    }}
+                                />
+                            </Form.Item>
+                            <Form.Item
+                                label={<Text strong style={{ color: isDarkMode ? '#fff' : '#000' }}>{t("role")}</Text>}
+                                style={{ flex: '1 1 45%', minWidth: 200 }}
+                            >
+                                <Input
+                                    value={t("system_admin")}
+                                    disabled
+                                    prefix={<UserOutlined style={{ color: '#999' }} />}
+                                    style={{
+                                        backgroundColor: isDarkMode ? '#2c2c2c' : '#f5f5f5',
+                                        color: isDarkMode ? '#ccc' : '#000',
+                                        borderRadius: 8,
+                                        border: 'none'
+                                    }}
+                                />
+                            </Form.Item>
+                        </Flex>
+
+                        <Divider style={{ margin: '24px 0', borderColor: isDarkMode ? '#444' : '#f0f0f0' }} />
+
+                        {/* Action Buttons */}
+                        <Flex gap={12} justify="space-between" wrap="wrap">
+                            <Button
+                                type="primary"
+                                icon={<EditOutlined />}
+                                size="large"
+                                style={{
+                                    flex: '1 1 auto',
+                                    minWidth: 140,
+                                    borderRadius: 8,
+                                    fontWeight: 600,
+                                    height: 44,
+                                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                    border: 'none'
+                                }}
+                            >
+                                {t("update_info")}
+                            </Button>
+                            <Button
+                                danger
+                                icon={<LogoutOutlined />}
+                                size="large"
+                                onClick={handleLogout}
+                                style={{
+                                    flex: '1 1 auto',
+                                    minWidth: 140,
+                                    borderRadius: 8,
+                                    fontWeight: 600,
+                                    height: 44
+                                }}
+                            >
+                                {t("logout")}
+                            </Button>
+                        </Flex>
+                    </Form>
+                </div>
             </Modal>
             {/* SYSTEM SETTINGS MODAL (Không thay đổi) */}
             <Modal

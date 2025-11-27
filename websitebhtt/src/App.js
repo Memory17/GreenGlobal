@@ -1,15 +1,16 @@
 // App.js
 import React, { useState, useEffect, useCallback, Suspense } from "react";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import "./App.css";
 import "./i18n";
 import "antd/dist/reset.css"; // cần cho Ant Design v5
 
 // --- IMPORT CONTEXT ---
 import { CartProvider } from "./context/CartContext";
-import { AuthProvider } from "./context/AuthContext";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 import { OrderProvider } from "./context/OrderContext"; // Context (đếm count) CÓ SẴN
 import { OrderHistoryProvider } from "./context/OrderHistoryContext"; // <-- THÊM MỚI (để lưu lịch sử)
+import { Web3Provider } from "./context/Web3Context"; // <-- THÊM: Web3/MetaMask Context
 
 // 🏠 --- USER COMPONENTS ---
 // (import Header, Footer, ... giữ nguyên)
@@ -85,6 +86,7 @@ function UserLayout() {
 function AdminLayout() {
   // (Giữ nguyên code)
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
+  const [isSideMenuCollapsed, setIsSideMenuCollapsed] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
@@ -100,6 +102,7 @@ function AdminLayout() {
   }, []);
 
   const toggleSideMenu = () => setIsSideMenuOpen((prev) => !prev);
+  const toggleCollapse = () => setIsSideMenuCollapsed((prev) => !prev);
 
   return (
     <div className={`App ${isDarkMode ? "dark-mode" : "light-mode"}`}>
@@ -108,20 +111,30 @@ function AdminLayout() {
         isDarkMode={isDarkMode}
         onToggleDarkMode={handleToggleDarkMode}
       />
-      <div className="SideMenuAndPageContent">
+      <div className={`SideMenuAndPageContent ${isSideMenuOpen ? 'mobile-open' : ''} ${isSideMenuCollapsed ? 'collapsed' : ''}`}>
         <SideMenu
           isSideMenuOpen={isSideMenuOpen}
           toggleSideMenu={toggleSideMenu}
+          collapsed={isSideMenuCollapsed}
+          onToggleCollapse={toggleCollapse}
         />
         <PageContent />
       </div>
-      <ChatBubble />
       <AppFooter />
-      {isSideMenuOpen && (
-        <div className="menu-overlay" onClick={toggleSideMenu} />
-      )}
+      <div className={`menu-overlay ${isSideMenuOpen ? 'open' : ''}`} onClick={toggleSideMenu} />
     </div>
   );
+}
+
+// ========== Admin Guard ==========
+function RequireAdminAuth({ children }) {
+  const { isLoggedIn, currentUser } = useAuth();
+  const location = useLocation();
+  // Redirect to /login if not authenticated or not admin
+  if (!isLoggedIn || currentUser?.role !== "admin") {
+    return <Navigate to="/login" replace state={{ from: location.pathname, reason: 'admin_required' }} />;
+  }
+  return children;
 }
 
 // ========== APP CHÍNH (ĐÃ CẬP NHẬT) ==========
@@ -139,10 +152,19 @@ function App() {
           <CartProvider>
             <OrderProvider> {/* Context (đếm count) CÓ SẴN */}
               <OrderHistoryProvider> {/* <-- THÊM MỚI (Context để lưu lịch sử) */}
-                <Routes>
-                  <Route path="/admin/*" element={<AdminLayout />} />
-                  <Route path="/*" element={<UserLayout />} />
-                </Routes>
+                <Web3Provider> {/* <-- THÊM: Web3/MetaMask Provider */}
+                  <Routes>
+                    <Route
+                      path="/admin/*"
+                      element={
+                        <RequireAdminAuth>
+                          <AdminLayout />
+                        </RequireAdminAuth>
+                      }
+                    />
+                    <Route path="/*" element={<UserLayout />} />
+                  </Routes>
+                </Web3Provider> {/* <-- THÊM: Đóng Web3Provider */}
               </OrderHistoryProvider> {/* <-- THÊM MỚI (Đóng) */}
             </OrderProvider>
           </CartProvider>

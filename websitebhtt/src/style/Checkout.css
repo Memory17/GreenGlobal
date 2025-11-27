@@ -106,6 +106,14 @@
   background-color: #1890ff !important;
 }
 
+/* Đặt style cho card thanh toán Blockchain để không bị che khuất bởi các popup */
+.crypto-payment-card {
+  margin-top: 28px; /* đẩy xuống một tí */
+  position: relative; /* để có thể thay đổi z-index */
+  z-index: 3; /* hơi cao để hiển thị ở trên nhưng vẫn thấp hơn các toast */
+  padding-bottom: 18px;
+}
+
 /* ---- Cột Tóm Tắt Đơn Hàng (Bên phải) ---- */
 .order-summary-card {
   border-radius: 16px;
@@ -222,15 +230,80 @@
 }
 
 .order-success-div {
-  background: #fff;
-  padding: 24px 40px 40px 40px;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-  max-width: 550px;
-  width: 90%;
+  background: linear-gradient(to bottom, #ffffff, #f9fafb);
+  padding: 28px 24px;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  max-width: 480px;
+  width: auto;
+  min-width: 400px;
+  max-height: 92vh;
+  overflow-y: auto;
   text-align: center;
   transform: scale(0.95);
-  animation: zoomIn 0.3s ease forwards; /* Hiệu ứng zoom */
+  animation: zoomIn 0.3s ease forwards;
+  border: 1px solid #e8e8e8;
+}
+
+.order-success-div::-webkit-scrollbar {
+  width: 6px;
+}
+
+.order-success-div::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.order-success-div::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 10px;
+}
+
+.order-success-div::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.tx-compact-card {
+  background: linear-gradient(135deg, #f0f5ff, #f9f0ff);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-top: 16px;
+  text-align: left;
+  font-size: 0.95rem;
+  color: #262626;
+  border: 1px solid #d9d9f7;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+}
+
+.tx-compact-card .tx-amount { 
+  font-weight: 700; 
+  color: #1890ff;
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+}
+
+.tx-compact-card .tx-hash { 
+  font-family: 'Courier New', monospace; 
+  font-size: 13px; 
+  color: #722ed1;
+  background: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  display: inline-block;
+  margin-top: 6px;
+  word-break: break-all;
+}
+
+.tx-compact-card .tx-meta { 
+  font-size: 13px; 
+  color: #8c8c8c;
+  margin-top: 8px;
+}
+
+.tx-details { 
+  margin-top: 12px; 
+  border-top: 1px dashed rgba(0,0,0,0.1); 
+  padding-top: 12px;
 }
 
 @keyframes zoomIn {
@@ -240,61 +313,110 @@
 
 .order-success-div .ant-result-title {
   font-weight: 700;
-  font-size: 1.8rem;
+  font-size: 1.75rem;
+  margin-bottom: 16px;
+  color: #1a1a1a;
+  letter-spacing: -0.5px;
+}
+
+.order-success-div .ant-result-icon {
+  margin-bottom: 20px;
+}
+
+.order-success-div .ant-result-icon > .anticon {
+  font-size: 72px;
 }
 
 .text-success {
-  font-size: 1rem;
-  color: #555;
+  font-size: 0.95rem;
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 8px;
 }
 
 .id-order-succcess {
-  font-size: 1.2rem;
-  font-weight: 600;
+  font-size: 1.1rem;
+  font-weight: 700;
   color: #1890ff;
-  background: #f0f8ff;
-  padding: 5px 15px;
-  border-radius: 8px;
+  background: linear-gradient(135deg, #e6f7ff, #f0f8ff);
+  padding: 8px 20px;
+  border-radius: 10px;
   display: inline-block;
-  margin-top: 10px;
-  border: 1px dashed #baddff;
+  margin: 12px 0 20px 0;
+  border: 2px solid #91d5ff;
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.15);
+  letter-spacing: 0.5px;
 }
 
 .order-success-details {
   width: 100%;
-  margin-top: 24px;
+  margin-top: 20px;
+  background: white;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
 .order-success-details .ant-descriptions {
-  text-align: left; /* Căn trái cho dễ đọc */
-  border-radius: 8px;
+  text-align: left;
+}
+
+.order-success-details .ant-descriptions-item-label {
+  font-weight: 600;
+  color: #595959;
+  padding: 10px 0;
+  font-size: 13px;
+}
+
+.order-success-details .ant-descriptions-item-content {
+  color: #262626;
+  padding: 10px 0;
+  font-size: 13px;
 }
 
 .spam-warning {
   display: block;
   margin-top: 16px;
-  color: #888;
-  font-size: 0.9rem;
+  color: #999;
+  font-size: 0.85rem;
   font-style: italic;
+  padding: 12px;
+  background: #fafafa;
+  border-radius: 8px;
+  border-left: 3px solid #ffa940;
 }
 
 .review-your-order {
-  display: block;
+  display: inline-block;
   margin-top: 16px;
   color: #1890ff;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s;
+  padding: 8px 16px;
+  border-radius: 6px;
+  background: #f0f8ff;
 }
 
 .review-your-order:hover {
   color: #096dd9;
-  text-decoration: underline;
+  background: #e6f7ff;
+  transform: translateY(-2px);
 }
 
-/* Tận dụng style nút confirm cho nút "Tiếp tục mua sắm" */
 .order-success-div .confirm-order-btn {
   margin-top: 24px;
+  height: 48px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+  transition: all 0.3s;
+}
+
+.order-success-div .confirm-order-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(24, 144, 255, 0.4);
 }
 .payment-form-item .ant-form-item-control-input {
   min-height: 220px; /* Bạn có thể tăng/giảm con số này */

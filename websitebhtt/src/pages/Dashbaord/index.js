@@ -40,6 +40,7 @@ import {
 } from "chart.js";
 import { Line, Bar } from "react-chartjs-2";
 import { useTranslation } from "react-i18next";
+import { getStoredOrders } from "../../API";
 
 ChartJS.register(
     CategoryScale,
@@ -54,28 +55,68 @@ ChartJS.register(
 
 const { Title: AntTitle, Text } = Typography;
 
-const getCustomersFromAPI = async () => {
+// Lấy sản phẩm từ localStorage
+const getStoredProducts = () => {
     try {
-        const response = await fetch("https://dummyjson.com/users");
-        if (!response.ok) throw new Error("Failed to fetch users");
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error("Error fetching customers:", error);
-        return { users: [] };
+        const stored = localStorage.getItem('local_products');
+        if (stored) {
+            return JSON.parse(stored) || [];
+        }
+        return [];
+    } catch (e) {
+        console.error('Error loading products:', e);
+        return [];
     }
 };
 
-const getProductsFromAPI = async () => {
-    try {
-        const response = await fetch("https://dummyjson.com/products?limit=10");
-        if (!response.ok) throw new Error("Failed to fetch products");
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error("Error fetching products:", error);
-        return { products: [] };
-    }
+// Tính toán thống kê bán hàng theo sản phẩm từ orders
+const calculateProductSales = (orders) => {
+    const productSales = new Map();
+    
+    orders.forEach(order => {
+        const items = order.items || [];
+        items.forEach(item => {
+            const productId = item.id || item.productId || item.title;
+            if (!productSales.has(productId)) {
+                productSales.set(productId, {
+                    id: productId,
+                    title: item.title || item.name || 'Unknown Product',
+                    thumbnail: item.thumbnail || item.image || '',
+                    price: item.price || 0,
+                    totalQuantity: 0,
+                    totalRevenue: 0,
+                });
+            }
+            const p = productSales.get(productId);
+            const qty = item.quantity || 1;
+            const price = item.price || 0;
+            p.totalQuantity += qty;
+            p.totalRevenue += qty * price;
+        });
+    });
+    
+    return Array.from(productSales.values()).sort((a, b) => b.totalRevenue - a.totalRevenue);
+};
+
+// Tính doanh thu theo tháng từ orders
+const calculateMonthlyRevenue = (orders) => {
+    const monthlyRevenue = Array(12).fill(0);
+    const currentYear = new Date().getFullYear();
+    
+    orders.forEach(order => {
+        const createdAt = order.createdAt;
+        if (createdAt) {
+            const date = new Date(createdAt);
+            if (date.getFullYear() === currentYear) {
+                const month = date.getMonth();
+                const total = order.totals?.total || order.totals?.subtotal || 0;
+                monthlyRevenue[month] += total;
+            }
+        }
+    });
+    
+    // Chuyển đổi sang đơn vị K (nghìn VNĐ)
+    return monthlyRevenue.map(v => Math.round(v / 1000));
 };
 
 const formatCurrencyDisplay = (amount, i18n) => {
@@ -236,19 +277,48 @@ function MonthlyRevenueChart({ data }) {
 function BestSellingProductsChart({ data }) {
     const { t } = useTranslation();
 
-    const labels = data.slice(0, 4).map(p => p.title.substring(0, 18));
-    const salesData = data.slice(0, 4).map(p => Math.floor(p.price * (Math.random() * 100 + 50)));
+    // Sử dụng dữ liệu thực từ totalRevenue hoặc tính từ price * quantity
+    const topProducts = data.slice(0, 5);
+    const labels = topProducts.map(p => (p.title || 'Unknown').substring(0, 20));
+    const salesData = topProducts.map(p => {
+        // Nếu có totalRevenue từ calculateProductSales, dùng nó
+        if (p.totalRevenue !== undefined) {
+            return Math.round(p.totalRevenue / 1000); // Chuyển sang K VNĐ
+        }
+        // Fallback nếu không có dữ liệu
+        return 0;
+    });
+
+    // Gradient colors cho từng thanh
+    const backgroundColors = [
+        'rgba(102, 126, 234, 0.85)',  // Purple
+        'rgba(118, 75, 162, 0.85)',   // Violet
+        'rgba(240, 101, 149, 0.85)',  // Pink
+        'rgba(255, 159, 64, 0.85)',   // Orange
+        'rgba(75, 192, 192, 0.85)',   // Teal
+    ];
+    
+    const borderColors = [
+        'rgb(102, 126, 234)',
+        'rgb(118, 75, 162)',
+        'rgb(240, 101, 149)',
+        'rgb(255, 159, 64)',
+        'rgb(75, 192, 192)',
+    ];
 
     const chartData = {
-        labels,
+        labels: labels.length > 0 ? labels : [t('no_data') || 'Chưa có dữ liệu'],
         datasets: [
             {
-                label: t('revenue'),
-                data: salesData,
-                backgroundColor: ['rgba(255, 99, 132, 0.7)', 'rgba(54, 162, 235, 0.7)', 'rgba(75, 192, 75, 0.7)', 'rgba(255, 206, 86, 0.7)'],
-                borderColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)', 'rgb(75, 192, 75)', 'rgb(255, 206, 86)'],
-                borderWidth: 1,
-                borderRadius: 6,
+                label: t('revenue') + ' (K VNĐ)',
+                data: salesData.length > 0 ? salesData : [0],
+                backgroundColor: backgroundColors.slice(0, salesData.length || 1),
+                borderColor: borderColors.slice(0, salesData.length || 1),
+                borderWidth: 2,
+                borderRadius: 8,
+                borderSkipped: false,
+                barThickness: salesData.length === 1 ? 40 : undefined,
+                maxBarThickness: 50,
             },
         ],
     };
@@ -259,21 +329,63 @@ function BestSellingProductsChart({ data }) {
         indexAxis: 'y',
         plugins: {
             legend: { display: false },
+            tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                padding: 12,
+                titleFont: { size: 14, weight: 'bold' },
+                bodyFont: { size: 13 },
+                cornerRadius: 8,
+                callbacks: {
+                    label: function(context) {
+                        const value = context.raw || 0;
+                        return ` ${value.toLocaleString('vi-VN')}K VNĐ`;
+                    }
+                }
+            }
         },
         scales: {
-            x: { beginAtZero: true },
+            x: { 
+                beginAtZero: true,
+                grid: {
+                    color: 'rgba(0, 0, 0, 0.05)',
+                },
+                ticks: {
+                    callback: function(value) {
+                        return value.toLocaleString('vi-VN') + 'K';
+                    }
+                }
+            },
+            y: {
+                grid: {
+                    display: false,
+                },
+                ticks: {
+                    font: { size: 12, weight: '500' },
+                    color: '#333',
+                }
+            }
         },
     };
 
     return (
         <Card
-            title={t("product_performance")}
+            title={
+                <Space>
+                    <FireOutlined style={{ color: '#ff4d4f' }} />
+                    {t("product_performance")}
+                </Space>
+            }
             bordered={false}
             style={{ borderRadius: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}
         >
-            <div style={{ height: '220px' }}>
+            <div style={{ height: salesData.length <= 2 ? '150px' : '220px' }}>
                 <Bar options={options} data={chartData} />
             </div>
+            {salesData.length === 0 && (
+                <div style={{ textAlign: 'center', padding: '20px', color: '#999' }}>
+                    {t('no_orders_yet') || 'Chưa có đơn hàng nào'}
+                </div>
+            )}
         </Card>
     );
 }
@@ -286,20 +398,37 @@ function TopCustomersRanking() {
     const [maxSpending, setMaxSpending] = useState(0);
 
     useEffect(() => {
-        getCustomersFromAPI().then(res => {
-            const customersWithSpending = (res.users || []).slice(0, 5).map(user => ({
-                id: user.id,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                email: user.email,
-                image: user.image,
-                totalSpending: Math.floor(Math.random() * 50000000) + 10000000,
-            })).sort((a, b) => b.totalSpending - a.totalSpending);
-
-            setMaxSpending(customersWithSpending[0]?.totalSpending || 1);
-            setTopCustomers(customersWithSpending);
-            setLoading(false);
+        // Lấy customers từ orders thực
+        const orders = getStoredOrders();
+        const customerMap = new Map();
+        
+        orders.forEach(order => {
+            const customer = order.customer || {};
+            const email = customer.email || customer.name || 'unknown';
+            if (!customerMap.has(email)) {
+                customerMap.set(email, {
+                    id: customerMap.size + 1,
+                    firstName: customer.name?.split(' ')[0] || 'Guest',
+                    lastName: customer.name?.split(' ').slice(1).join(' ') || '',
+                    email: customer.email || '',
+                    image: customer.avatar || null,
+                    totalSpending: 0,
+                    orderCount: 0,
+                });
+            }
+            const c = customerMap.get(email);
+            c.totalSpending += order.totals?.total || order.totals?.subtotal || 0;
+            c.orderCount += 1;
         });
+        
+        const customersWithSpending = Array.from(customerMap.values())
+            .sort((a, b) => b.totalSpending - a.totalSpending)
+            .slice(0, 5);
+
+        const maxVal = customersWithSpending[0]?.totalSpending || 1;
+        setMaxSpending(maxVal);
+        setTopCustomers(customersWithSpending);
+        setLoading(false);
     }, []);
 
     const rankIcons = [
@@ -375,28 +504,42 @@ function RecentOrdersTable() {
 
     useEffect(() => {
         setLoading(true);
-        getProductsFromAPI().then((res) => {
-            const items = (res.products || [])
-                .slice(0, 5)
-                .map((p) => ({
-                    key: p.id,
-                    title: p.title,
-                    quantity: Math.floor(Math.random() * 5) + 1,
-                    price: p.price,
-                    image: p.thumbnail,
-                }));
-            setDataSource(items);
-            setLoading(false);
+        // Lấy orders thực từ localStorage
+        const orders = getStoredOrders();
+        
+        // Lấy 5 đơn hàng gần nhất và các sản phẩm trong đó
+        const recentItems = [];
+        const recentOrders = orders.slice(0, 5);
+        
+        recentOrders.forEach(order => {
+            const items = order.items || [];
+            items.forEach(item => {
+                if (recentItems.length < 5) {
+                    recentItems.push({
+                        key: `${order.id}-${item.id || item.title}`,
+                        orderId: order.id,
+                        title: item.title || item.name || 'Unknown Product',
+                        quantity: item.quantity || 1,
+                        price: item.price || 0,
+                        image: item.thumbnail || item.image || '',
+                        status: order.status,
+                        createdAt: order.createdAt,
+                    });
+                }
+            });
         });
+        
+        setDataSource(recentItems);
+        setLoading(false);
     }, []);
 
     const columns = [
         {
             title: t("product_name"),
             dataIndex: "title",
-            width: '45%',
+            width: '35%',
             align: 'left',
-            render: (text) => <Typography.Text strong>{text.substring(0, 30)}</Typography.Text>,
+            render: (text) => <Typography.Text strong>{(text || '').substring(0, 20)}</Typography.Text>,
         },
         {
             title: t("quantity"),
@@ -408,14 +551,14 @@ function RecentOrdersTable() {
         {
             title: t("unit_price"),
             dataIndex: "price",
-            width: '25%',
+            width: '30%',
             align: 'right',
             render: (v) => formatCurrencyDisplay(v, i18n),
         },
         {
             title: t("action"),
-            width: '15%',
-            align: 'right',
+            width: '20%',
+            align: 'center',
             render: () => (
                 <Tooltip title={t("view_order_details")}>
                     <Button
@@ -476,34 +619,95 @@ function RevenueReports() {
         topProduct: ""
     });
 
-    const [monthlyData] = useState([15, 22, 31, 28, 45, 52, 60, 68, 85, 75, 92, 105]);
+    const [monthlyData, setMonthlyData] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
     const [products, setProducts] = useState([]);
 
     useEffect(() => {
-        const loadData = async () => {
-            const [usersRes, productsRes] = await Promise.all([
-                getCustomersFromAPI(),
-                getProductsFromAPI()
-            ]);
-
-            const users = usersRes.users || [];
-            const prods = productsRes.products || [];
-
-            const totalRev = users.length * 5000000;
-            const newCusts = users.length;
-            const topProd = prods.length > 0 ? prods[0].title : "Top Product";
+        const loadData = () => {
+            // Lấy dữ liệu thực từ localStorage
+            const orders = getStoredOrders();
+            
+            // Tính tổng doanh thu từ orders
+            let totalRevenue = 0;
+            orders.forEach(order => {
+                totalRevenue += order.totals?.total || order.totals?.subtotal || 0;
+            });
+            
+            // Lấy danh sách khách hàng unique từ orders
+            const customerEmails = new Set();
+            orders.forEach(order => {
+                const email = order.customer?.email || order.customer?.name;
+                if (email) customerEmails.add(email);
+            });
+            const newCustomers = customerEmails.size;
+            
+            // Tính sản phẩm bán chạy nhất
+            const productSales = calculateProductSales(orders);
+            const topProduct = productSales.length > 0 ? productSales[0].title : "Chưa có dữ liệu";
+            
+            // Tính tỷ lệ tăng trưởng (so sánh tháng này với tháng trước)
+            const now = new Date();
+            const thisMonth = now.getMonth();
+            const lastMonth = thisMonth === 0 ? 11 : thisMonth - 1;
+            const thisYear = now.getFullYear();
+            const lastMonthYear = thisMonth === 0 ? thisYear - 1 : thisYear;
+            
+            let thisMonthRevenue = 0;
+            let lastMonthRevenue = 0;
+            
+            orders.forEach(order => {
+                const createdAt = order.createdAt;
+                if (createdAt) {
+                    const date = new Date(createdAt);
+                    const month = date.getMonth();
+                    const year = date.getFullYear();
+                    const orderTotal = order.totals?.total || order.totals?.subtotal || 0;
+                    
+                    if (month === thisMonth && year === thisYear) {
+                        thisMonthRevenue += orderTotal;
+                    } else if (month === lastMonth && year === lastMonthYear) {
+                        lastMonthRevenue += orderTotal;
+                    }
+                }
+            });
+            
+            let growthRate = 0;
+            if (lastMonthRevenue > 0) {
+                growthRate = Math.round(((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100);
+            } else if (thisMonthRevenue > 0) {
+                growthRate = 100;
+            }
+            
+            // Tính doanh thu theo tháng
+            const monthlyRevenue = calculateMonthlyRevenue(orders);
+            setMonthlyData(monthlyRevenue);
+            
+            // Lấy thống kê sản phẩm bán chạy trực tiếp từ orders (đã sắp xếp theo doanh thu)
+            // productSales đã được tính ở trên và sắp xếp theo totalRevenue giảm dần
+            setProducts(productSales.slice(0, 10));
 
             setStats({
-                totalRevenue: totalRev,
-                growthRate: Math.floor(Math.random() * 15) + 5,
-                newCustomers: newCusts,
-                topProduct: topProd.substring(0, 25)
+                totalRevenue: totalRevenue,
+                growthRate: growthRate,
+                newCustomers: newCustomers,
+                topProduct: topProduct.substring(0, 25)
             });
-
-            setProducts(prods);
         };
 
         loadData();
+        
+        // Lắng nghe sự kiện cập nhật orders
+        const handleOrdersUpdated = () => loadData();
+        window.addEventListener('orders_updated', handleOrdersUpdated);
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'app_orders_v1') {
+                loadData();
+            }
+        });
+        
+        return () => {
+            window.removeEventListener('orders_updated', handleOrdersUpdated);
+        };
     }, []);
 
     const totalRevenueFormatted = formatCurrencyDisplay(stats.totalRevenue, i18n);
@@ -599,14 +803,14 @@ function RevenueReports() {
 
             {/* --- CHARTS & RANKING LIST --- */}
             <Row gutter={[24, 24]}>
-                <Col xs={24} sm={24} md={15} lg={15}>
+                <Col xs={24} sm={24} md={14} lg={14}>
                     <Space direction="vertical" size={24} style={{ width: '100%' }}>
                         <MonthlyRevenueChart data={monthlyData} />
                         <BestSellingProductsChart data={products} />
                     </Space>
                 </Col>
 
-                <Col xs={24} sm={24} md={9} lg={9}>
+                <Col xs={24} sm={24} md={10} lg={10}>
                     <Space direction="vertical" size={24} style={{ width: '100%' }}>
                         <TopCustomersRanking />
                         <RecentOrdersTable />

@@ -117,9 +117,7 @@ function Inventory() {
     const handleSort = (value) => {
         setSortOption(value);
     };
-    const filterLowStock = () => {
-        setFilterCategory("low_stock");
-    };
+
     const processedData = useMemo(() => {
         let ds = [...dataSource];
         if (searchText) {
@@ -204,10 +202,10 @@ function Inventory() {
         return Math.round(100 - (record.discountedPrice / record.price) * 100);
     };
 
-    const getStockStatus = (stock) => {
-        if (stock > 50) return { color: "success", label: "Kho đủ", percentage: 100 };
-        if (stock > 20) return { color: "warning", label: "Cảnh báo", percentage: 60 };
-        return { color: "error", label: "Sắp hết", percentage: 30 };
+    const getStockStatus = (stock, t) => {
+        if (stock > 50) return { color: "success", label: t("inventory_stock_sufficient"), percentage: 100 };
+        if (stock > 20) return { color: "warning", label: t("inventory_stock_warning"), percentage: 60 };
+        return { color: "error", label: t("inventory_stock_low"), percentage: 30 };
     };
 
     const columns = [
@@ -217,7 +215,7 @@ function Inventory() {
             render: (link, record) => (
                 <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
                     <Badge 
-                        count={record._isLocal ? "Mới" : ""} 
+                        count={record._isLocal ? t("inventory_badge_new") : ""} 
                         style={{ backgroundColor: '#5104ecff', boxShadow: "0 2px 4px rgba(102, 126, 234, 0.3)" }}
                     >
                         <Avatar
@@ -267,7 +265,7 @@ function Inventory() {
             align: "right",
         },
         {
-            title: "Khuyến mãi",
+            title: t("inventory_col_discount"),
             dataIndex: "discountedPrice",
             render: (discounted, record) => {
                 const p = calcDiscountPercent(record);
@@ -308,7 +306,7 @@ function Inventory() {
             dataIndex: "stock",
             width: 180,
             render: (stock) => {
-                const status = getStockStatus(stock);
+                const status = getStockStatus(stock, t);
                 return (
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                         <div style={{ flex: 1 }}>
@@ -348,7 +346,7 @@ function Inventory() {
             fixed: "right",
             render: (_, record) => (
                 <Space size={6}>
-                    <Tooltip title="Xem chi tiết">
+                    <Tooltip title={t("inventory_tip_view")}>
                         <Button 
                             type="text" 
                             size="small"
@@ -357,7 +355,7 @@ function Inventory() {
                             style={{ color: "#667eea" }}
                         />
                     </Tooltip>
-                    <Tooltip title="Chỉnh sửa">
+                    <Tooltip title={t("inventory_tip_edit")}>
                         <Button 
                             type="text" 
                             size="small"
@@ -366,13 +364,13 @@ function Inventory() {
                             style={{ color: "#1890ff" }}
                         />
                     </Tooltip>
-                    <Tooltip title="Xóa">
+                    <Tooltip title={t("inventory_tip_delete")}>
                         <Popconfirm
-                            title={t("inventory_confirm_delete") || "Xóa sản phẩm?"}
-                            description="Hành động này không thể hoàn tác"
+                            title={t("inventory_confirm_delete")}
+                            description={t("inventory_delete_warning")}
                             onConfirm={() => handleDelete(record.id)}
-                            okText="Xóa"
-                            cancelText="Hủy"
+                            okText={t("delete")}
+                            cancelText={t("cancel")}
                             icon={<ExclamationCircleOutlined style={{ color: "red" }} />}
                         >
                             <Button 
@@ -587,8 +585,8 @@ function Inventory() {
 
                         <Col span={24} style={{ marginTop: 6 }}>
                             <Flex gap={12}>
-                                <Tag color="blue" style={{ padding: "4px 12px", borderRadius: 6 }}>📦 Tổng SP: {totalProducts}</Tag>
-                                <Tag color="green" style={{ padding: "4px 12px", borderRadius: 6 }}>📊 Tồn kho: {totalStock}</Tag>
+                                <Tag color="blue" style={{ padding: "4px 12px", borderRadius: 6 }}>📦 {t("total_products")}: {totalProducts}</Tag>
+                                <Tag color="green" style={{ padding: "4px 12px", borderRadius: 6 }}>📊 {t("total_stock")}: {totalStock}</Tag>
                             </Flex>
                         </Col>
                     </Row>
@@ -623,12 +621,12 @@ function Inventory() {
 
             {/* Modal */}
             <Modal
-                title={editingProduct ? `📝 Cập nhật sản phẩm` : `➕ Thêm sản phẩm`}
+                title={editingProduct ? `📝 ${t("inventory_modal_update")}` : `➕ ${t("inventory_modal_add")}`}
                 open={isModalOpen}
                 onCancel={closeModal}
                 onOk={handleSave}
-                okText={editingProduct ? "Cập nhật" : "Thêm"}
-                cancelText="Hủy"
+                okText={editingProduct ? t("update") : t("add")}
+                cancelText={t("cancel")}
                 centered
                 width={640}
                 okButtonProps={{ style: { background: "#667eea" } }}
@@ -641,35 +639,38 @@ function Inventory() {
                         if (changed.thumbnail !== undefined) setThumbnailPreview(changed.thumbnail || "");
                     }}
                 >
-                    <Form.Item name="title" label="Tên sản phẩm" rules={[{ required: true, message: "Vui lòng nhập tên sản phẩm" }]}>
-                        <Input placeholder="Nhập tên sản phẩm" />
+                    <Form.Item name="title" label={t("inventory_label_name")} rules={[{ required: true, message: t("inventory_msg_name_required") }]}>
+                        <Input placeholder={t("inventory_placeholder_name")} />
                     </Form.Item>
-                    <Form.Item name="price" label="Giá" rules={[{ required: true, message: "Vui lòng nhập giá" }]}>
-                        <InputNumber style={{ width: "100%" }} min={0} placeholder="Nhập giá" />
+                    <Form.Item name="price" label={t("inventory_label_price")} rules={[{ required: true, message: t("inventory_msg_price_required") }]}>
+                        <InputNumber style={{ width: "100%" }} min={0} placeholder={t("inventory_placeholder_price")} />
                     </Form.Item>
-                    <Form.Item name="discountedPrice" label="Giá khuyến mãi">
-                        <InputNumber style={{ width: "100%" }} min={0} placeholder="Nhập giá khuyến mãi (nếu có)" />
+                    <Form.Item name="discountedPrice" label={t("inventory_label_discount_price")}>
+                        <InputNumber style={{ width: "100%" }} min={0} placeholder={t("inventory_placeholder_discount")} />
                     </Form.Item>
-                    <Form.Item name="rating" label="Đánh giá">
+                    <Form.Item name="rating" label={t("inventory_label_rating")}>
                         <Rate allowHalf />
                     </Form.Item>
-                    <Form.Item name="stock" label="Tồn kho">
+                    <Form.Item name="stock" label={t("inventory_label_stock")}>
                         <InputNumber min={0} style={{ width: "100%" }} />
                     </Form.Item>
-                    <Form.Item name="brand" label="Thương hiệu">
-                        <Input placeholder="Nhập thương hiệu" />
+                    <Form.Item name="brand" label={t("inventory_label_brand")}>
+                        <Input placeholder={t("inventory_placeholder_brand")} />
                     </Form.Item>
-                    <Form.Item name="category" label="Danh mục">
-                        {/* ⭐ SỬA LỖI: Dùng danh mục động từ state 'categories' */}
-                        <Select placeholder="Chọn danh mục" options={categories} />
+                    <Form.Item name="category" label={t("inventory_label_category")}>
+                        <Select 
+                            placeholder={t("inventory_placeholder_category")} 
+                            options={categories} 
+                            getPopupContainer={(triggerNode) => triggerNode.parentNode}
+                        />
                     </Form.Item>
-                    <Form.Item name="thumbnail" label="Link ảnh">
-                        <Input placeholder="Dán link ảnh sản phẩm" />
+                    <Form.Item name="thumbnail" label={t("inventory_label_image_link")}>
+                        <Input placeholder={t("inventory_placeholder_image_link")} />
                     </Form.Item>
 
                     {thumbnailPreview ? (
                         <div style={{ marginTop: 8 }}>
-                            <Typography.Text strong>Xem trước ảnh</Typography.Text>
+                            <Typography.Text strong>{t("inventory_preview_image")}</Typography.Text>
                             <div style={{ marginTop: 8 }}>
                                 <img src={thumbnailPreview} alt="preview" style={{ width: "100%", borderRadius: 8, maxHeight: 220, objectFit: "cover" }} onError={(e) => (e.currentTarget.style.display = "none")} />
                             </div>

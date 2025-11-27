@@ -9,11 +9,13 @@ import { useTranslation } from "react-i18next";
 
 const DARK_BACKGROUND = "#001529";
 
-function SideMenu() {
+function SideMenu({ isSideMenuOpen = false, toggleSideMenu, collapsed = undefined, onToggleCollapse }) {
     const { t } = useTranslation();
     const location = useLocation();
-    const [selectedKeys, setSelectedKeys] = useState("/admin");
-    const [collapsed, setCollapsed] = useState(false);
+    const [selectedKeys, setSelectedKeys] = useState('/admin');
+    // allow parent to control collapsed state; otherwise fallback to local state
+    const [localCollapsed, setLocalCollapsed] = useState(false);
+    const effectiveCollapsed = typeof collapsed === 'boolean' ? collapsed : localCollapsed;
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -25,13 +27,13 @@ function SideMenu() {
 
     return (
         <div
-            className="SideMenu"
+            className={`SideMenu ${isSideMenuOpen ? 'mobile-open' : ''}`} 
             style={{
                 background: DARK_BACKGROUND,
                 display: "flex",
                 flexDirection: "column",
-                height: "100%",
-                width: collapsed ? 80 : 220,
+                /* Don't set fixed height inline (use CSS to control height so mobile fixed position works properly) */
+                width: effectiveCollapsed ? 80 : 220,
                 transition: "width 0.3s ease",
                 flexShrink: 0,
             }}
@@ -177,6 +179,10 @@ function SideMenu() {
                     transition: all 0.3s ease;
                 }
 
+                .menu-icon-wrapper span {
+                    transition: all 0.3s ease;
+                }
+
                 .menu-text {
                     flex: 1;
                     transition: opacity 0.3s ease, max-width 0.3s ease;
@@ -185,6 +191,12 @@ function SideMenu() {
                     overflow: hidden;
                 }
 
+                /* Khi collapse: icon phóng to vừa phải */
+                .menu-collapsed .menu-icon-wrapper span {
+                    font-size: 26px !important;
+                }
+
+                /* Hover trên menu item khi không collapse */
                 .menu-item-wrapper:hover .menu-icon-wrapper {
                     transform: scale(1.6);
                     margin-left: calc(50% - 12px);
@@ -195,6 +207,11 @@ function SideMenu() {
                     opacity: 0;
                     max-width: 0;
                     transition: opacity 0.3s ease, max-width 0.3s ease;
+                }
+
+                /* Hover trên menu item khi đã collapse - icon phóng to nhẹ */
+                .menu-collapsed .menu-item-wrapper:hover .menu-icon-wrapper span {
+                    font-size: 30px !important;
                 }
 
                 /* Ẩn text khi collapse */
@@ -320,11 +337,15 @@ function SideMenu() {
                 .collapse-btn:hover .collapse-btn-tooltip {
                     opacity: 1;
                 }
+
+                /* Mobile close button removed - not rendering the 'x' on the side menu */
                 `}
             </style>
 
+            {/* Mobile close removed to hide the 'x' on the "Tổng quan" menu item */}
+
             <Menu
-                className={`SideMenuVertical ${collapsed ? "menu-collapsed" : ""}`}
+                className={`SideMenuVertical ${effectiveCollapsed ? "menu-collapsed" : ""}`}
                 theme="dark"
                 style={{
                     background: "transparent",
@@ -414,6 +435,18 @@ function SideMenu() {
                         label: (
                             <div className="menu-item-wrapper">
                                 <div className="menu-icon-wrapper">
+                                    <span style={{ fontSize: '18px' }}>💬</span>
+                                </div>
+                                <span className="menu-text">Messages</span>
+                            </div>
+                        ),
+                        icon: null,
+                        key: "/admin/messages",
+                    },
+                    {
+                        label: (
+                            <div className="menu-item-wrapper">
+                                <div className="menu-icon-wrapper">
                                     <span style={{ fontSize: '18px' }}>🔥</span>
                                 </div>
                                 <span className="menu-text">{t("help") || "Hỗ trợ"}</span>
@@ -428,14 +461,20 @@ function SideMenu() {
             <div className="collapse-btn-wrapper">
                 <button
                     className="collapse-btn"
-                    onClick={() => setCollapsed(!collapsed)}
-                    title={collapsed ? "Mở menu" : "Đóng menu"}
+                    onClick={() => {
+                        if (typeof onToggleCollapse === 'function') {
+                            onToggleCollapse();
+                        } else {
+                            setLocalCollapsed(!localCollapsed);
+                        }
+                    }}
+                    title={effectiveCollapsed ? "Mở menu" : "Đóng menu"}
                 >
                     <div className="collapse-btn-icon">
-                        {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                        {effectiveCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
                     </div>
                     <div className="collapse-btn-tooltip">
-                        {collapsed ? "Mở menu" : "Đóng menu"}
+                        {effectiveCollapsed ? "Mở menu" : "Đóng menu"}
                     </div>
                 </button>
             </div>

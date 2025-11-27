@@ -759,6 +759,7 @@ function Orders() {
                                 (option?.label?.toLowerCase() ?? '').includes(input.toLowerCase())
                             }
                             options={customerOptions}
+                            getPopupContainer={(triggerNode) => triggerNode.parentNode}
                         >
                         </Select>
                     </Form.Item>
@@ -774,7 +775,10 @@ function Orders() {
                         <InputNumber min={1} style={{ width: "100%" }} placeholder={t("orders_placeholder_qty")} />
                     </Form.Item>
                     <Form.Item name="status" label={t("orders_col_status")} rules={[{ required: true, message: t('orders_msg_status_required') }]}>
-                        <Select placeholder={t("orders_placeholder_select_status")}>
+                        <Select 
+                            placeholder={t("orders_placeholder_select_status")}
+                            getPopupContainer={(triggerNode) => triggerNode.parentNode}
+                        >
                             <Option value="Processing">{t('orders_tag_Processing', 'Đang Xác nhận')}</Option>
                             <Option value="Confirmed">{t('orders_tag_Confirmed', 'Đã Xác nhận')}</Option> 
                             <Option value="Shipping">{t('orders_tag_Shipping', 'Đang Giao hàng')}</Option> 
@@ -802,6 +806,13 @@ function Orders() {
                 onClose={() => setIsDrawerVisible(false)}
                 open={isDrawerVisible}
                 width={screenSize === 'xs' ? '100%' : 380}
+                /* Ensure Drawer is mounted to body and above other overlays so it's interactable */
+                getContainer={() => document.body}
+                zIndex={99999}
+                style={{ zIndex: 99999 }}
+                wrapClassName="orders-quickview-drawer"
+                maskClosable={true}
+                maskStyle={{ backgroundColor: 'rgba(0,0,0,0.45)', zIndex: 99998 }}
             >
                 {quickViewOrder && (
                     <Space direction="vertical" size={14} style={{ width: '100%' }}>
@@ -943,6 +954,26 @@ function Orders() {
                     background-color: #f0f5ff !important;
                     font-weight: 600;
                     color: #667eea;
+                }
+
+                /* Force Drawer wrapper above all other elements and enable pointer events */
+                .orders-quickview-drawer,
+                .orders-quickview-drawer .ant-drawer,
+                .orders-quickview-drawer .ant-drawer-content-wrapper {
+                    z-index: 2147483647 !important;
+                    pointer-events: auto !important;
+                }
+
+                .orders-quickview-drawer .ant-drawer-mask {
+                    z-index: 2147483646 !important;
+                    pointer-events: auto !important;
+                }
+
+                /* If there's a transformed ancestor creating a new stacking context, ensure Drawer is fixed to viewport */
+                .orders-quickview-drawer .ant-drawer-content-wrapper {
+                    position: fixed !important;
+                    top: 0 !important;
+                    right: 0 !important;
                 }
             `}</style>
         </Space>

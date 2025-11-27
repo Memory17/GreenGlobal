@@ -596,7 +596,7 @@ function Customers() {
             >
                 
                 <Card bordered={false} style={{ borderRadius: 12, boxShadow: "0 4px 12px rgba(0,0,0,0.06)", padding: "0" }}>
-                    <div style={{
+                    <div className="customers-header" style={{
                         display: "flex",
                         alignItems: "center",
                         gap: "16px",
@@ -630,7 +630,7 @@ function Customers() {
                         }}></div>
 
                         {/* Icon container */}
-                        <div style={{
+                        <div className="customers-header-icon" style={{
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
@@ -649,12 +649,13 @@ function Customers() {
                         </div>
 
                         {/* Text container */}
-                        <div style={{
+                        <div className="customers-header-title" style={{
                             display: "flex",
                             flexDirection: "column",
                             gap: "4px",
                             position: "relative",
-                            zIndex: 2
+                            zIndex: 2,
+                            flex: 1
                         }}>
                             <div style={{
                                 fontSize: "28px",
@@ -671,7 +672,7 @@ function Customers() {
                         </div>
 
                         {/* Badge */}
-                        <div style={{
+                        <div className="customers-header-badge" style={{
                             marginLeft: "auto",
                             background: "rgba(255, 255, 255, 0.2)",
                             border: "1px solid rgba(255, 255, 255, 0.3)",
@@ -700,20 +701,22 @@ function Customers() {
                         </div>
                     </div>
                     
-                    <div style={{ padding: "20px 24px" }}>
-                        <Flex justify="space-between" align="center" gap={12} style={{ width: "100%" }}>
+                    <div className="customers-filters" style={{ padding: "20px 24px" }}>
+                        <Flex className="customers-filters-row" justify="space-between" align="center" gap={12} style={{ width: "100%", flexWrap: "wrap" }}>
                             <Search
+                                className="customers-search"
                                 placeholder={t("cus_placeholder_search")} 
-                                style={{ flex: "1", minWidth: "200px" }}
+                                style={{ flex: "1 1 200px", minWidth: "200px", maxWidth: "100%" }}
                                 value={searchValue}
                                 onChange={(e) => setSearchValue(e.target.value)}
                                 enterButton={<SearchOutlined />}
                             />
                             
                             <Select
+                                className="customers-city-filter"
                                 value={selectedCity}
                                 onChange={(value) => setSelectedCity(value)}
-                                style={{ flex: "1", minWidth: "150px" }}
+                                style={{ flex: "1 1 150px", minWidth: "150px", maxWidth: "100%" }}
                                 placeholder={t("cus_placeholder_filter_city")} 
                             >
                                 {cities.map((city) => (
@@ -724,20 +727,22 @@ function Customers() {
                             </Select>
                             
                             <Button 
+                                className="customers-activity-btn"
                                 type="default" 
                                 icon={<HistoryOutlined />} 
-                                style={{ fontWeight: 600, flex: "1" }}
+                                style={{ fontWeight: 600, flex: "1 1 auto", minWidth: "120px" }}
                                 onClick={() => message.info(t('cus_msg_open_activity_page'))} 
                             >
-                                {t("cus_button_activity")} 
+                                <span className="customers-btn-text">{t("cus_button_activity")}</span>
                             </Button>
                             <Button 
+                                className="customers-export-btn"
                                 type="primary" 
                                 icon={<CloudDownloadOutlined />} 
-                                style={{ fontWeight: 600, backgroundColor: '#2ecc71', flex: "1" }} 
+                                style={{ fontWeight: 600, backgroundColor: '#2ecc71', flex: "1 1 auto", minWidth: "120px" }} 
                                 onClick={handleExportCSV}
                             >
-                                {t("cus_button_export_report")} 
+                                <span className="customers-btn-text">{t("cus_button_export_report")}</span>
                             </Button>
                         </Flex>
                     </div>
@@ -751,20 +756,159 @@ function Customers() {
                     }}
                     bodyStyle={{ padding: "0" }}
                 >
-                    <Table
-                        loading={loading}
-                        size="large"
-                        columns={columns}
-                        dataSource={filteredData}
-                        rowKey="id"
-                        pagination={{
-                            position: ["bottomCenter"],
-                            pageSize: 8,
-                            showSizeChanger: false, 
-                        }}
-                    />
+                    <div className="customers-table-wrapper" style={{ overflowX: "auto" }}>
+                        <Table
+                            loading={loading}
+                            size="large"
+                            columns={columns}
+                            dataSource={filteredData}
+                            rowKey="id"
+                            scroll={{ x: 1200 }}
+                            pagination={{
+                                position: ["bottomCenter"],
+                                pageSize: 8,
+                                showSizeChanger: false,
+                                responsive: true,
+                                showTotal: (total, range) => (
+                                    <Text type="secondary" style={{ fontSize: 14 }}>
+                                        {t("cus_pagination_total", { start: range[0], end: range[1], total })}
+                                    </Text>
+                                ),
+                            }}
+                        />
+                    </div>
                 </Card>
             </Space>
+
+            <style>{`
+                /* Mobile Responsive Styles */
+                @media (max-width: 768px) {
+                    .customers-header {
+                        flex-direction: column !important;
+                        padding: 16px !important;
+                        gap: 12px !important;
+                    }
+
+                    .customers-header-icon {
+                        width: 48px !important;
+                        height: 48px !important;
+                        font-size: 20px !important;
+                    }
+
+                    .customers-header-title > div {
+                        font-size: 20px !important;
+                        text-align: center;
+                    }
+
+                    .customers-header-badge {
+                        position: absolute !important;
+                        top: 16px !important;
+                        right: 16px !important;
+                        margin-left: 0 !important;
+                        padding: 6px 12px !important;
+                    }
+
+                    .customers-header-badge > div:first-child {
+                        font-size: 10px !important;
+                    }
+
+                    .customers-header-badge > div:last-child {
+                        font-size: 16px !important;
+                    }
+
+                    .customers-filters {
+                        padding: 16px !important;
+                    }
+
+                    .customers-filters-row {
+                        flex-direction: column !important;
+                        gap: 10px !important;
+                    }
+
+                    .customers-search,
+                    .customers-city-filter,
+                    .customers-activity-btn,
+                    .customers-export-btn {
+                        width: 100% !important;
+                        flex: 1 1 100% !important;
+                        max-width: 100% !important;
+                    }
+
+                    .customers-btn-text {
+                        display: inline;
+                    }
+
+                    .customers-table-wrapper {
+                        margin: 0 -16px;
+                    }
+
+                    .ant-table {
+                        font-size: 13px !important;
+                    }
+
+                    .ant-table-thead > tr > th {
+                        padding: 12px 8px !important;
+                        font-size: 12px !important;
+                    }
+
+                    .ant-table-tbody > tr > td {
+                        padding: 10px 8px !important;
+                    }
+
+                    .ant-pagination {
+                        margin: 16px 0 !important;
+                    }
+
+                    .ant-pagination-item,
+                    .ant-pagination-prev,
+                    .ant-pagination-next {
+                        min-width: 28px !important;
+                        height: 28px !important;
+                        line-height: 26px !important;
+                        font-size: 12px !important;
+                    }
+                }
+
+                /* Tablet Responsive */
+                @media (min-width: 769px) and (max-width: 1024px) {
+                    .customers-header-title > div {
+                        font-size: 24px !important;
+                    }
+
+                    .customers-filters-row {
+                        gap: 10px !important;
+                    }
+
+                    .customers-search {
+                        flex: 2 1 250px !important;
+                    }
+
+                    .customers-city-filter {
+                        flex: 1 1 150px !important;
+                    }
+
+                    .customers-activity-btn,
+                    .customers-export-btn {
+                        flex: 1 1 140px !important;
+                    }
+                }
+
+                /* Small mobile devices */
+                @media (max-width: 480px) {
+                    .customers-header-title > div {
+                        font-size: 18px !important;
+                    }
+
+                    .ant-space {
+                        padding: 16px !important;
+                    }
+
+                    .customers-activity-btn .customers-btn-text,
+                    .customers-export-btn .customers-btn-text {
+                        font-size: 13px !important;
+                    }
+                }
+            `}</style>
 
             <Modal
                 title={<Space><UserSwitchOutlined style={{color: '#2980b9'}} /> {t("cus_modal_edit_profile_title")}</Space>} 

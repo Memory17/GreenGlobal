@@ -105,10 +105,11 @@ const AppHeader = () => {
       const storedReviews = localStorage.getItem(GLOBAL_REVIEWS_KEY);
       const allReviews = storedReviews ? JSON.parse(storedReviews) : [];
   
-      const lastReadTimestamp = localStorage.getItem(NOTIFICATION_READ_KEY) || 0;
+      const lastReadTimestampStr = localStorage.getItem(NOTIFICATION_READ_KEY);
+      const lastReadTimestamp = lastReadTimestampStr ? parseInt(lastReadTimestampStr, 10) : 0;
   
       const userNotifications = allReviews
-        .filter(review => (review.user === currentUser.username || review.user === currentUser.email) && Array.isArray(review.adminReplies))
+        .filter(review => (review.user === currentUser.username || review.user === currentUser.email) && Array.isArray(review.adminReplies) && review.adminReplies.length > 0)
         .flatMap(review => 
           review.adminReplies
             // ⭐️ SỬA: Lọc bỏ các phản hồi do chính người dùng tạo ra
@@ -135,8 +136,21 @@ const AppHeader = () => {
       loadUserNotifications();
     };
 
+    // Lắng nghe event từ cùng tab
     window.addEventListener('reviews_updated', handleReviewUpdate);
-    return () => window.removeEventListener('reviews_updated', handleReviewUpdate);
+    
+    // Lắng nghe thay đổi localStorage từ tab khác (cross-tab sync)
+    const handleStorageChange = (e) => {
+      if (e.key === 'app_reviews_v1') {
+        loadUserNotifications();
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('reviews_updated', handleReviewUpdate);
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, [currentUser, loadUserNotifications]);
 
   const handleOpenNotifications = () => {
@@ -478,18 +492,32 @@ const AppHeader = () => {
         onClose={() => setIsNotificationsOpen(false)}
         open={isNotificationsOpen}
         width={400}
+        zIndex={4100}
+        mask={true}
+        maskClosable={true}
+        className="notification-drawer"
+        rootClassName="notification-drawer"
+        styles={{ 
+          body: { padding: 0, background: '#fff' },
+          mask: { backgroundColor: 'rgba(0, 0, 0, 0.45)' },
+          wrapper: { background: '#fff' },
+          content: { background: '#fff' },
+          header: { background: '#fff' }
+        }}
       >
         <List
           itemLayout="horizontal"
           dataSource={notifications}
           locale={{ emptyText: "Bạn chưa có thông báo nào." }}
+          style={{ background: '#fff' }}
           renderItem={(item) => (
             <List.Item
+              className={item.isNew ? 'notification-new' : ''}
               style={{
-                backgroundColor: item.isNew ? '#e6f7ff' : 'transparent',
-                borderLeft: item.isNew ? '3px solid #1890ff' : 'none',
+                backgroundColor: item.isNew ? '#e6f7ff' : '#ffffff',
+                borderLeft: item.isNew ? '3px solid #1890ff' : '3px solid transparent',
                 padding: '12px 16px',
-                transition: 'background-color 0.3s'
+                cursor: 'pointer',
               }}
               onClick={() => {
                 navigate(`/product/${item.productId}`, { state: { reviewToFocus: item.reviewId } });
