@@ -19,6 +19,7 @@ import {
     fetchCoupons, createCoupon, deleteCoupon, updateCoupon,
     fetchShippingRules, createShippingRule,
 } from '../../data/discountService'; 
+import { getStoredOrders } from '../../API'; 
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -697,21 +698,95 @@ const CouponsManagement = () => {
     );
 };
 
-// --- 2.5. Khách hàng Thân thiết (Loyalty Program) (Giữ nguyên) ---
+// --- 2.5. Khách hàng Thân thiết (Loyalty Program) ---
 
 const LoyaltyManagement = () => {
     const { t, i18n } = useTranslation();
+    const [customers, setCustomers] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     const loyaltyTiers = [
         { name: t('promo_loyalty_tier_silver'), color: 'silver', level: 'silver', level_vi: 'Bạc', minSpent: 0, maxSpent: 10000000, benefit: t('promo_loyalty_silver_benefit') },
         { name: t('promo_loyalty_tier_gold'), color: 'gold', level: 'gold', level_vi: 'Vàng', minSpent: 10000001, maxSpent: 50000000, benefit: t('promo_loyalty_gold_benefit') },
         { name: t('promo_loyalty_tier_diamond'), color: 'blue', level: 'diamond', level_vi: 'Kim Cương', minSpent: 50000001, maxSpent: Infinity, benefit: t('promo_loyalty_diamond_benefit') },
     ];
-    
-    const mockCustomersWithLang = [
-        { key: 'cus1', name: 'Nguyễn Văn A', level_vi: 'Vàng', level: 'gold', totalSpent: 25000000, points: 1250 },
-        { key: 'cus2', name: 'Trần Thị B', level_vi: 'Bạc', level: 'silver', totalSpent: 8000000, points: 300 },
-    ];
+
+    // Tính level dựa trên tổng chi tiêu
+    const calculateLevel = (totalSpent) => {
+        if (totalSpent >= 50000001) return { level: 'diamond', level_vi: 'Kim Cương' };
+        if (totalSpent >= 10000001) return { level: 'gold', level_vi: 'Vàng' };
+        return { level: 'silver', level_vi: 'Bạc' };
+    };
+
+    // Tính điểm tích lũy (1 điểm = 20.000 VNĐ chi tiêu)
+    const calculatePoints = (totalSpent) => {
+        return Math.floor(totalSpent / 20000);
+    };
+
+    useEffect(() => {
+        const loadCustomersFromOrders = () => {
+            setLoading(true);
+            try {
+                const orders = getStoredOrders();
+                const customerMap = new Map();
+
+                orders.forEach(order => {
+                    const customer = order.customer || {};
+                    const identifier = customer.email || customer.name || customer.phone;
+                    
+                    if (!identifier) return;
+
+                    if (!customerMap.has(identifier)) {
+                        customerMap.set(identifier, {
+                            key: identifier,
+                            name: customer.name || customer.email || 'Khách hàng',
+                            email: customer.email || '',
+                            phone: customer.phone || '',
+                            totalSpent: 0,
+                            orderCount: 0,
+                        });
+                    }
+
+                    const c = customerMap.get(identifier);
+                    c.totalSpent += order.totals?.total || order.totals?.subtotal || 0;
+                    c.orderCount += 1;
+                });
+
+                // Chuyển đổi sang mảng và thêm level, points
+                const customersArray = Array.from(customerMap.values())
+                    .map(c => {
+                        const levelInfo = calculateLevel(c.totalSpent);
+                        return {
+                            ...c,
+                            ...levelInfo,
+                            points: calculatePoints(c.totalSpent),
+                        };
+                    })
+                    .sort((a, b) => b.totalSpent - a.totalSpent); // Sắp xếp theo chi tiêu
+
+                setCustomers(customersArray);
+            } catch (error) {
+                console.error('Error loading customers:', error);
+                setCustomers([]);
+            }
+            setLoading(false);
+        };
+
+        loadCustomersFromOrders();
+
+        // Lắng nghe sự kiện cập nhật orders
+        const handleOrdersUpdated = () => loadCustomersFromOrders();
+        window.addEventListener('orders_updated', handleOrdersUpdated);
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'app_orders_v1') {
+                loadCustomersFromOrders();
+            }
+        });
+
+        return () => {
+            window.removeEventListener('orders_updated', handleOrdersUpdated);
+        };
+    }, []);
 
     const getTierBorderStyle = (level) => {
         switch(level) {
@@ -730,13 +805,13 @@ const LoyaltyManagement = () => {
         { title: t('promo_col_customer'), dataIndex: 'name', key: 'name' },
         {
             title: t('promo_col_level'),
-            dataIndex: i18n.language === 'en' ? 'level' : 'level_vi',
+            dataIndex: 'level',
             key: 'level',
-            render: (levelKey) => {
-                const key = (levelKey || '').toLowerCase().replace(' ', '_');
-                const color = key === 'vàng' || key === 'gold' ? 'gold' : key === 'bạc' || key === 'silver' ? 'default' : 'blue';
-                const levelDisplay = t(`promo_loyalty_tier_${key}`);
-                return <Tag color={color}>{levelDisplay}</Tag>
+            render: (level) => {
+                const color = level === 'gold' ? 'gold' : level === 'silver' ? 'default' : 'blue';
+                // Sử dụng key dịch cho các cấp độ
+                const displayName = t(`promo_loyalty_tier_${level}`);
+                return <Tag color={color}>{displayName}</Tag>
             }
         },
         {
@@ -788,7 +863,14 @@ const LoyaltyManagement = () => {
                 />
             </Card>
             <Card title={t('promo_card_member_list')}>
-                <Table columns={columns} dataSource={mockCustomersWithLang} rowKey="key" pagination={{ pageSize: 5 }} />
+                <Table 
+                    columns={columns} 
+                    dataSource={customers} 
+                    rowKey="key" 
+                    pagination={{ pageSize: 5 }} 
+                    loading={loading}
+                    locale={{ emptyText: t('promo_no_customers_yet') || 'Chưa có khách hàng nào' }}
+                />
             </Card>
         </Space>
     );

@@ -10,6 +10,7 @@ import { CartProvider } from "./context/CartContext";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { OrderProvider } from "./context/OrderContext"; // Context (đếm count) CÓ SẴN
 import { OrderHistoryProvider } from "./context/OrderHistoryContext"; // <-- THÊM MỚI (để lưu lịch sử)
+import { Web3Provider } from "./context/Web3Context"; // <-- THÊM: Web3/MetaMask Context
 
 // 🏠 --- USER COMPONENTS ---
 // (import Header, Footer, ... giữ nguyên)
@@ -149,17 +150,19 @@ function App() {
           <CartProvider>
             <OrderProvider> {/* Context (đếm count) CÓ SẴN */}
               <OrderHistoryProvider> {/* <-- THÊM MỚI (Context để lưu lịch sử) */}
-                <Routes>
-                  <Route
-                    path="/admin/*"
-                    element={
-                      <RequireAdminAuth>
-                        <AdminLayout />
-                      </RequireAdminAuth>
-                    }
-                  />
-                  <Route path="/*" element={<UserLayout />} />
-                </Routes>
+                <Web3Provider> {/* <-- THÊM: Web3/MetaMask Provider */}
+                  <Routes>
+                    <Route
+                      path="/admin/*"
+                      element={
+                        <RequireAdminAuth>
+                          <AdminLayout />
+                        </RequireAdminAuth>
+                      }
+                    />
+                    <Route path="/*" element={<UserLayout />} />
+                  </Routes>
+                </Web3Provider> {/* <-- THÊM: Đóng Web3Provider */}
               </OrderHistoryProvider> {/* <-- THÊM MỚI (Đóng) */}
             </OrderProvider>
           </CartProvider>
