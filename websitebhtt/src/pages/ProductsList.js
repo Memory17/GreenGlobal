@@ -35,6 +35,7 @@ import "../style/Pagination.css"; // Import Pagination CSS
 import HotDeal from "../components/HotDeal"; // Import HotDeal component
 import BestSellers from "../components/BestSellers"; // Import BestSellers component
 import TopRated from "../components/TopRated"; // Import TopRated component
+import ProductCatalog from "../components/ProductCatalog"; // Import ProductCatalog component
 import {
   getProductCategories,
   // getProductsByFullUrl, // Không cần dùng hàm này nữa nếu lọc trên client
@@ -667,6 +668,12 @@ function Product() {
         onBuyNow={handleBuyNow}
         onAddToCart={handleAddToCartClick}
       />
+      {/* ------------------------------------------- */}
+
+      {/* ------------------------------------------- */}
+      {/* --------- PRODUCT CATALOG SECTION -------- */}
+      {/* ------------------------------------------- */}
+      <ProductCatalog />
       {/* ------------------------------------------- */}
 
     </div>

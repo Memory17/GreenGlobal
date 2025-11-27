@@ -1,0 +1,266 @@
+/* src/style/ProductCatalog.css */
+
+.catalog-section {
+  margin: 80px auto;
+  padding: 0 20px;
+  max-width: 1200px;
+}
+
+.catalog-header {
+  text-align: center;
+  margin-bottom: 80px;
+}
+
+.catalog-title {
+  font-size: 42px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #1f1f1f 0%, #595959 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0 0 16px 0;
+}
+
+.catalog-subtitle {
+  font-size: 16px;
+  color: #8c8c8c;
+  font-weight: 400;
+}
+
+/* --- LIST LAYOUT --- */
+.catalog-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 100px; /* Khoảng cách lớn giữa các item */
+}
+
+.catalog-list-item {
+  display: flex;
+  align-items: center;
+  gap: 60px;
+  opacity: 0;
+  animation: fadeInUp 0.8s ease forwards;
+}
+
+/* Zigzag Layout */
+.catalog-list-item.reverse {
+  flex-direction: row-reverse;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- IMAGE SECTION --- */
+.catalog-list-image-wrapper {
+  flex: 1;
+  position: relative;
+  border-radius: 30px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15); /* Bóng đổ sâu */
+  background-color: #f5f5f5; /* Nền nhẹ cho ảnh transparent */
+  height: 400px; /* Chiều cao cố định cho ảnh đẹp */
+  transition: transform 0.5s ease;
+}
+
+.catalog-list-item:hover .catalog-list-image-wrapper {
+  transform: scale(1.02); /* Zoom nhẹ cả khung */
+}
+
+.catalog-list-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Đảm bảo ảnh phủ kín khung */
+  transition: transform 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.catalog-list-item:hover .catalog-list-image {
+  transform: scale(1.1); /* Zoom ảnh bên trong */
+}
+
+/* Price Badge - Modern Floating Pill */
+.catalog-list-price-badge {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  color: #1f1f1f;
+  padding: 10px 24px;
+  border-radius: 50px;
+  font-size: 20px;
+  font-weight: 800;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+}
+
+/* --- CONTENT SECTION --- */
+.catalog-list-content {
+  flex: 0.8;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.catalog-category-label {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #1677ff;
+  margin-bottom: 16px;
+  background: #e6f7ff;
+  padding: 6px 16px;
+  border-radius: 4px;
+}
+
+.catalog-list-title {
+  font-size: 40px; /* Tên sản phẩm to */
+  font-weight: 800;
+  color: #1f1f1f;
+  margin-bottom: 20px;
+  line-height: 1.2;
+}
+
+.catalog-list-desc {
+  font-size: 16px;
+  color: #595959;
+  line-height: 1.8;
+  margin-bottom: 30px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Specs Grid */
+.catalog-specs {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 40px;
+  border-top: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f0f0f0;
+  padding: 20px 0;
+  width: 100%;
+}
+
+.spec-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.spec-label {
+  font-size: 12px;
+  color: #8c8c8c;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.spec-value {
+  font-size: 16px;
+  color: #1f1f1f;
+  font-weight: 700;
+}
+
+/* Action Button */
+.catalog-action-btn {
+  height: 50px;
+  padding: 0 40px;
+  font-weight: 600;
+  font-size: 16px;
+  box-shadow: 0 10px 20px rgba(22, 119, 255, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.catalog-action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px rgba(22, 119, 255, 0.4);
+}
+
+/* --- NAVIGATION BUTTONS --- */
+.catalog-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(4px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.3s ease;
+  opacity: 0; /* Hidden by default */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.catalog-list-image-wrapper:hover .catalog-nav-btn {
+  opacity: 1; /* Show on hover */
+}
+
+.catalog-nav-btn:hover {
+  background: #fff;
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+}
+
+.catalog-nav-btn.prev {
+  left: 20px;
+}
+
+.catalog-nav-btn.next {
+  right: 20px;
+}
+
+/* --- ANIMATIONS --- */
+.fade-out {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: all 0.3s ease;
+}
+
+.fade-in {
+  opacity: 1;
+  transform: scale(1);
+  transition: all 0.3s ease;
+}
+
+.catalog-content-inner {
+  transition: all 0.3s ease;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .catalog-list-item, 
+  .catalog-list-item.reverse {
+    flex-direction: column;
+    gap: 30px;
+    text-align: center;
+  }
+
+  .catalog-list-content {
+    align-items: center;
+  }
+
+  .catalog-list-image-wrapper {
+    width: 100%;
+    height: 300px;
+  }
+
+  .catalog-specs {
+    justify-content: center;
+  }
+  
+  .catalog-list-title {
+    font-size: 32px;
+  }
+}
