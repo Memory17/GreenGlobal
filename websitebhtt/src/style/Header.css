@@ -12,6 +12,14 @@
   --search-bg: #f3f4f6; /* Màu nền xám nhạt cho thanh tìm kiếm */
 }
 
+body.dark-mode {
+  --header-bg: #141414;
+  --header-text-color: #ffffff;
+  --header-border-color: #303030;
+  --header-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --search-bg: #1f1f1f;
+}
+
 /*
  * ===================================================================
  * 1. MAIN HEADER CONTAINER (Giữ nguyên)
@@ -149,6 +157,34 @@
   position: relative;
   width: 240px; /* Chiều rộng mặc định */
   transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+
+}
+
+/* Fix background rectangle behind search bar in Dark Mode */
+.modern-search-wrapper .ant-select,
+.modern-search-wrapper .ant-select-selector,
+.modern-search-wrapper .ant-select-single .ant-select-selector,
+.modern-search-wrapper .ant-select-show-search .ant-select-selector,
+.modern-search-wrapper .ant-select-selection-search,
+.modern-search-wrapper .ant-select-selection-item,
+.modern-search-wrapper .ant-select-selection-placeholder {
+  background-color: transparent !important;
+  background: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+/* Ensure no background on focus/active states of the container */
+.modern-search-wrapper .ant-select-focused .ant-select-selector,
+.modern-search-wrapper .ant-select:hover .ant-select-selector,
+.modern-search-wrapper .ant-select-selector:focus-within,
+.modern-search-wrapper .ant-select-selector:hover {
+  background-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
 }
 
 /* 2. Input Style (Dạng viên thuốc) */
@@ -167,11 +203,16 @@
   transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
 }
 
+/* Dark Mode: Add border to search input */
+body.dark-mode .modern-search-input.ant-input-affix-wrapper {
+  border-color: #434343 !important;
+}
+
 /* Input text bên trong */
 .modern-search-input input.ant-input {
   background-color: transparent !important;
   font-size: 14px;
-  color: #333;
+  color: var(--header-text-color);
 }
 
 /* 3. Hiệu ứng khi Focus (Click vào thanh tìm kiếm) */
@@ -265,6 +306,21 @@
   align-items: center;
 }
 
+/* Dark mode for search dropdown */
+body.dark-mode .modern-search-dropdown .ant-select-dropdown {
+  background-color: #1f1f1f;
+  border-color: #303030;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode .modern-search-dropdown .ant-select-item {
+  color: #ffffff;
+}
+
+body.dark-mode .modern-search-dropdown .ant-select-item-option-active {
+  background-color: #303030 !important;
+}
+
 /*
  * ===================================================================
  * 6. CART ICON (Giữ nguyên)
@@ -279,14 +335,21 @@
   transform: scale(1.1);
 }
 
-.header-right-desktop .ant-shopping-cart-outlined {
+.header-right-desktop .ant-shopping-cart-outlined,
+.header-cart-badge .anticon-shopping-cart {
   font-size: 26px !important;
-  color: #333;
+  color: var(--header-text-color);
   transition: color 0.3s ease;
 }
 
-.header-right-desktop .ant-badge:hover .ant-shopping-cart-outlined {
+.header-right-desktop .ant-badge:hover .ant-shopping-cart-outlined,
+.header-cart-badge:hover .anticon-shopping-cart {
   color: var(--primary-color);
+}
+
+.header-notification-icon {
+  color: var(--header-text-color) !important;
+  transition: color 0.3s ease;
 }
 
 .header-right-desktop .ant-badge-count {
@@ -400,11 +463,64 @@
    font-weight: 500 !important;
 }
 
-/*
- * ===================================================================
- * 8. [NÂNG CẤP] BUTTONS (Login/Logout) - HIỆU ỨNG "SIÊU ĐỈNH"
- * ===================================================================
- */
+/* --- NOTIFICATION DRAWER DARK MODE --- */
+body.dark-mode .ant-drawer-content {
+  background-color: #141414;
+  color: #ffffff;
+}
+
+body.dark-mode .ant-drawer-header {
+  background-color: #141414;
+  border-bottom: 1px solid #303030;
+}
+
+body.dark-mode .ant-drawer-title {
+  color: #ffffff;
+}
+
+body.dark-mode .ant-drawer-close {
+  color: #ffffff;
+}
+
+body.dark-mode .ant-list-item-meta-title > div > .ant-typography {
+  color: #ffffff !important;
+}
+
+body.dark-mode .ant-list-item-meta-title > div > .ant-typography-secondary {
+  color: rgba(255, 255, 255, 0.45) !important;
+}
+
+body.dark-mode .ant-list-item-meta-description .ant-typography {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+body.dark-mode .ant-list-item-meta-description b {
+  color: #ffffff;
+}
+
+body.dark-mode .ant-list-item-meta-description p {
+  color: rgba(255, 255, 255, 0.65) !important;
+}
+
+/* Notification Item Background in Dark Mode */
+body.dark-mode .ant-list-item {
+  border-bottom: 1px solid #303030;
+}
+
+body.dark-mode .ant-list-item:hover {
+  background-color: #1f1f1f !important;
+}
+
+/* New Notification Highlight in Dark Mode */
+body.dark-mode .notification-new {
+  background-color: #111d2c !important; /* Dark blue tint */
+  border-left-color: #177ddc !important;
+}
+
+/* Empty State Text */
+body.dark-mode .ant-empty-description {
+  color: rgba(255, 255, 255, 0.45);
+}
 
 /* --- Style chung cho cả 2 nút --- */
 .header-login-btn,
@@ -457,4 +573,66 @@
 
 .header-logout-btn:active {
   transform: translateY(-1px);
+}
+
+/* --- CART POPOVER STYLES --- */
+.cart-popover-overlay .ant-popover-inner {
+  border-radius: 16px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.cart-popover-content {
+  max-width: 320px;
+  padding: 4px;
+}
+
+.cart-popover-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.cart-popover-icon {
+  background-color: #fff1f0;
+  padding: 12px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(255, 77, 79, 0.15);
+}
+
+.cart-popover-title {
+  font-size: 16px !important;
+  display: block !important;
+  margin-bottom: 4px !important;
+  color: #262626 !important;
+}
+
+.cart-popover-desc {
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  color: rgba(0, 0, 0, 0.45); /* Default secondary text color */
+}
+
+/* --- CART POPOVER DARK MODE --- */
+body.dark-mode .cart-popover-overlay .ant-popover-inner,
+body.dark-mode .cart-popover-overlay .ant-popover-arrow::before {
+  background-color: #1f1f1f !important;
+  box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.4), 0 3px 6px -4px rgba(0, 0, 0, 0.48), 0 9px 28px 8px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-mode .cart-popover-icon {
+  background-color: #2a1215; /* Darker red background for dark mode */
+  box-shadow: none;
+}
+
+body.dark-mode .cart-popover-title {
+  color: #ffffff !important;
+}
+
+body.dark-mode .cart-popover-desc {
+  color: rgba(255, 255, 255, 0.65) !important;
 }

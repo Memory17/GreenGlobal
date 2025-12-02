@@ -11,6 +11,7 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import { OrderProvider } from "./context/OrderContext"; // Context (đếm count) CÓ SẴN
 import { OrderHistoryProvider } from "./context/OrderHistoryContext"; // <-- THÊM MỚI (để lưu lịch sử)
 import { Web3Provider } from "./context/Web3Context"; // <-- THÊM: Web3/MetaMask Context
+import { ThemeProvider } from "./context/ThemeContext"; // <-- THÊM: Theme Context
 
 // 🏠 --- USER COMPONENTS ---
 // (import Header, Footer, ... giữ nguyên)
@@ -47,7 +48,8 @@ import OrderHistory from "./pages/OrderHistory/OrderHistory"; // <-- THÊM MỚI
 import TermsAndPolicies from "./pages/TermsAndPolicies/TermsAndPolicies";
 import VipPackages from "./pages/VipPackages/VipPackages";
 
-const DARK_MODE_KEY = "app_dark_mode";
+
+const ADMIN_DARK_MODE_KEY = "admin_dark_mode"; // Key riêng cho Admin
 
 // ========== GIAO DIỆN USER ==========
 function UserLayout() {
@@ -94,7 +96,7 @@ function AdminLayout() {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
-    const savedMode = localStorage.getItem(DARK_MODE_KEY);
+    const savedMode = localStorage.getItem(ADMIN_DARK_MODE_KEY);
     if (savedMode !== null) {
       setIsDarkMode(savedMode === "true");
     }
@@ -102,7 +104,7 @@ function AdminLayout() {
 
   const handleToggleDarkMode = useCallback((newMode) => {
     setIsDarkMode(newMode);
-    localStorage.setItem(DARK_MODE_KEY, newMode.toString());
+    localStorage.setItem(ADMIN_DARK_MODE_KEY, newMode.toString());
   }, []);
 
   const toggleSideMenu = () => setIsSideMenuOpen((prev) => !prev);
@@ -152,27 +154,29 @@ function App() {
       }
     >
       <BrowserRouter>
-        <AuthProvider>
-          <CartProvider>
-            <OrderProvider> {/* Context (đếm count) CÓ SẴN */}
-              <OrderHistoryProvider> {/* <-- THÊM MỚI (Context để lưu lịch sử) */}
-                <Web3Provider> {/* <-- THÊM: Web3/MetaMask Provider */}
-                  <Routes>
-                    <Route
-                      path="/admin/*"
-                      element={
-                        <RequireAdminAuth>
-                          <AdminLayout />
-                        </RequireAdminAuth>
-                      }
-                    />
-                    <Route path="/*" element={<UserLayout />} />
-                  </Routes>
-                </Web3Provider> {/* <-- THÊM: Đóng Web3Provider */}
-              </OrderHistoryProvider> {/* <-- THÊM MỚI (Đóng) */}
-            </OrderProvider>
-          </CartProvider>
-        </AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <CartProvider>
+              <OrderProvider> {/* Context (đếm count) CÓ SẴN */}
+                <OrderHistoryProvider> {/* <-- THÊM MỚI (Context để lưu lịch sử) */}
+                  <Web3Provider> {/* <-- THÊM: Web3/MetaMask Provider */}
+                    <Routes>
+                      <Route
+                        path="/admin/*"
+                        element={
+                          <RequireAdminAuth>
+                            <AdminLayout />
+                          </RequireAdminAuth>
+                        }
+                      />
+                      <Route path="/*" element={<UserLayout />} />
+                    </Routes>
+                  </Web3Provider> {/* <-- THÊM: Đóng Web3Provider */}
+                </OrderHistoryProvider> {/* <-- THÊM MỚI (Đóng) */}
+              </OrderProvider>
+            </CartProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </BrowserRouter>
     </Suspense>
   );

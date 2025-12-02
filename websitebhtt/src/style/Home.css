@@ -1,0 +1,25 @@
+/* src/style/Home.css */
+
+/* Global Layout Background for Dark Mode */
+body.dark-mode .ant-layout {
+  background: #141414;
+}
+
+body.dark-mode .ant-layout-content {
+  background: #141414;
+}
+
+/* Ensure Divider is visible in Dark Mode */
+body.dark-mode .ant-divider {
+  border-top-color: #303030;
+  color: #ffffff;
+}
+
+body.dark-mode .ant-divider-inner-text {
+  color: #ffffff;
+}
+
+/* Fix for ProductsList container if needed */
+body.dark-mode .products-list-container {
+  background: transparent;
+}

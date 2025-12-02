@@ -1646,3 +1646,33 @@ padding-right: "20px"; */
 /* Generic fix: prevent flex children overflow in compact cards */
 .ticket-meta, .summary-inner, .automation-rule-card { min-width: 0; }
 .ticket-meta > div, .summary-inner > div, .automation-rule-card > div { min-width: 0; }
+/* DARK MODE STYLES */
+body.dark-mode {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+body.dark-mode .AppHeader,
+body.dark-mode .AppFooter,
+body.dark-mode .ant-card,
+body.dark-mode .ant-modal-content,
+body.dark-mode .ant-modal-header {
+  background-color: #1f1f1f !important;
+  color: #e0e0e0 !important;
+}
+
+body.dark-mode .ant-typography,
+body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4, body.dark-mode h5,
+body.dark-mode .ant-list-item-meta-title,
+body.dark-mode .ant-list-item-meta-description {
+  color: #e0e0e0 !important;
+}
+
+body.dark-mode .ant-input,
+body.dark-mode .ant-picker,
+body.dark-mode .ant-select-selector {
+  background-color: #2a2a2a !important;
+  border-color: #444 !important;
+  color: #e0e0e0 !important;
+}
+

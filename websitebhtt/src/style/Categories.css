@@ -156,3 +156,43 @@
 .categories-dropdown::-webkit-scrollbar-thumb:hover {
   background: #999;
 }
+
+/* ===================================================================
+ * DARK MODE STYLES
+ * =================================================================== */
+
+body.dark-mode .categories-dropdown {
+  background: #141414;
+}
+
+body.dark-mode .category-item:hover {
+  background-color: #1f1f1f;
+  border-color: #303030;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .category-title {
+  color: #ffffff !important;
+  border-bottom-color: #303030;
+}
+
+body.dark-mode .category-product {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+body.dark-mode .category-product:hover {
+  color: #1677ff;
+  background-color: #111d2c; /* Dark blue tint */
+}
+
+body.dark-mode .categories-dropdown::-webkit-scrollbar-track {
+  background: #1f1f1f;
+}
+
+body.dark-mode .categories-dropdown::-webkit-scrollbar-thumb {
+  background: #424242;
+}
+
+body.dark-mode .categories-dropdown::-webkit-scrollbar-thumb:hover {
+  background: #5a5a5a;
+}

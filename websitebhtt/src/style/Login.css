@@ -305,3 +305,160 @@
   padding: 8px 12px !important;
   line-height: 45px !important;
 }
+
+/* =========================================
+   DARK MODE SUPPORT (LOGIN & REGISTER)
+========================================= */
+
+/* Main Background - Darken the image overlay */
+body.dark-mode .login,
+body.dark-mode .login-page {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)), url("../assets/images/profile-banner2.png");
+}
+
+/* Card Container */
+body.dark-mode .login-row {
+  background: #1f1f1f;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  border: 1px solid #303030;
+}
+
+/* Right Column (Form Area) */
+body.dark-mode .login-col-right {
+  background-color: #1f1f1f;
+}
+
+/* Titles */
+body.dark-mode .login-title {
+  color: #1677ff !important; /* Strong Primary Blue */
+  text-shadow: 0 0 10px rgba(22, 119, 255, 0.4);
+}
+
+/* Primary Action Buttons (Login/Register) - Blue Text Style */
+body.dark-mode .login-form .ant-btn-primary,
+body.dark-mode .form-login .ant-btn-primary {
+  background: transparent !important;
+  border: 1px solid #40a9ff !important;
+  color: #40a9ff !important;
+  box-shadow: 0 0 10px rgba(64, 169, 255, 0.2);
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+body.dark-mode .login-form .ant-btn-primary:hover,
+body.dark-mode .form-login .ant-btn-primary:hover {
+  background: rgba(64, 169, 255, 0.15) !important;
+  border-color: #69c0ff !important;
+  color: #69c0ff !important;
+  box-shadow: 0 0 20px rgba(64, 169, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Form Labels */
+body.dark-mode .ant-form-item-label > label {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* Inputs */
+body.dark-mode .login-form .ant-input-affix-wrapper,
+body.dark-mode .login-form .ant-input,
+body.dark-mode .form-login .ant-input-affix-wrapper,
+body.dark-mode .form-login .ant-input,
+body.dark-mode .custom-input {
+  background-color: #262626 !important;
+  border-color: #434343;
+  color: #ffffff !important;
+}
+
+body.dark-mode .ant-input-password-icon {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+body.dark-mode .ant-input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Input Focus State */
+body.dark-mode .login-form .ant-input-affix-wrapper:focus-within,
+body.dark-mode .login-form .ant-input-affix-wrapper:hover,
+body.dark-mode .form-login .ant-input-affix-wrapper:focus-within,
+body.dark-mode .form-login .ant-input-affix-wrapper:hover,
+body.dark-mode .custom-input:focus,
+body.dark-mode .custom-input:hover {
+  border-color: #40a9ff !important;
+  box-shadow: 0 0 0 2px rgba(64, 169, 255, 0.2) !important;
+}
+
+/* Links */
+body.dark-mode .ant-typography a,
+body.dark-mode a {
+  color: #1677ff !important; /* Strong Blue */
+}
+
+body.dark-mode .ant-typography a:hover,
+body.dark-mode a:hover {
+  color: #40a9ff !important;
+  text-shadow: 0 0 8px rgba(64, 169, 255, 0.6);
+}
+
+/* Specific fix for "Register now" / "Login now" */
+body.dark-mode .dont-have-account a {
+  color: #1677ff !important;
+  font-weight: bold;
+}
+
+/* "Or login with" Divider */
+body.dark-mode .or-login,
+body.dark-mode .dont-have-account {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+body.dark-mode .or-login-with-form-item::before,
+body.dark-mode .or-login-with-form-item::after {
+  background: #434343;
+}
+
+/* Social Buttons */
+body.dark-mode .btn-login-google {
+  background-color: #db4437 !important; /* Google Red */
+  border-color: #db4437 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 10px rgba(219, 68, 55, 0.3);
+}
+
+body.dark-mode .btn-login-google:hover {
+  background-color: #ff5c4d !important;
+  border-color: #ff5c4d !important;
+  box-shadow: 0 0 15px rgba(219, 68, 55, 0.6);
+  transform: translateY(-2px);
+}
+
+body.dark-mode .btn-login-facebook {
+  background-color: #1877f2 !important; /* Facebook Blue */
+  border-color: #1877f2 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 10px rgba(24, 119, 242, 0.3);
+}
+
+body.dark-mode .btn-login-facebook:hover {
+  background-color: #4096ff !important;
+  border-color: #4096ff !important;
+  box-shadow: 0 0 15px rgba(24, 119, 242, 0.6);
+  transform: translateY(-2px);
+}
+
+/* Left Column Text (Enhance contrast) */
+body.dark-mode .title-left {
+  color: #00e5ff !important; /* Cyan Neon */
+  text-shadow: 0 0 20px rgba(0, 229, 255, 0.6);
+}
+
+body.dark-mode .text-left {
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Hide Red Asterisk (Required Mark) in Dark Mode */
+body.dark-mode .ant-form-item-label > label.ant-form-item-required::before {
+  display: none !important;
+}

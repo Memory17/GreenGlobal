@@ -119,3 +119,128 @@
   color: #1677ff;
   vertical-align: middle;
 }
+
+/* =========================================
+   DARK MODE SUPPORT (ORDER HISTORY)
+========================================= */
+
+body.dark-mode .order-history-container {
+  background-color: #121212;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode .order-history-container .ant-typography,
+body.dark-mode .order-history-container h2,
+body.dark-mode .order-history-container h5 {
+  color: #ffffff !important;
+}
+
+/* Collapse Panels */
+body.dark-mode .order-history-container .ant-collapse-item {
+  background-color: #1f1f1f;
+  border-color: #303030;
+}
+
+body.dark-mode .order-history-container .ant-collapse-header {
+  color: #ffffff !important;
+  border-bottom-color: #303030;
+}
+
+body.dark-mode .order-history-container .ant-collapse-item-active > .ant-collapse-header {
+  background-color: #262626;
+}
+
+body.dark-mode .order-history-container .ant-collapse-content {
+  background-color: #1f1f1f;
+  color: #ffffff;
+  border-top-color: #303030;
+}
+
+/* List Items */
+body.dark-mode .order-history-container .ant-list-item {
+  color: #ffffff;
+}
+
+body.dark-mode .order-history-container .ant-list-item:hover {
+  background-color: #262626;
+}
+
+body.dark-mode .order-history-container .ant-list-item-meta-title {
+  color: #ffffff !important;
+}
+
+body.dark-mode .order-history-container .ant-list-item-meta-description {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* Descriptions Table */
+body.dark-mode .order-history-container .ant-descriptions-item-label {
+  background-color: #262626 !important;
+  color: #40a9ff !important; /* Neon Blue */
+  text-shadow: 0 0 10px rgba(64, 169, 255, 0.3);
+  border-color: #303030;
+}
+
+body.dark-mode .order-history-container .ant-descriptions-item-content {
+  color: #ffffff;
+  border-color: #303030;
+}
+
+body.dark-mode .order-history-container .ant-descriptions-bordered .ant-descriptions-view {
+  border-color: #303030;
+}
+
+body.dark-mode .order-history-container .ant-descriptions-bordered .ant-descriptions-item-label,
+body.dark-mode .order-history-container .ant-descriptions-bordered .ant-descriptions-item-content {
+  border-right-color: #303030;
+}
+
+/* Icons & Highlights */
+body.dark-mode .order-history-container .ant-descriptions-item-label .anticon {
+  color: #40a9ff; /* Neon Blue */
+  text-shadow: 0 0 10px rgba(64, 169, 255, 0.4);
+}
+
+body.dark-mode .order-history-container .ant-descriptions-item-content strong {
+  color: #40a9ff; /* Neon Blue for Totals */
+  text-shadow: 0 0 10px rgba(64, 169, 255, 0.4);
+}
+
+/* Empty State */
+body.dark-mode .ant-empty-description {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* Divider */
+body.dark-mode .ant-divider {
+  border-top-color: #303030;
+}
+
+/* Card (if used for empty state) */
+body.dark-mode .ant-card {
+  background-color: #1f1f1f;
+  border-color: #303030;
+}
+
+body.dark-mode .ant-card-body {
+  color: #ffffff;
+}
+
+/* Tags */
+body.dark-mode .ant-tag-blue {
+  background-color: #111d2c;
+  border-color: #15395b;
+  color: #177ddc;
+}
+
+body.dark-mode .ant-tag-green {
+  background-color: #162312;
+  border-color: #274916;
+  color: #49aa19;
+}
+
+/* Danger Text (Discount) */
+body.dark-mode .ant-typography-danger {
+  color: #ff4d4f !important;
+  text-shadow: 0 0 8px rgba(255, 77, 79, 0.4);
+}

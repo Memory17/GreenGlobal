@@ -446,3 +446,108 @@
         min-width: 28px;
     }
 }
+
+/* ===================================================================
+ * DARK MODE STYLES FOR TOP RATED
+ * =================================================================== */
+
+body.dark-mode .top-rated-section-wrapper {
+  background: linear-gradient(135deg, #1f1f1f 0%, #141414 100%);
+  border-color: #303030;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+body.dark-mode .top-rated-section-wrapper::before {
+  background: radial-gradient(circle, rgba(250, 173, 20, 0.05) 0%, rgba(0,0,0,0) 70%);
+}
+
+/* Banner Dark Mode */
+body.dark-mode .top-rated-banner-content {
+  background: linear-gradient(135deg, #d48806 0%, #874d00 100%);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+}
+
+body.dark-mode .icon-wrapper {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .nav-btn {
+  background: rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+body.dark-mode .nav-btn:hover {
+  background: #faad14;
+  color: #ffffff;
+  border-color: #faad14;
+}
+
+/* Highlight Card Dark Mode */
+body.dark-mode .highlight-product-card {
+  background: #1f1f1f;
+  border-color: #faad14;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+body.dark-mode .highlight-image-container {
+  background: #303030;
+}
+
+body.dark-mode .highlight-title {
+  color: #ffffff !important;
+}
+
+body.dark-mode .highlight-rating {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+body.dark-mode .highlight-desc {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+body.dark-mode .highlight-buy-btn {
+  background: transparent;
+  border-color: #faad14;
+  color: #faad14;
+}
+
+body.dark-mode .highlight-buy-btn:hover {
+  background: #faad14 !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .highlight-cart-btn {
+  border-color: #424242;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+body.dark-mode .highlight-cart-btn:hover {
+  border-color: #faad14;
+  color: #faad14;
+}
+
+/* Grid Cards Dark Mode */
+body.dark-mode .grid-product-card {
+  background: #1f1f1f;
+  border-color: #303030;
+}
+
+body.dark-mode .grid-product-card:hover {
+  background: #262626;
+  border-color: #faad14;
+  box-shadow: 0 8px 20px rgba(250, 173, 20, 0.15);
+}
+
+body.dark-mode .grid-title {
+  color: #ffffff;
+}
+
+body.dark-mode .grid-cart-btn {
+  background: #303030;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+body.dark-mode .grid-cart-btn:hover {
+  background: #faad14;
+  color: #ffffff;
+}

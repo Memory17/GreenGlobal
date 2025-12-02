@@ -75,15 +75,27 @@
   box-shadow: 0 0 15px rgba(0, 210, 255, 0.2);
 }
 
-.footer-input {
+.footer-input,
+.footer-input .ant-input {
   background: transparent !important;
   border: none !important;
   color: white !important;
   box-shadow: none !important;
 }
-.footer-input::placeholder {
-  color: #666;
+
+body.dark-mode .footer-input,
+body.dark-mode .footer-input .ant-input {
+  background: transparent !important;
+  border: none !important;
+  color: white !important;
+  box-shadow: none !important;
 }
+
+.footer-input input::placeholder,
+.footer-input .ant-input::placeholder {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
 .input-icon {
   color: var(--primary-color);
 }

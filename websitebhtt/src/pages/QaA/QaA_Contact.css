@@ -119,3 +119,47 @@
     width: 100%;
   }
 }
+
+/* ===================================================================
+ * DARK MODE STYLES FOR CONTACT SECTION
+ * =================================================================== */
+
+body.dark-mode .qna-contact-card {
+  background: linear-gradient(to right, #1f1f1f, #141414);
+  border-color: #303030;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+body.dark-mode .qna-contact-card:hover {
+  border-color: #40a9ff;
+  box-shadow: 0 15px 35px rgba(64, 169, 255, 0.15);
+}
+
+body.dark-mode .qna-contact-card::before {
+  background: #40a9ff;
+}
+
+body.dark-mode .qna-contact-icon {
+  background: #303030;
+  color: #40a9ff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+body.dark-mode .qna-contact-title {
+  color: #ffffff !important;
+}
+
+body.dark-mode .qna-contact-text {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+body.dark-mode .qna-contact-btn {
+  background: #40a9ff;
+  border-color: #40a9ff;
+  box-shadow: 0 4px 15px rgba(64, 169, 255, 0.3);
+}
+
+body.dark-mode .qna-contact-btn:hover {
+  background: #69c0ff;
+  border-color: #69c0ff;
+}

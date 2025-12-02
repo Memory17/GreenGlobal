@@ -458,3 +458,433 @@ display: flex;
   font-size: 12px;
   color: #939597;
 }
+
+/* --- [SI�U �?NH] Settings Modal Styling --- */
+
+/* 1. Modal Container - Glassmorphism */
+.settings-modal .ant-modal-content {
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-radius: 20px !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+/* Dark Mode Support for Modal */
+body.dark-mode .settings-modal .ant-modal-content {
+  background: rgba(30, 30, 30, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 2. Header Styling */
+.settings-modal .ant-modal-header {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+  padding: 20px 24px !important;
+  margin-bottom: 0 !important;
+}
+
+body.dark-mode .settings-modal .ant-modal-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.settings-modal .ant-modal-title {
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.settings-modal .ant-modal-close {
+  top: 20px !important;
+  right: 24px !important;
+  color: #999 !important;
+  transition: all 0.3s ease;
+}
+
+.settings-modal .ant-modal-close:hover {
+  color: #00c6ff !important;
+  transform: rotate(90deg);
+}
+
+/* 3. Tabs Styling (Sidebar) */
+.settings-modal .ant-tabs-nav {
+  width: 200px !important;
+  background: rgba(0, 0, 0, 0.02);
+  border-right: 1px solid rgba(0, 0, 0, 0.06) !important;
+  padding-top: 20px;
+}
+
+body.dark-mode .settings-modal .ant-tabs-nav {
+  background: rgba(255, 255, 255, 0.02);
+  border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.settings-modal .ant-tabs-tab {
+  padding: 12px 24px !important;
+  margin: 8px 12px !important;
+  border-radius: 10px !important;
+  transition: all 0.3s ease !important;
+  justify-content: flex-start !important;
+}
+
+.settings-modal .ant-tabs-tab:hover {
+  background: rgba(0, 198, 255, 0.1);
+}
+
+.settings-modal .ant-tabs-tab-active {
+  background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%) !important;
+  box-shadow: 0 4px 15px rgba(0, 198, 255, 0.3);
+}
+
+.settings-modal .ant-tabs-tab-active .ant-tabs-tab-btn,
+.settings-modal .ant-tabs-tab-active .anticon {
+  color: white !important;
+}
+
+.setting-tab-label {
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* 4. Content Area Styling */
+.settings-modal .ant-tabs-content-holder {
+  padding: 24px !important;
+  background: transparent;
+}
+
+.setting-section-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #333;
+  position: relative;
+  padding-left: 15px;
+}
+
+body.dark-mode .setting-section-title {
+  color: #fff;
+}
+
+.setting-section-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 24px;
+  background: linear-gradient(to bottom, #00c6ff, #0072ff);
+  border-radius: 4px;
+}
+
+/* 5. Setting Item Card */
+.setting-item-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  margin-bottom: 16px;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: default;
+}
+
+body.dark-mode .setting-item-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.setting-item-card:hover {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  border-color: #00c6ff;
+}
+
+.setting-info {
+  flex: 1;
+  padding-right: 20px;
+}
+
+.setting-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+body.dark-mode .setting-title {
+  color: #fff;
+}
+
+.setting-desc {
+  font-size: 13px;
+  color: #888;
+  line-height: 1.4;
+}
+
+body.dark-mode .setting-desc {
+  color: #aaa;
+}
+
+/* Danger Zone */
+.setting-item-card.danger-zone {
+  border-color: rgba(255, 77, 79, 0.2);
+  background: rgba(255, 77, 79, 0.02);
+}
+
+.setting-item-card.danger-zone:hover {
+  border-color: #ff4d4f;
+  box-shadow: 0 8px 20px rgba(255, 77, 79, 0.15);
+}
+
+.setting-title.danger-text {
+  color: #ff4d4f;
+}
+
+/* Animation for Tab Content */
+.settings-tab-content {
+  animation: fadeInRight 0.4s ease-out forwards;
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+
+/* =========================================
+   STATS MODAL (SHOPPING INSIGHTS)
+========================================= */
+
+/* --- Light Mode Defaults (Matching previous inline styles) --- */
+.stats-modal-container .ant-modal-content {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.stat-summary-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.stat-label {
+  color: #666;
+  font-size: 13px;
+}
+
+.stat-value-text .ant-statistic-content-value {
+  color: #333;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.chart-section-card,
+.fun-facts-card,
+.monthly-chart-card,
+.review-stats-card,
+.empty-stats-container {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  height: 100%;
+}
+
+/* Spacing for Cards */
+.dashboard-summary {
+  margin-bottom: 24px;
+}
+
+.monthly-chart-card {
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+
+.review-stats-card {
+  margin-top: 24px;
+}
+
+.fun-facts-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.fun-facts-list {
+  list-style: none;
+  padding: 0;
+  font-size: 16px;
+  margin: 0;
+}
+
+.fun-fact-item {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.fun-fact-icon {
+  font-size: 24px;
+  margin-right: 15px;
+}
+
+.section-title-blue {
+  color: #1890ff !important;
+  margin-top: 0 !important;
+  margin-bottom: 20px !important;
+}
+
+.section-title-dark {
+  color: #333 !important;
+  margin: 0 !important;
+}
+
+.review-stat-item-card {
+  border-radius: 8px;
+}
+
+.bg-blue-light { background: #f0f5ff; }
+.bg-orange-light { background: #fff7e6; }
+.bg-red-light { background: #fff1f0; }
+
+.review-images-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.review-image-item {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* =========================================
+   DARK MODE OVERRIDES (STATS MODAL)
+========================================= */
+
+body.dark-mode .stats-modal-container .ant-modal-content {
+  background-color: #1f1f1f !important;
+  border: 1px solid #303030;
+}
+
+body.dark-mode .stats-modal-container .ant-modal-header {
+  background-color: #1f1f1f !important;
+  border-bottom: 1px solid #303030 !important;
+}
+
+body.dark-mode .stats-modal-title {
+  color: #40a9ff !important; /* Neon Blue Title */
+  text-shadow: 0 0 10px rgba(64, 169, 255, 0.4);
+}
+
+body.dark-mode .stats-modal-container .ant-modal-close {
+  color: #fff !important;
+}
+
+/* Cards Background */
+body.dark-mode .stat-summary-card,
+body.dark-mode .chart-section-card,
+body.dark-mode .fun-facts-card,
+body.dark-mode .monthly-chart-card,
+body.dark-mode .review-stats-card,
+body.dark-mode .empty-stats-container {
+  background-color: #262626 !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  border: 1px solid #303030;
+}
+
+/* Text Colors */
+body.dark-mode .stat-label {
+  color: rgba(255, 255, 255, 0.65) !important;
+}
+
+body.dark-mode .stat-value-text .ant-statistic-content-value {
+  color: #fff !important;
+}
+
+body.dark-mode .section-title-blue {
+  color: #40a9ff !important;
+  text-shadow: 0 0 8px rgba(64, 169, 255, 0.4);
+}
+
+body.dark-mode .section-title-dark {
+  color: #fff !important;
+}
+
+/* Fun Facts */
+body.dark-mode .fun-fact-item {
+  background-color: #1f1f1f !important;
+  color: #fff;
+  border: 1px solid #303030;
+}
+
+body.dark-mode .fun-fact-item strong {
+  text-shadow: 0 0 5px currentColor; /* Glow effect for values */
+}
+
+/* Review Stats Backgrounds */
+body.dark-mode .bg-blue-light { background: #111d2c !important; border: 1px solid #15395b; }
+body.dark-mode .bg-orange-light { background: #2b2111 !important; border: 1px solid #443111; }
+body.dark-mode .bg-red-light { background: #2a1215 !important; border: 1px solid #431418; }
+
+/* Empty State */
+body.dark-mode .empty-stats-container {
+  color: rgba(255, 255, 255, 0.65) !important;
+}
+
+body.dark-mode .empty-stats-container .anticon {
+  color: #434343 !important;
+}
+
+body.dark-mode .empty-text {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* Select Dropdown */
+body.dark-mode .year-select .ant-select-selector {
+  background-color: #1f1f1f !important;
+  color: #fff !important;
+  border-color: #434343 !important;
+}
+
+body.dark-mode .year-select .ant-select-arrow {
+  color: #fff !important;
+}
+
+/* =========================================
+   GLOBAL FIXES
+========================================= */
+/* Fix ColorPicker z-index issue when inside Modal */
+.ant-color-picker-popover,
+.ant-popover,
+.ant-tooltip,
+.ant-select-dropdown,
+div[class*="ant-color-picker-popover"] {
+  z-index: 99999 !important;
+}
+

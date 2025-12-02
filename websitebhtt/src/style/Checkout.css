@@ -422,3 +422,184 @@
   min-height: 220px; /* Bạn có thể tăng/giảm con số này */
   transform: translateY(-80px);
 }
+/* =========================================
+   DARK MODE SUPPORT
+========================================= */
+
+body.dark-mode .checkout-page-container {
+  background-color: #121212;
+}
+
+body.dark-mode .checkout-title {
+  color: #ffffff;
+}
+
+/* Cards */
+body.dark-mode .checkout-card,
+body.dark-mode .order-summary-card {
+  background-color: #1f1f1f;
+  border-color: #303030;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .checkout-card .ant-card-head {
+  background-color: #262626;
+  border-bottom: 1px solid #303030;
+}
+
+body.dark-mode .checkout-card .ant-card-head-title,
+body.dark-mode .order-summary-card .ant-card-head-title {
+  color: #40a9ff; /* Lighter blue for dark mode */
+}
+
+/* Form Inputs */
+body.dark-mode .checkout-form .ant-form-item-label > label {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+body.dark-mode .checkout-form .ant-input-affix-wrapper,
+body.dark-mode .checkout-form .ant-picker,
+body.dark-mode .checkout-form .ant-input {
+  background-color: #262626;
+  border-color: #434343;
+  color: #ffffff;
+}
+
+body.dark-mode .checkout-form .ant-input-affix-wrapper .ant-input {
+  background-color: transparent;
+  color: #ffffff;
+}
+
+body.dark-mode .checkout-form .ant-input::placeholder,
+body.dark-mode .checkout-form .ant-picker-input > input::placeholder {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+body.dark-mode .ant-picker-suffix {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+body.dark-mode .checkout-form .ant-input-affix-wrapper:focus,
+body.dark-mode .checkout-form .ant-input-affix-wrapper-focused {
+  border-color: #177ddc;
+  box-shadow: 0 0 0 3px rgba(23, 125, 220, 0.2);
+}
+
+body.dark-mode .ant-input-prefix {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* Payment Radio */
+body.dark-mode .payment-radio {
+  background-color: #262626;
+  border-color: #434343;
+}
+
+body.dark-mode .payment-radio:hover {
+  background-color: #303030;
+  border-color: #177ddc;
+}
+
+body.dark-mode .payment-radio span.ant-radio + * {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Order Summary */
+body.dark-mode .order-summary-card .ant-list-item-meta-title {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+body.dark-mode .order-summary-card .ant-list-item-meta-description {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+body.dark-mode .summary-row {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+body.dark-mode .summary-row .ant-typography {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+body.dark-mode .summary-row.total .ant-typography {
+  color: #ffffff;
+}
+
+body.dark-mode .summary-row .total-price {
+  color: #40a9ff;
+}
+
+/* Success Popup */
+body.dark-mode .order-success-div {
+  background: linear-gradient(to bottom, #1f1f1f, #141414);
+  border-color: #303030;
+}
+
+body.dark-mode .order-success-div .ant-result-title {
+  color: #ffffff;
+}
+
+body.dark-mode .order-success-div .ant-result-subtitle {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+body.dark-mode .text-success {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+body.dark-mode .id-order-succcess {
+  background: linear-gradient(135deg, #112a45, #163c5e);
+  border-color: #177ddc;
+  color: #40a9ff;
+  box-shadow: 0 2px 8px rgba(23, 125, 220, 0.15);
+}
+
+body.dark-mode .order-success-details {
+  background-color: #262626;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+body.dark-mode .order-success-details .ant-descriptions-item-label {
+  background-color: #1f1f1f; /* Darker background for labels */
+  color: #69c0ff !important; /* Neon Blue */
+  text-shadow: 0 0 10px rgba(105, 192, 255, 0.4); /* Glowing effect */
+  border-color: #434343;
+}
+
+body.dark-mode .order-success-details .ant-descriptions-item-content {
+  background-color: #262626;
+  color: #ffffff !important;
+  border-color: #434343;
+}
+
+body.dark-mode .order-success-details .ant-descriptions-view {
+  border-color: #434343;
+}
+
+body.dark-mode .spam-warning {
+  background: #2a2a2a;
+  color: #bfbfbf;
+}
+
+body.dark-mode .review-your-order {
+  background: #112a45;
+  color: #40a9ff;
+}
+
+body.dark-mode .review-your-order:hover {
+  background: #163c5e;
+  color: #69c0ff;
+}
+
+/* Transaction Info Card in Success Popup */
+body.dark-mode .tx-compact-card {
+    background: linear-gradient(135deg, #1f1f1f, #2a2a2a);
+    border-color: #434343;
+    color: #e6e6e6;
+}
+
+body.dark-mode .tx-compact-card .tx-hash {
+    background: #303030;
+    color: #9254de;
+}
+

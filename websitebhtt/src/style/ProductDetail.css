@@ -263,3 +263,187 @@
         font-size: 30px !important;
     }
 }
+
+/* Review Form Container (Default Light Mode) */
+.review-form-container {
+  margin-bottom: 40px;
+  padding: 24px;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+/* =========================================
+   DARK MODE SUPPORT (PRODUCT DETAIL)
+========================================= */
+
+body.dark-mode .product-detail-page {
+  background-color: #121212 !important;
+}
+
+/* Typography */
+body.dark-mode .ant-typography,
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4,
+body.dark-mode h5 {
+  color: #ffffff !important;
+}
+
+body.dark-mode .ant-typography-secondary {
+  color: rgba(255, 255, 255, 0.65) !important;
+}
+
+/* Product Price */
+body.dark-mode .product-price {
+  color: #ff4d4f !important; /* Bright Red/Orange */
+  text-shadow: 0 0 15px rgba(255, 77, 79, 0.4); /* Glowing effect */
+}
+
+body.dark-mode .ant-typography-delete {
+  color: rgba(255, 255, 255, 0.45) !important;
+}
+
+/* Product Description Box */
+body.dark-mode .text-product-info {
+  background-color: #1f1f1f;
+  color: #e0e0e0;
+  border-left-color: #177ddc;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Quantity Selector */
+body.dark-mode .select-quantity {
+  border-top-color: #303030;
+  border-bottom-color: #303030;
+}
+
+body.dark-mode .quantity-product-cart {
+  border-color: #434343;
+}
+
+body.dark-mode .quantity-product-cart .ant-btn {
+  background-color: #262626;
+  color: #ffffff;
+}
+
+body.dark-mode .quantity-product-cart .ant-btn:hover:not(:disabled) {
+  background-color: #303030;
+  color: #40a9ff;
+}
+
+body.dark-mode .quantity-product-cart .ant-typography {
+  color: #ffffff;
+}
+
+/* Action Buttons */
+body.dark-mode .add-to-cart-button {
+  background-color: transparent !important;
+  border-color: #177ddc !important;
+  color: #177ddc !important;
+}
+
+body.dark-mode .add-to-cart-button:hover:not(:disabled) {
+  background-color: rgba(23, 125, 220, 0.15) !important;
+  box-shadow: 0 0 15px rgba(23, 125, 220, 0.3) !important;
+}
+
+body.dark-mode .buy-now-button {
+  background-color: #d4380d !important; /* Darker Orange */
+  border-color: #d4380d !important;
+}
+
+body.dark-mode .buy-now-button:hover:not(:disabled) {
+  background-color: #ff4d4f !important;
+  box-shadow: 0 0 15px rgba(212, 56, 13, 0.4) !important;
+}
+
+/* Review Form Container */
+body.dark-mode .review-form-container {
+  background: #1f1f1f !important;
+  border: 1px solid #303030;
+}
+
+body.dark-mode .ant-input,
+body.dark-mode .ant-input-textarea {
+  background-color: #262626;
+  border-color: #434343;
+  color: #ffffff;
+}
+
+body.dark-mode .ant-input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Reviews List */
+body.dark-mode .ant-list-item {
+  color: #ffffff;
+}
+
+body.dark-mode .ant-list-item-meta-title > a,
+body.dark-mode .ant-list-item-meta-title .ant-typography-strong {
+  color: #ffffff !important;
+}
+
+body.dark-mode .ant-list-item-meta-description {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+body.dark-mode .ant-list-item-meta-description .ant-typography {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Filter Select */
+body.dark-mode .ant-select:not(.ant-select-customize-input) .ant-select-selector {
+  background-color: transparent;
+  color: #ffffff;
+}
+
+body.dark-mode .ant-select-arrow {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* Images */
+body.dark-mode .main-product-image {
+  border-color: #303030 !important;
+  background-color: #1f1f1f; /* For transparent images */
+}
+
+body.dark-mode .thumbnail-images .ant-image {
+  border-color: #303030 !important;
+  background-color: #1f1f1f;
+}
+
+body.dark-mode .thumbnail-images .ant-image[style*="border: 2px solid #1890ff"] {
+  border-color: #177ddc !important;
+}
+
+/* Stock Status Colors */
+body.dark-mode .ant-typography[style*="color: #389e0d"] { /* Green/In Stock */
+  color: #73d13d !important;
+  text-shadow: 0 0 10px rgba(115, 209, 61, 0.4);
+}
+
+body.dark-mode .ant-typography[style*="color: #faad14"] { /* Orange/Low Stock */
+  color: #ffec3d !important;
+  text-shadow: 0 0 10px rgba(255, 236, 61, 0.4);
+}
+
+body.dark-mode .ant-typography[style*="color: #cf1322"] { /* Red/Out of Stock */
+  color: #ff4d4f !important;
+  text-shadow: 0 0 10px rgba(255, 77, 79, 0.4);
+}
+
+/* Rating Stars */
+body.dark-mode .ant-rate {
+  color: #fadb14; /* Keep yellow but maybe brighter */
+}
+
+body.dark-mode .ant-rate-star-second {
+  color: #fadb14;
+}
+
+body.dark-mode .ant-rate-star-zero .ant-rate-star-first, 
+body.dark-mode .ant-rate-star-zero .ant-rate-star-second {
+  color: rgba(255, 255, 255, 0.15); /* Darker gray for empty stars */
+}

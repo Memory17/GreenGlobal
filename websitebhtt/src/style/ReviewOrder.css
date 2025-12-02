@@ -430,3 +430,272 @@ margin-top: 16px!important;
     padding: 0.75rem 0.5rem;
   }
 }
+
+/* =========================================
+   DARK MODE SUPPORT (REVIEW ORDER)
+========================================= */
+
+body.dark-mode .review-order {
+  background-color: #121212;
+}
+
+/* --- Banner "Almost Done" --- */
+body.dark-mode .big-title {
+  background: #135200; /* Dark Green */
+  border-color: #237804;
+  color: #d9f7be; /* Light Green Text */
+}
+
+/* --- Cards (Ship To, Payment, Summary) --- */
+body.dark-mode .ship-to-div,
+body.dark-mode .payment-review-div,
+body.dark-mode .summary-review-div,
+body.dark-mode .order-detail-and-method-content {
+  background: #1f1f1f;
+  border-color: #303030;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .ship-to-div:hover,
+body.dark-mode .payment-review-div:hover,
+body.dark-mode .summary-review-div:hover {
+  background: #262626;
+  border-color: #177ddc; /* Blue border on hover */
+}
+
+/* --- Titles --- */
+body.dark-mode .ship-to-title {
+  border-bottom-color: #303030;
+}
+
+body.dark-mode .title-content-wrapper {
+  color: #ffffff;
+}
+
+body.dark-mode .change-info-text {
+  color: #40a9ff !important;
+}
+
+body.dark-mode .change-info-text:hover {
+  color: #69c0ff !important;
+}
+
+/* --- Descriptions (Ship To) --- */
+body.dark-mode .delivery-descriptions .ant-descriptions-item-label {
+  color: #69c0ff !important; /* Neon Blue */
+  text-shadow: 0 0 8px rgba(105, 192, 255, 0.5); /* Glowing effect */
+}
+
+body.dark-mode .delivery-descriptions .ant-descriptions-item-content {
+  color: #ffffff;
+}
+
+body.dark-mode .delivery-descriptions .ant-descriptions-row > td {
+  border-bottom: 1px solid #303030;
+}
+
+/* --- Payment Info --- */
+body.dark-mode .visa-name {
+  color: #ffffff !important;
+}
+
+body.dark-mode .billing-address-title {
+  color: rgba(255, 255, 255, 0.65) !important;
+}
+
+body.dark-mode .billing-address-detail {
+  color: #ffffff;
+}
+
+body.dark-mode .apply-gift {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* --- Summary Info --- */
+body.dark-mode .subtotal-text,
+body.dark-mode .shipping-text {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+body.dark-mode .subtotal-value,
+body.dark-mode .shipping-value {
+  color: #ffffff;
+}
+
+body.dark-mode .total {
+  border-top-color: #303030;
+}
+
+body.dark-mode .total-text {
+  color: #ffffff;
+}
+
+body.dark-mode .total-value-review {
+  color: #40a9ff !important;
+  text-shadow: 0 0 10px rgba(64, 169, 255, 0.3); /* Glowing effect */
+}
+
+/* --- Order Detail Section --- */
+body.dark-mode .order-detail-review .ant-typography {
+  color: #ffffff;
+}
+
+body.dark-mode .shipping-from {
+  background: #262626;
+  border-color: #303030;
+}
+
+body.dark-mode .text-shipping-from {
+  color: #ffffff;
+}
+
+body.dark-mode .note-text {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* --- Product Table --- */
+body.dark-mode .product-table .ant-table-thead > tr > th {
+  background: #2a2a2a !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+body.dark-mode .product-table .ant-table-tbody > tr:not(:last-child) > td {
+  border-bottom-color: #303030 !important;
+}
+
+body.dark-mode .product-table .ant-typography-strong {
+  color: #ffffff;
+}
+
+body.dark-mode .product-table .ant-typography-secondary {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+body.dark-mode .product-table .ant-typography-success {
+  color: #73d13d !important; /* Neon Green */
+  text-shadow: 0 0 8px rgba(115, 209, 61, 0.6); /* Glowing effect */
+}
+
+body.dark-mode .product-image-wrapper {
+  background-color: #303030;
+  border-color: #434343;
+}
+
+/* --- Modals (Specific to Review Order if needed) --- */
+body.dark-mode .ant-modal-content {
+  background-color: #1f1f1f;
+}
+body.dark-mode .ant-modal-header {
+  background-color: #1f1f1f;
+  border-bottom: 1px solid #303030;
+}
+body.dark-mode .ant-modal-title {
+  color: #ffffff;
+}
+body.dark-mode .ant-modal-close {
+  color: rgba(255, 255, 255, 0.65);
+}
+body.dark-mode .ant-radio-wrapper {
+  color: rgba(255, 255, 255, 0.85);
+}
+/* =========================================
+   DARK MODE SUPPORT (EDIT SHIPPING MODAL)
+========================================= */
+
+/* Form Labels */
+body.dark-mode .ant-form-item-label > label {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Inputs */
+body.dark-mode .ant-input,
+body.dark-mode .ant-input-affix-wrapper,
+body.dark-mode .ant-input-affix-wrapper > input.ant-input {
+  background-color: #262626;
+  border-color: #434343;
+  color: #ffffff;
+}
+
+body.dark-mode .ant-input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+body.dark-mode .ant-input-affix-wrapper .ant-input-prefix {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* Select Dropdown */
+body.dark-mode .ant-select:not(.ant-select-customize-input) .ant-select-selector {
+  background-color: #262626;
+  border-color: #434343;
+  color: #ffffff;
+}
+
+body.dark-mode .ant-select-arrow {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+body.dark-mode .ant-select-dropdown {
+  background-color: #1f1f1f;
+}
+
+body.dark-mode .ant-select-item {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+body.dark-mode .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+  background-color: #112a45; /* Dark blue selection */
+  color: #ffffff;
+}
+
+body.dark-mode .ant-select-item-option-active:not(.ant-select-item-option-disabled) {
+  background-color: #262626;
+}
+
+/* DatePicker */
+body.dark-mode .ant-picker {
+  background-color: #262626;
+  border-color: #434343;
+}
+
+body.dark-mode .ant-picker-input > input {
+  color: #ffffff;
+}
+
+body.dark-mode .ant-picker-suffix {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+body.dark-mode .ant-picker-dropdown {
+  background-color: #1f1f1f;
+}
+
+body.dark-mode .ant-picker-panel-container {
+  background-color: #1f1f1f;
+}
+
+body.dark-mode .ant-picker-header {
+  color: rgba(255, 255, 255, 0.85);
+  border-bottom-color: #303030;
+}
+
+body.dark-mode .ant-picker-header button {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+body.dark-mode .ant-picker-content th {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+body.dark-mode .ant-picker-cell {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+body.dark-mode .ant-picker-cell-in-view {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+body.dark-mode .ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner {
+  background-color: #177ddc;
+}
+

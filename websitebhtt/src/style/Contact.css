@@ -656,3 +656,154 @@ a.contact-value:hover {
     transform: translateY(0);
   }
 }
+
+/* ===================================================================
+ * DARK MODE STYLES FOR CONTACT PAGE
+ * =================================================================== */
+
+body.dark-mode .contact-page-wrapper {
+  background: #141414;
+}
+
+body.dark-mode .contact-header h1 {
+  background: linear-gradient(135deg, #ffffff, #a0a0a0);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+body.dark-mode .contact-subtitle {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* Cards */
+body.dark-mode .contact-card {
+  background: #1f1f1f;
+  border-color: #303030;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .contact-card h2,
+body.dark-mode .contact-card h3,
+body.dark-mode .contact-card h4 {
+  color: #ffffff !important;
+}
+
+/* Form Card */
+body.dark-mode .contact-form-card {
+  background: #1f1f1f;
+}
+
+body.dark-mode .form-header .ant-typography-secondary {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* Form Inputs */
+body.dark-mode .contact-form .ant-form-item-label > label {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+body.dark-mode .contact-form .ant-input-lg,
+body.dark-mode .contact-form .ant-input-affix-wrapper-lg,
+body.dark-mode .contact-form .ant-input-textarea-lg textarea,
+body.dark-mode .contact-form textarea.ant-input {
+  background-color: #2a2a2a;
+  border-color: #434343;
+  color: #ffffff;
+}
+
+body.dark-mode .contact-form .ant-input-affix-wrapper-lg input {
+  background-color: transparent;
+  color: #ffffff;
+}
+
+body.dark-mode .contact-form .ant-input-affix-wrapper-lg input::placeholder,
+body.dark-mode .contact-form .ant-input-lg::placeholder,
+body.dark-mode .contact-form textarea.ant-input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+body.dark-mode .contact-form .input-icon {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+body.dark-mode .contact-form .ant-input-affix-wrapper:focus-within,
+body.dark-mode .contact-form .ant-input-affix-wrapper-focused,
+body.dark-mode .contact-form .ant-input:focus,
+body.dark-mode .contact-form .ant-input-textarea-affix-wrapper:focus-within,
+body.dark-mode .contact-form textarea.ant-input:focus {
+  background-color: #2a2a2a;
+  border-color: #177ddc !important;
+  box-shadow: 0 0 0 4px rgba(23, 125, 220, 0.1) !important;
+}
+
+body.dark-mode .contact-form .ant-input-affix-wrapper:focus-within .input-icon {
+  color: #177ddc;
+}
+
+/* Contact Info Items */
+body.dark-mode .contact-info-card .ant-typography {
+  color: #ffffff;
+}
+
+body.dark-mode .contact-value {
+  color: #ffffff;
+}
+
+body.dark-mode .contact-desc {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+body.dark-mode .contact-info-item:hover {
+  background-color: #2a2a2a;
+  border-color: #434343;
+}
+
+/* Map Overlay */
+body.dark-mode .contact-map-overlay {
+  background: rgba(31, 31, 31, 0.9);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .contact-map-overlay .map-text h3 {
+  color: #ffffff;
+}
+
+body.dark-mode .contact-map-overlay .map-text p {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+body.dark-mode .contact-map-overlay .map-icon {
+  background: #303030;
+  color: #ffffff;
+}
+
+/* Map Filter */
+body.dark-mode .contact-map-iframe {
+  filter: grayscale(100%) invert(90%) hue-rotate(180deg) contrast(90%);
+}
+
+body.dark-mode .contact-map-wrapper:hover .contact-map-iframe {
+  filter: grayscale(0%) invert(0%);
+}
+
+/* Additional Dark Mode Tweaks */
+body.dark-mode .contact-info-item-icon-wrapper {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .contact-hours-card {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border-color: #303030;
+}
+
+body.dark-mode .contact-submit-btn {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+  color: #ffffff !important;
+}
+
+body.dark-mode .contact-submit-btn:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+}

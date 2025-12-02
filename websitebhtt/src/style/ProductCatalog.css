@@ -264,3 +264,62 @@
     font-size: 32px;
   }
 }
+
+/* ===================================================================
+ * DARK MODE STYLES FOR PRODUCT CATALOG
+ * =================================================================== */
+
+body.dark-mode .catalog-title {
+  background: linear-gradient(135deg, #ffffff 0%, #bfbfbf 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+body.dark-mode .catalog-subtitle {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+body.dark-mode .catalog-list-image-wrapper {
+  background-color: #1f1f1f;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode .catalog-list-price-badge {
+  background: rgba(31, 31, 31, 0.95);
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode .catalog-category-label {
+  background: rgba(22, 119, 255, 0.2);
+  color: #1677ff;
+}
+
+body.dark-mode .catalog-list-title {
+  color: #ffffff;
+}
+
+body.dark-mode .catalog-list-desc {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+body.dark-mode .catalog-specs {
+  border-color: #303030;
+}
+
+body.dark-mode .spec-label {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+body.dark-mode .spec-value {
+  color: #ffffff;
+}
+
+body.dark-mode .catalog-nav-btn {
+  background: rgba(31, 31, 31, 0.8);
+  color: #ffffff;
+}
+
+body.dark-mode .catalog-nav-btn:hover {
+  background: #1f1f1f;
+}

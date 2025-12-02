@@ -141,7 +141,7 @@ const Contact = () => {
               </Row>
 
               <Form.Item name="message" label="Tin nhắn" rules={[{ required: true, message: 'Vui lòng nhập tin nhắn' }]}>
-                <Input.TextArea rows={6} placeholder="Hãy cho chúng tôi biết thêm về yêu cầu của bạn..." showCount maxLength={500} />
+                <Input.TextArea autoSize={{ minRows: 6, maxRows: 15 }} placeholder="Hãy cho chúng tôi biết thêm về yêu cầu của bạn..." showCount maxLength={500} />
               </Form.Item>
 
               <Form.Item>

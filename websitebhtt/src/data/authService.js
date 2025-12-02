@@ -99,6 +99,79 @@ export const getStoredUsers = () => {
 };
 
 /**
+ * Đổi mật khẩu
+ * - Nếu là user local: Cập nhật trực tiếp
+ * - Nếu là user API: Kiểm tra mật khẩu cũ qua API, nếu đúng thì lưu thành user local mới (override)
+ * - Nếu là Admin cứng: Không cho phép đổi (hoặc phải xử lý riêng)
+ */
+export const changePassword = (username, oldPassword, newPassword) => {
+  return new Promise(async (resolve, reject) => {
+    // 0. Chặn Admin cứng
+    if (username === 'admin') {
+      reject(new Error('Không thể đổi mật khẩu cho tài khoản Admin mặc định.'));
+      return;
+    }
+
+    const users = getUsersFromStorage();
+    const idx = users.findIndex(u => u.username === username);
+
+    // 1. Trường hợp User đã có trong LocalStorage
+    if (idx !== -1) {
+      if (users[idx].password !== oldPassword) {
+        reject(new Error('Mật khẩu cũ không chính xác.'));
+        return;
+      }
+      // Cập nhật mật khẩu
+      users[idx].password = newPassword;
+      saveUsersToStorage(users);
+      resolve({ success: true });
+      return;
+    }
+
+    // 2. Trường hợp User chưa có (có thể là User từ API)
+    try {
+      // Thử đăng nhập API để xác thực mật khẩu cũ
+      const response = await fetch(LOGIN_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password: oldPassword }),
+      });
+
+      if (!response.ok) {
+        reject(new Error('Mật khẩu cũ không chính xác.'));
+        return;
+      }
+
+      const apiUser = await response.json();
+
+      // Nếu đúng, tạo một bản ghi User mới trong LocalStorage để "ghi đè" cho lần đăng nhập sau
+      const newUser = {
+        id: apiUser.id, // Giữ ID từ API (hoặc tạo mới nếu muốn tránh trùng lặp)
+        username: apiUser.username,
+        password: newPassword, // Mật khẩu mới
+        firstName: apiUser.firstName,
+        lastName: apiUser.lastName,
+        email: apiUser.email,
+        role: 'user',
+        image: apiUser.image,
+        disabled: false
+      };
+
+      users.push(newUser);
+      saveUsersToStorage(users);
+      
+      // Dispatch event cập nhật
+      try { window.dispatchEvent(new Event('my_app_users_updated')); } catch (e) {}
+
+      resolve({ success: true });
+
+    } catch (error) {
+      reject(new Error('Lỗi kết nối hoặc tài khoản không tồn tại.'));
+    }
+  });
+};
+
+/**
  * Cập nhật thông tin user đã lưu trong localStorage.
  * Nếu user không tồn tại trong localStorage, sẽ tạo một bản copy local mới (override) và lưu.
  */

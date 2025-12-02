@@ -8,6 +8,9 @@ import {
   Divider,
   Card,
   Rate,
+  Carousel, // <-- THÊM
+
+  Avatar,   // <-- THÊM
 } from "antd";
 import {
   ArrowRightOutlined,
@@ -15,12 +18,26 @@ import {
   TwitterOutlined,
   InstagramFilled,
   LinkedinFilled,
-  CheckCircleFilled
+  CheckCircleFilled,
+  UsergroupAddOutlined, // <-- THÊM
+  TrophyOutlined,       // <-- THÊM
+  ShoppingOutlined,     // <-- THÊM
+  SafetyCertificateOutlined, // <-- THÊM
+
+  RocketOutlined,       // <-- THÊM
+  MobileOutlined,       // <-- THÊM
+  GlobalOutlined,       // <-- THÊM
 } from "@ant-design/icons";
 
 import "../assets/style.css";
 
 import avtMember from "../assets/images/avtmember.png";
+// Import Partner Logos
+import visaLogo from "../assets/images/visa.png";
+import MastercardLogo from "../assets/images/mastercard.png";
+import PayPal from "../assets/images/paypal.png";
+import GooglePay from "../assets/images/gpay.png";
+import redbullLogo from "../assets/images/redbull.png";
 
 const { Text, Title } = Typography;
 
@@ -142,6 +159,196 @@ const About = () => {
         </Row>
       </div>
 
+      {/* === 1. SOCIAL PROOF SECTION (NIỀM TIN KHÁCH HÀNG) === */}
+      <div className="social-proof-section">
+        <div className="title-about" style={{ paddingBottom: '2rem', justifyContent: 'center' }}>
+          <Title level={2} className="title-left-about" style={{ textAlign: 'center', width: '100%' }}>
+            Khách Hàng Nói Gì Về Chúng Tôi
+          </Title>
+        </div>
+        
+        {/* Stats */}
+        <Row gutter={[32, 32]} className="stats-container">
+          <Col xs={24} md={8}>
+            <div className="stat-item">
+              <UsergroupAddOutlined className="stat-icon" />
+              <Title level={2} className="stat-number">100,000+</Title>
+              <Text className="stat-label">Khách Hàng Hài Lòng</Text>
+            </div>
+          </Col>
+          <Col xs={24} md={8}>
+            <div className="stat-item">
+              <TrophyOutlined className="stat-icon" />
+              <Title level={2} className="stat-number">5 Năm</Title>
+              <Text className="stat-label">Kinh Nghiệm Phục Vụ</Text>
+            </div>
+          </Col>
+          <Col xs={24} md={8}>
+            <div className="stat-item">
+              <ShoppingOutlined className="stat-icon" />
+              <Title level={2} className="stat-number">1,000,000+</Title>
+              <Text className="stat-label">Đơn Hàng Đã Giao</Text>
+            </div>
+          </Col>
+        </Row>
+
+        {/* Testimonials Carousel */}
+        <div className="testimonials-carousel-wrapper">
+          <Carousel autoplay dots={true} effect="fade">
+            <div className="testimonial-slide">
+              <Card className="testimonial-card" bordered={false}>
+                <Rate disabled defaultValue={5} />
+                <Text className="testimonial-quote">
+                  "Dịch vụ tuyệt vời! Tôi đã mua hàng ở đây 3 lần và chưa bao giờ thất vọng. Giao hàng nhanh và đóng gói rất cẩn thận."
+                </Text>
+                <div className="testimonial-user">
+                  <Avatar src="https://randomuser.me/api/portraits/women/44.jpg" size={50} />
+                  <div className="user-info">
+                    <Text strong>Nguyễn Thu Hà</Text>
+                    <Text type="secondary">Khách hàng thân thiết</Text>
+                  </div>
+                </div>
+              </Card>
+            </div>
+            <div className="testimonial-slide">
+              <Card className="testimonial-card" bordered={false}>
+                <Rate disabled defaultValue={5} />
+                <Text className="testimonial-quote">
+                  "Sản phẩm chất lượng, đúng như mô tả. Nhân viên tư vấn rất nhiệt tình và dễ thương. Sẽ ủng hộ dài dài!"
+                </Text>
+                <div className="testimonial-user">
+                  <Avatar src="https://randomuser.me/api/portraits/men/32.jpg" size={50} />
+                  <div className="user-info">
+                    <Text strong>Trần Minh Tuấn</Text>
+                    <Text type="secondary">Đã mua 5 đơn hàng</Text>
+                  </div>
+                </div>
+              </Card>
+            </div>
+            <div className="testimonial-slide">
+              <Card className="testimonial-card" bordered={false}>
+                <Rate disabled defaultValue={4.5} allowHalf />
+                <Text className="testimonial-quote">
+                  "Giá cả rất cạnh tranh so với thị trường. Tôi thích chính sách đổi trả minh bạch của shop. Rất an tâm khi mua sắm."
+                </Text>
+                <div className="testimonial-user">
+                  <Avatar src="https://randomuser.me/api/portraits/women/68.jpg" size={50} />
+                  <div className="user-info">
+                    <Text strong>Lê Thị Mai</Text>
+                    <Text type="secondary">Khách hàng mới</Text>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          </Carousel>
+        </div>
+      </div>
+
+      {/* === 2. MILESTONES SECTION (DẤU MỐC) === */}
+      <div className="milestones-section">
+        <div className="title-about">
+          <Title level={2} className="title-left-about">
+            Hành Trình Của Chúng Tôi
+          </Title>
+          <div className="title-right-about">
+            <Text strong>Những Dấu Mốc Đáng Nhớ</Text>
+            <br />
+            <Text>
+              Từ những bước đi đầu tiên cho đến ngày hôm nay, chúng tôi đã không ngừng nỗ lực để mang đến trải nghiệm mua sắm tốt nhất.
+            </Text>
+          </div>
+        </div>
+        
+        <div className="timeline-container">
+          <div className="timeline-line"></div>
+
+          {/* Item 1: 2020 */}
+          <div className="timeline-row">
+            <div className="timeline-content left">
+              <Card className="timeline-card" bordered={false}>
+                <div className="timeline-header">
+                  <span className="timeline-year-badge">2020</span>
+                  <Title level={4} style={{ margin: '10px 0 5px' }}>Thành Lập Công Ty</Title>
+                </div>
+                <Text>Khởi đầu với niềm đam mê cháy bỏng và 5 thành viên sáng lập tại một văn phòng nhỏ, đặt nền móng cho sứ mệnh phục vụ khách hàng.</Text>
+              </Card>
+            </div>
+            <div className="timeline-marker">
+              <div className="marker-dot"><RocketOutlined /></div>
+            </div>
+            <div className="timeline-content right">
+              <div className="timeline-image-wrapper">
+                <img src="https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Thành lập" />
+              </div>
+            </div>
+          </div>
+
+          {/* Item 2: 2021 */}
+          <div className="timeline-row reverse">
+            <div className="timeline-content left">
+              <div className="timeline-image-wrapper">
+                <img src="https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Mở rộng" />
+              </div>
+            </div>
+            <div className="timeline-marker">
+              <div className="marker-dot blue"><UsergroupAddOutlined /></div>
+            </div>
+            <div className="timeline-content right">
+              <Card className="timeline-card" bordered={false}>
+                <div className="timeline-header">
+                  <span className="timeline-year-badge blue">2021</span>
+                  <Title level={4} style={{ margin: '10px 0 5px' }}>Đạt 10.000 Khách Hàng</Title>
+                </div>
+                <Text>Mở rộng quy mô kho bãi và nhận được sự tin tưởng từ cộng đồng người tiêu dùng, đánh dấu bước tăng trưởng vượt bậc.</Text>
+              </Card>
+            </div>
+          </div>
+
+          {/* Item 3: 2022 */}
+          <div className="timeline-row">
+            <div className="timeline-content left">
+              <Card className="timeline-card" bordered={false}>
+                <div className="timeline-header">
+                  <span className="timeline-year-badge red">2022</span>
+                  <Title level={4} style={{ margin: '10px 0 5px' }}>Ra Mắt Ứng Dụng Di Động</Title>
+                </div>
+                <Text>Phát hành ứng dụng trên iOS và Android, mang đến trải nghiệm mua sắm tiện lợi mọi lúc mọi nơi cho khách hàng.</Text>
+              </Card>
+            </div>
+            <div className="timeline-marker">
+              <div className="marker-dot red"><MobileOutlined /></div>
+            </div>
+            <div className="timeline-content right">
+              <div className="timeline-image-wrapper">
+                <img src="https://images.pexels.com/photos/5082579/pexels-photo-5082579.jpeg?auto=compress&cs=tinysrgb&w=600" alt="App Mobile" />
+              </div>
+            </div>
+          </div>
+
+          {/* Item 4: 2024 */}
+          <div className="timeline-row reverse">
+            <div className="timeline-content left">
+              <div className="timeline-image-wrapper">
+                <img src="https://images.pexels.com/photos/1267338/pexels-photo-1267338.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Quốc tế" />
+              </div>
+            </div>
+            <div className="timeline-marker">
+              <div className="marker-dot purple"><GlobalOutlined /></div>
+            </div>
+            <div className="timeline-content right">
+              <Card className="timeline-card" bordered={false}>
+                <div className="timeline-header">
+                  <span className="timeline-year-badge purple">2024</span>
+                  <Title level={4} style={{ margin: '10px 0 5px' }}>Vươn Tầm Quốc Tế</Title>
+                </div>
+                <Text>Bắt đầu hợp tác với các thương hiệu toàn cầu và mở rộng thị trường xuất khẩu, khẳng định vị thế thương hiệu.</Text>
+              </Card>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
       {/* (Phần Meet the team giữ nguyên) */}
       <div className="title-about">
         <Title level={2} className="title-left-about">
@@ -228,6 +435,29 @@ const About = () => {
               </div>
             </div>
           </Card>
+        </div>
+      </div>
+
+      {/* === 3. PARTNERSHIPS SECTION (ĐỐI TÁC) === */}
+      <div className="partners-section">
+        <div className="title-about" style={{ paddingBottom: '1rem', justifyContent: 'center' }}>
+          <Title level={2} className="title-left-about" style={{ textAlign: 'center', width: '100%' }}>
+            Đối Tác & Chứng Nhận
+          </Title>
+        </div>
+        <div className="partners-logos-container">
+          <div className="partner-logo-item"><img src={visaLogo} alt="Visa" /></div>
+          <div className="partner-logo-item"><img src={MastercardLogo} alt="Mastercard" /></div>
+          <div className="partner-logo-item"><img src={PayPal} alt="PayPal" /></div>
+          <div className="partner-logo-item"><img src={GooglePay} alt="Google Pay" /></div>
+          <div className="partner-logo-item"><img src={redbullLogo} alt="Redbull" /></div>
+          {/* Placeholder logos if imports fail or are missing */}
+          <div className="partner-logo-item">
+             <div className="cert-badge">
+                <SafetyCertificateOutlined style={{ fontSize: '30px', color: '#52c41a' }} />
+                <Text strong style={{ marginLeft: 8 }}>SSL Secure</Text>
+             </div>
+          </div>
         </div>
       </div>
 

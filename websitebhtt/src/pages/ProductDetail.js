@@ -460,7 +460,7 @@ const ProductDetail = () => {
           <Divider />
           
           {/* FORM VIẾT ĐÁNH GIÁ */}
-          <div style={{ marginBottom: 40, padding: 24, background: '#f9f9f9', borderRadius: 8 }}>
+          <div className="review-form-container">
             <Title level={4}>Viết đánh giá của bạn</Title>
             {currentUser ? (
               <Space direction="vertical" style={{ width: '100%' }}>

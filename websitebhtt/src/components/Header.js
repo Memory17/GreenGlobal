@@ -374,7 +374,7 @@ const AppHeader = () => {
               onClick={handleOpenNotifications}
             >
               <BellOutlined
-                style={{ fontSize: "24px", color: "black", cursor: "pointer" }}
+                style={{ fontSize: "24px", cursor: "pointer" }}
                 onClick={handleOpenNotifications}
                 className="header-notification-icon"
               />
@@ -382,47 +382,20 @@ const AppHeader = () => {
           )}
 
           <Popover
+            overlayClassName="cart-popover-overlay"
             content={
-              <div style={{ maxWidth: "320px", padding: "4px" }}>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "flex-start",
-                    gap: "16px",
-                    marginBottom: "16px",
-                  }}
-                >
-                  <div
-                    style={{
-                      backgroundColor: "#fff1f0",
-                      padding: "12px",
-                      borderRadius: "16px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      boxShadow: "0 2px 8px rgba(255, 77, 79, 0.15)",
-                    }}
-                  >
+              <div className="cart-popover-content">
+                <div className="cart-popover-header">
+                  <div className="cart-popover-icon">
                     <ShoppingCartOutlined
                       style={{ fontSize: "24px", color: "#ff4d4f" }}
                     />
                   </div>
                   <div style={{ flex: 1 }}>
-                    <Text
-                      strong
-                      style={{
-                        fontSize: "16px",
-                        display: "block",
-                        marginBottom: "4px",
-                        color: "#262626",
-                      }}
-                    >
+                    <Text strong className="cart-popover-title">
                       Đừng quên giỏ hàng!
                     </Text>
-                    <Text
-                      type="secondary"
-                      style={{ fontSize: "14px", lineHeight: "1.5" }}
-                    >
+                    <Text type="secondary" className="cart-popover-desc">
                       Bạn đang có{" "}
                       <Text strong type="danger" style={{ fontSize: "15px" }}>
                         {totalItems}
@@ -552,8 +525,9 @@ const AppHeader = () => {
           locale={{ emptyText: "Bạn chưa có thông báo nào." }}
           renderItem={(item) => (
             <List.Item
+              className={item.isNew ? "notification-new" : ""}
               style={{
-                backgroundColor: item.isNew ? "#e6f7ff" : "transparent",
+                backgroundColor: item.isNew ? (document.body.classList.contains('dark-mode') ? "#111d2c" : "#e6f7ff") : "transparent",
                 borderLeft: item.isNew ? "3px solid #1890ff" : "none",
                 padding: "12px 16px",
                 transition: "background-color 0.3s",

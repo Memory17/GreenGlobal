@@ -1103,3 +1103,488 @@
   background: transparent !important;
   transform: none;
 }
+
+/* ===================================================================
+ * DARK MODE STYLES FOR BLOG PAGE
+ * =================================================================== */
+
+body.dark-mode .blog-container {
+  background-color: #141414;
+}
+
+body.dark-mode .blog-background {
+  background: linear-gradient(135deg, #141414 0%, #1f1f1f 100%);
+}
+
+body.dark-mode .gradient-orb {
+  opacity: 0.15;
+}
+
+/* Header */
+body.dark-mode .header-content {
+  background: rgba(30, 30, 30, 0.6);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .blog-title {
+  background: linear-gradient(135deg, #ffffff 0%, #a0a0a0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+body.dark-mode .blog-subtitle {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* Search & Filter */
+body.dark-mode .search-box {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-mode .search-input .ant-input {
+  background: transparent !important;
+  color: #fff;
+}
+
+body.dark-mode .search-input .ant-input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+body.dark-mode .search-icon {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+body.dark-mode .filter-select .ant-select-selector {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #fff !important;
+}
+
+body.dark-mode .filter-select .ant-select-arrow {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Blog Cards */
+body.dark-mode .blog-card {
+  background: #1f1f1f;
+  border: 1px solid #303030;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .blog-card:hover {
+  border-color: #10b981;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .post-title {
+  color: #fff;
+}
+
+body.dark-mode .post-desc {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+body.dark-mode .post-meta {
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .meta-item {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+body.dark-mode .read-more-btn {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+body.dark-mode .read-more-btn:hover {
+  background: #10b981;
+  color: #fff;
+}
+
+/* Sidebar */
+body.dark-mode .sidebar-card {
+  background: #1f1f1f;
+  border: 1px solid #303030;
+}
+
+body.dark-mode .sidebar-title {
+  color: #fff;
+}
+
+body.dark-mode .sidebar-title::after {
+  background: linear-gradient(90deg, #10b981, transparent);
+}
+
+body.dark-mode .category-item {
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+body.dark-mode .category-item:hover,
+body.dark-mode .category-item.active {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+body.dark-mode .category-count {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.65);
+}
+
+body.dark-mode .popular-post-item:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+body.dark-mode .popular-post-info h4 {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+body.dark-mode .popular-post-date {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+body.dark-mode .tag-cloud .ant-tag {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+body.dark-mode .tag-cloud .ant-tag:hover {
+  color: #10b981;
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+}
+
+/* Pagination */
+body.dark-mode .blog-pagination {
+  background: #1f1f1f;
+  border-color: #303030;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-mode .ant-pagination-item {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+body.dark-mode .ant-pagination-item a {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+body.dark-mode .ant-pagination-item-active {
+  background: #10b981;
+  border-color: #10b981;
+}
+
+body.dark-mode .ant-pagination-item-active a {
+  color: #fff;
+}
+
+body.dark-mode .ant-pagination-prev .ant-pagination-item-link,
+body.dark-mode .ant-pagination-next .ant-pagination-item-link {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Modal Detail */
+body.dark-mode .ant-modal-content {
+  background: #1f1f1f;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode .ant-modal-close {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+body.dark-mode .ant-modal-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+body.dark-mode .post-detail-header h1 {
+  color: #fff;
+}
+
+body.dark-mode .detail-meta-item {
+  color: rgba(255, 255, 255, 0.65);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode .post-content-body {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+body.dark-mode .post-content-body h2,
+body.dark-mode .post-content-body h3 {
+  color: #fff;
+}
+
+body.dark-mode .post-content-body strong {
+  color: #fff;
+}
+
+body.dark-mode .post-tags-section {
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .post-tags-section h4 {
+  color: #fff;
+}
+
+/* Comments in Modal */
+body.dark-mode .comments-section {
+  background: #141414;
+  border-top-color: #303030;
+}
+
+body.dark-mode .comments-section h3 {
+  color: #fff;
+}
+
+body.dark-mode .comment-item {
+  background: #1f1f1f;
+  border: 1px solid #303030;
+}
+
+body.dark-mode .comment-author-name {
+  color: #fff;
+}
+
+body.dark-mode .comment-content {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+body.dark-mode .comment-date {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+body.dark-mode .comment-form {
+  background: #1f1f1f;
+  border-color: #434343;
+}
+
+body.dark-mode .comment-form:focus-within {
+  border-color: #10b981;
+  background: #1f1f1f;
+}
+
+body.dark-mode .comment-input {
+  color: #fff;
+}
+
+body.dark-mode .comment-input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Empty State */
+body.dark-mode .ant-empty-description {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* Scrollbar */
+body.dark-mode ::-webkit-scrollbar-track {
+  background: #141414;
+}
+
+body.dark-mode ::-webkit-scrollbar-thumb {
+  background: #434343;
+}
+
+body.dark-mode ::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Ant Design Overrides for Portals (Dropdowns, Tooltips) */
+body.dark-mode .ant-select-dropdown {
+  background-color: #1f1f1f;
+  border: 1px solid #303030;
+}
+
+body.dark-mode .ant-select-item {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+body.dark-mode .ant-select-item-option-selected {
+  background-color: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+body.dark-mode .ant-select-item-option-active {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode .ant-tooltip-inner {
+  background-color: #434343;
+  color: #fff;
+}
+
+body.dark-mode .ant-tooltip-arrow-content {
+  background-color: #434343;
+}
+
+/* ===================================================================
+ * FIXES FOR SEARCH, FILTER, AND COUNT IN DARK MODE
+ * =================================================================== */
+
+body.dark-mode .blog-search,
+body.dark-mode .blog-search .ant-input-wrapper,
+body.dark-mode .blog-search .ant-input-affix-wrapper {
+  background-color: #1f1f1f !important;
+  border-color: #303030 !important;
+}
+
+body.dark-mode .blog-search .ant-input-group-addon,
+body.dark-mode .blog-search .ant-btn {
+  background-color: #2a2a2a !important;
+  border-color: #303030 !important;
+  color: #fff !important;
+}
+
+body.dark-mode .blog-search:hover,
+body.dark-mode .blog-search:focus-within,
+body.dark-mode .blog-search .ant-input-affix-wrapper:hover,
+body.dark-mode .blog-search .ant-input-affix-wrapper:focus-within {
+  background-color: #1f1f1f !important;
+  border-color: #10b981 !important;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1), 0 8px 24px rgba(0, 0, 0, 0.2) !important;
+}
+
+body.dark-mode .blog-search input.ant-input {
+  background-color: transparent !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .category-filter {
+  background: #1f1f1f !important;
+  border-color: #303030 !important;
+}
+
+body.dark-mode .category-filter:hover {
+  background: #1f1f1f !important;
+  border-color: #10b981 !important;
+}
+
+body.dark-mode .category-select .ant-select-selector {
+  color: #ffffff !important;
+}
+
+body.dark-mode .results-count {
+  background: #1f1f1f !important;
+  border-color: #303030 !important;
+}
+
+body.dark-mode .count-text {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* ===================================================================
+ * FIXES FOR MODAL DETAIL IN DARK MODE
+ * =================================================================== */
+
+/* Modal Header */
+body.dark-mode .blog-detail-modal .ant-modal-header {
+  background: #1f1f1f;
+  border-bottom: 1px solid #303030;
+}
+
+body.dark-mode .blog-detail-modal .ant-modal-title h2 {
+  color: #ffffff !important;
+}
+
+/* Modal Meta Section */
+body.dark-mode .modal-post-meta {
+  border-top-color: #303030 !important;
+  border-bottom-color: #303030 !important;
+}
+
+body.dark-mode .modal-post-meta strong {
+  color: #ffffff;
+}
+
+body.dark-mode .modal-post-meta span {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+body.dark-mode .action-item {
+  color: rgba(255, 255, 255, 0.65) !important;
+}
+
+body.dark-mode .action-item .action-count {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* Modal Content */
+body.dark-mode .post-content-detail {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+body.dark-mode .post-content-detail p {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+body.dark-mode .post-content-detail h2,
+body.dark-mode .post-content-detail h3,
+body.dark-mode .post-content-detail h4 {
+  color: #ffffff;
+}
+
+body.dark-mode .post-content-detail strong {
+  color: #ffffff;
+}
+
+body.dark-mode .post-content-detail ul li,
+body.dark-mode .post-content-detail ol li {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Comments Section */
+body.dark-mode .comment-section .comment-title {
+  color: #ffffff;
+}
+
+body.dark-mode .comment-list .ant-list-item {
+  border-bottom-color: #303030;
+}
+
+body.dark-mode .comment-list .comment-author {
+  color: #ffffff !important;
+}
+
+body.dark-mode .comment-list .comment-content {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+body.dark-mode .comment-list .comment-date {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+body.dark-mode .comment-list .ant-list-empty-text {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* Modal Footer */
+body.dark-mode .blog-detail-modal .ant-modal-footer {
+  border-top-color: #303030;
+}
+
+body.dark-mode .modal-like-btn {
+  background: transparent;
+  border-color: #303030;
+  color: #ffffff;
+}
+
+body.dark-mode .modal-like-btn:hover {
+  border-color: #ff4d4f;
+  color: #ff4d4f;
+}
+
+body.dark-mode .modal-like-btn.liked {
+  background: #ff4d4f;
+  border-color: #ff4d4f;
+  color: #ffffff;
+}

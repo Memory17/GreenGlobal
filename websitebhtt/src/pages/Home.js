@@ -1,6 +1,7 @@
 import { Layout, Divider } from "antd";
 import ProductsList from "./ProductsList";
 import QaA from "./QaA/QaA";
+import "../style/Home.css"; // Import Home styles for Dark Mode
 
 const { Content } = Layout;
 

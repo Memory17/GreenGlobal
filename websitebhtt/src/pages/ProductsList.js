@@ -70,7 +70,6 @@ function Product() {
   const [pageSize, setPageSize] = useState(12); // Số sản phẩm mỗi trang
 
   // --- STATE ĐỂ BẬT/TẮT BỘ LỌC ---
-  const [showFilters, setShowFilters] = useState(false); // Mặc định là ẩn
   
   const fetchAllProducts = useCallback(async () => {
     setLoading(true);
@@ -333,6 +332,7 @@ function Product() {
             <Popover
                 trigger="click"
                 placement="bottomRight"
+                overlayClassName="filter-popover-overlay"
                 content={
                     <div className="filter-popup-content">
                         <div className="filter-popup-header">
@@ -364,6 +364,7 @@ function Product() {
             <Popover
                 trigger="click"
                 placement="bottomRight"
+                overlayClassName="filter-popover-overlay"
                 content={
                     <div className="filter-popup-content">
                         <div className="filter-popup-header">

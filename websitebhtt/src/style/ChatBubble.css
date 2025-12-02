@@ -1239,3 +1239,143 @@
 /* Ensure the badge scales with the button or stays positioned correctly */
 /* Antd Badge wraps the element. If the element transforms, the badge might need adjustment if it's not inside the transform context.
    Usually Antd Badge works fine. */
+
+/* =========================================
+   DARK MODE SUPPORT (CHAT BUBBLE)
+========================================= */
+
+/* Messenger Panel Container */
+body.dark-mode .messenger-panel {
+  background: #1f1f1f;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+/* Header (Keep gradient but maybe adjust shadow) */
+body.dark-mode .messenger-header {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+}
+
+/* Messages Area */
+body.dark-mode .messenger-messages {
+  background: #121212; /* Deep dark */
+}
+
+/* Message Bubbles */
+body.dark-mode .message-item.other-user .message-bubble {
+  background: #262626;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-mode .message-date-separator {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Input Area */
+body.dark-mode .messenger-input {
+  background: #1f1f1f;
+  border-top: 1px solid #303030;
+}
+
+body.dark-mode .messenger-textarea .ant-input-textarea {
+  background: #262626;
+  border-color: #434343;
+  color: #ffffff;
+}
+
+body.dark-mode .messenger-textarea .ant-input-textarea:focus {
+  border-color: #177ddc;
+  background: #262626;
+  box-shadow: 0 0 0 2px rgba(23, 125, 220, 0.2);
+}
+
+/* Action Buttons */
+body.dark-mode .icon-action-button {
+  background: #262626;
+  border-color: #434343;
+  color: #a0a0a0;
+}
+
+body.dark-mode .icon-action-button:hover {
+  background: #303030;
+  color: #ffffff;
+  border-color: #177ddc;
+}
+
+/* Emoji Picker */
+body.dark-mode .emoji-picker {
+  background: #1f1f1f;
+  border-color: #303030;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode .emoji-btn:hover {
+  background: #303030;
+}
+
+/* Quick Replies */
+body.dark-mode .quick-replies {
+  background: #1f1f1f;
+  border-top: 1px solid #303030;
+}
+
+body.dark-mode .quick-reply-btn {
+  background: #262626;
+  border-color: #434343;
+  color: #40a9ff;
+}
+
+body.dark-mode .quick-reply-btn:hover {
+  background: #303030;
+  border-color: #177ddc;
+}
+
+/* Support Popup */
+body.dark-mode .support-popup-card {
+  background-color: #1f1f1f;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+body.dark-mode .support-popup-header h4 {
+  color: #ffffff;
+}
+
+body.dark-mode .support-option-item {
+  border-bottom-color: #303030;
+}
+
+body.dark-mode .support-option-item:hover {
+  background-color: #262626;
+}
+
+body.dark-mode .support-option-item .ant-list-item-meta-title a {
+  color: #ffffff;
+}
+
+body.dark-mode .support-option-item:hover .ant-list-item-meta-title a {
+  color: #40a9ff;
+}
+
+body.dark-mode .support-option-item .ant-list-item-meta-description {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Product Card in Chat */
+body.dark-mode .product-card {
+  background: #262626 !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+}
+
+body.dark-mode .product-info {
+  background: #262626;
+}
+
+body.dark-mode .product-name {
+  color: #ffffff;
+}
+
+body.dark-mode .product-price {
+  color: #ff4d4f; /* Neon Red for price */
+  text-shadow: 0 0 5px rgba(255, 77, 79, 0.4);
+}

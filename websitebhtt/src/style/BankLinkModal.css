@@ -189,3 +189,73 @@
   gap: 12px;
   margin-bottom: 24px;
 }
+
+/* =========================================
+   DARK MODE SUPPORT (BANK LINK MODAL)
+========================================= */
+
+body.dark-mode .bank-link-modal .ant-modal-content {
+  background-color: #1f1f1f;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  border: 1px solid #303030;
+}
+
+body.dark-mode .bank-link-modal .ant-modal-title {
+  color: #fff;
+}
+
+body.dark-mode .bank-link-modal .ant-modal-close {
+  color: #fff;
+}
+
+body.dark-mode .bank-link-modal .ant-modal-close:hover {
+  color: #ff4d4f;
+}
+
+/* Form Labels */
+body.dark-mode .modern-form .ant-form-item-label > label {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Inputs */
+body.dark-mode .modern-input {
+  background-color: #141414;
+  border-color: #434343;
+  color: #fff;
+}
+
+body.dark-mode .modern-input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+body.dark-mode .modern-input:hover,
+body.dark-mode .modern-input:focus {
+  border-color: #177ddc;
+  background-color: #141414;
+  box-shadow: 0 0 0 2px rgba(23, 125, 220, 0.2);
+}
+
+/* Selects */
+body.dark-mode .modern-select .ant-select-selector {
+  background-color: #141414 !important;
+  border-color: #434343 !important;
+  color: #fff !important;
+}
+
+body.dark-mode .modern-select .ant-select-selection-placeholder {
+  color: rgba(255, 255, 255, 0.3) !important;
+}
+
+body.dark-mode .modern-select .ant-select-arrow {
+  color: #fff;
+}
+
+/* Security Note */
+body.dark-mode .security-note {
+  background-color: #111d2c;
+  border-color: #164c7e;
+}
+
+body.dark-mode .security-note .ant-typography {
+  color: #d9d9d9 !important;
+}

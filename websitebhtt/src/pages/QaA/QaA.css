@@ -159,3 +159,94 @@
 
 /* Import Contact Styles */
 @import './QaA_Contact.css';
+
+/* ===================================================================
+ * DARK MODE STYLES FOR Q&A
+ * =================================================================== */
+
+body.dark-mode .qna-page-wrapper {
+  background-color: #141414;
+}
+
+body.dark-mode .qna-header-section {
+  background: linear-gradient(135deg, #0050b3 0%, #003a8c 100%);
+}
+
+body.dark-mode .qna-search-input {
+  background-color: transparent !important;
+  border: 1px solid #40a9ff;
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+}
+
+body.dark-mode .qna-search-input .ant-input {
+  background-color: transparent !important;
+  color: #ffffff;
+}
+
+body.dark-mode .qna-search-input .anticon {
+  color: #ffffff;
+}
+
+body.dark-mode .qna-search-input::placeholder {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+body.dark-mode .qna-search-input .ant-input::placeholder {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+body.dark-mode .qna-card {
+  background-color: #1f1f1f;
+  border-color: #303030;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+body.dark-mode .qna-card:hover {
+  border-color: #40a9ff;
+  box-shadow: 0 12px 24px rgba(0,0,0,0.5);
+  background-color: #262626;
+}
+
+body.dark-mode .qna-card.active {
+  background-color: rgba(64, 169, 255, 0.15);
+  border-color: #40a9ff;
+}
+
+body.dark-mode .qna-card.active .qna-question-text {
+  color: #40a9ff;
+}
+
+body.dark-mode .qna-card.active .qna-toggle-icon {
+  color: #40a9ff;
+}
+
+body.dark-mode .qna-question-text {
+  color: #ffffff;
+}
+
+body.dark-mode .qna-answer-text {
+  color: rgba(255, 255, 255, 0.85);
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .qna-question-text {
+  color: #ffffff;
+}
+
+body.dark-mode .qna-card.active .qna-question-text {
+  color: #177ddc;
+}
+
+body.dark-mode .qna-toggle-icon {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+body.dark-mode .qna-card.active .qna-toggle-icon {
+  color: #177ddc;
+}
+
+body.dark-mode .qna-answer-text {
+  color: rgba(255, 255, 255, 0.65);
+  border-top-color: #303030;
+}

@@ -462,3 +462,322 @@
     padding: 1rem;
   }
 }
+
+/* ===================================================================
+ * DARK MODE STYLES FOR CART PAGE
+ * =================================================================== */
+
+body.dark-mode .shopping-card-page {
+  background-color: #141414;
+}
+
+body.dark-mode .shopping-cart-title,
+body.dark-mode .cart-title-shopping,
+body.dark-mode .order-sumary,
+body.dark-mode .total-title {
+  color: #ffffff !important;
+}
+
+/* Order Status Bar */
+body.dark-mode .order-status-shopping {
+  background: #1f1f1f;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .order-status-shopping::before {
+  background: #303030;
+}
+
+body.dark-mode .checkpoint-col .anticon {
+  background: #1f1f1f;
+  border-color: #434343;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+body.dark-mode .checkpoint-col .ant-typography {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* Active status in dark mode */
+body.dark-mode .order-status-shopping .order-confirm:not(:first-child) .anticon,
+body.dark-mode .order-status-shopping .order-confirm:not(:first-child) .ant-typography {
+  color: #177ddc !important; /* AntD Blue Dark */
+  border-color: #177ddc !important;
+}
+
+/* Left Column - Product List */
+body.dark-mode .shopping-col-left .select-card {
+  background: #1f1f1f;
+  border-color: #303030;
+}
+
+body.dark-mode .product-card-shopping {
+  background: #1f1f1f;
+  border-color: #303030;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .item-cart:hover {
+  background: #2a2a2a;
+}
+
+body.dark-mode .item-cart img {
+  border-color: #303030;
+}
+
+body.dark-mode .item-text {
+  color: #ffffff;
+}
+
+body.dark-mode .item-attribute {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+body.dark-mode .item-price {
+  color: #177ddc;
+}
+
+body.dark-mode .delete-icon {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+body.dark-mode .delete-icon:hover {
+  color: #ff4d4f;
+}
+
+/* Right Column - Summary */
+body.dark-mode .sumary-card {
+  background: #1f1f1f;
+  border-color: #303030;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .coupon-left {
+  border-color: #303030;
+  background: #2a2a2a;
+}
+
+body.dark-mode .coupon-left .anticon {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+body.dark-mode .coupoint-text {
+  background: transparent !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .coupoint-text::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+body.dark-mode .title-price-summary {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+body.dark-mode .text-price-summary {
+  color: #ffffff;
+}
+
+body.dark-mode .total-value {
+  color: #177ddc !important;
+}
+
+/* Coupon Modal Items */
+body.dark-mode .coupon-list-item {
+  background: #1f1f1f;
+  border-color: #177ddc;
+}
+
+body.dark-mode .coupon-list-item::before,
+body.dark-mode .coupon-list-item::after {
+  background: #1f1f1f; /* Match modal background */
+  box-shadow: inset 0 0 3px rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .coupon-list-item:hover {
+  background: #2a2a2a;
+}
+
+body.dark-mode .coupon-item-name {
+  color: #ffffff;
+}
+
+body.dark-mode .coupon-item-desc {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+body.dark-mode .coupon-item-code {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+body.dark-mode .coupon-item-code.coupon-code-default {
+  background-color: #303030;
+  border-color: #434343;
+  color: #ffffff;
+}
+
+/* Modals */
+body.dark-mode .ant-modal-content {
+  background-color: #1f1f1f;
+}
+
+body.dark-mode .ant-modal-header {
+  background-color: #1f1f1f;
+  border-bottom-color: #303030;
+}
+
+body.dark-mode .ant-modal-title {
+  color: #ffffff !important;
+}
+
+body.dark-mode .ant-modal-close {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+body.dark-mode .ant-modal-close:hover {
+  color: #ffffff;
+}
+
+/* Checkbox */
+body.dark-mode .ant-checkbox-wrapper {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+body.dark-mode .ant-checkbox-inner {
+  background-color: transparent;
+  border-color: #434343;
+}
+
+body.dark-mode .ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #177ddc;
+  border-color: #177ddc;
+}
+
+/* ===================================================================
+ * ORDER HISTORY MODAL STYLES (DELIVERED / CANCELLED)
+ * =================================================================== */
+
+/* Light Mode Defaults (moved from inline styles) */
+.order-list-item {
+  background: #f9f9f9;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  border: 1px solid #f0f0f0;
+  transition: all 0.3s ease;
+}
+
+.order-product-item {
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.order-product-item:last-child {
+  border-bottom: none;
+}
+
+/* Dark Mode Overrides */
+body.dark-mode .order-list-item {
+  background: #1f1f1f;
+  border-color: #303030;
+}
+
+body.dark-mode .order-list-item:hover {
+  border-color: #177ddc;
+}
+
+body.dark-mode .order-list-item .ant-typography {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+body.dark-mode .order-list-item .ant-typography strong {
+  color: #ffffff;
+}
+
+/* Nested Product List in Modal */
+body.dark-mode .order-product-item {
+  border-bottom-color: #303030;
+}
+
+body.dark-mode .order-product-item .ant-list-item-meta-title {
+  color: #ffffff !important;
+}
+
+body.dark-mode .order-product-item .ant-list-item-meta-description {
+  color: rgba(255, 255, 255, 0.45) !important;
+}
+
+/* Review Modal Specifics */
+body.dark-mode .ant-rate {
+  color: #fadb14; /* Gold color for stars */
+}
+
+body.dark-mode .ant-rate-star:not(.ant-rate-star-full) .ant-rate-star-first,
+body.dark-mode .ant-rate-star:not(.ant-rate-star-full) .ant-rate-star-second {
+  color: rgba(255, 255, 255, 0.2);
+}
+/* Lucky Coin Section */
+.lucky-coin-section {
+  background: #fff7e6;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #ffd591;
+}
+
+.lucky-coin-avatar {
+  background-color: #ffec3d;
+  color: #fff;
+}
+
+/* Coupon Gift Avatar */
+.coupon-gift-avatar {
+  background-color: #ff4d4f;
+  color: #fff;
+}
+
+/* Dark Mode Overrides for New Sections */
+body.dark-mode .lucky-coin-section {
+  background: #1f1f1f !important;
+  border-color: #434343 !important;
+}
+
+body.dark-mode .lucky-coin-avatar {
+  background-color: #d4b106 !important; /* Darker gold/yellow */
+  color: #fff !important;
+}
+
+body.dark-mode .coupon-gift-avatar {
+  background-color: #a8071a !important; /* Darker red */
+  color: #fff !important;
+}
+
+
+/* Dark Mode for Cart Icon */
+body.dark-mode .cart-img {
+  filter: invert(1);
+}
+
+
+/* Shipping Coupon Avatar */
+.shipping-coupon-avatar {
+  background-color: #1890ff;
+  color: #fff;
+}
+
+/* Dark Mode for Shipping Coupon Avatar */
+body.dark-mode .shipping-coupon-avatar {
+  background-color: #0958d9 !important; /* Darker blue */
+  color: #fff !important;
+}
+
+/* Dark Mode for Shipping Coupon Tag (Green) */
+body.dark-mode .shipping-coupon-tag.ant-tag-green {
+  background-color: #135200 !important; /* Dark green background */
+  border-color: #237804 !important;
+  color: #d9f7be !important; /* Light green text */
+}
+

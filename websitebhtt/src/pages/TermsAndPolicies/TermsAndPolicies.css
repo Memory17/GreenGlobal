@@ -602,3 +602,136 @@
     padding: 20px;
   }
 }
+
+/* =========================================
+   DARK MODE SUPPORT (TERMS & POLICIES)
+========================================= */
+
+body.dark-mode .terms-container {
+  background-color: #121212;
+}
+
+body.dark-mode .terms-wrapper {
+  background: #1f1f1f;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  border: 1px solid #303030;
+}
+
+body.dark-mode .terms-section {
+  border-bottom: 1px solid #303030;
+}
+
+body.dark-mode .terms-section h2 {
+  color: #fff;
+}
+
+body.dark-mode .terms-section p,
+body.dark-mode .terms-section ul li {
+  color: #b0b0b0;
+}
+
+/* Cards & Items */
+body.dark-mode .privacy-item,
+body.dark-mode .terms-card,
+body.dark-mode .payment-card,
+body.dark-mode .shipping-info {
+  background: #262626;
+  border-color: #303030;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+body.dark-mode .privacy-item h4,
+body.dark-mode .terms-card h3,
+body.dark-mode .payment-card h4,
+body.dark-mode .shipping-text h3 {
+  color: #fff;
+}
+
+body.dark-mode .privacy-item p,
+body.dark-mode .payment-card p,
+body.dark-mode .shipping-text p {
+  color: #888;
+}
+
+/* Rule Boxes */
+body.dark-mode .rule-box.allowed {
+  background: #162312; /* Dark Green Tint */
+  border-color: #237804;
+}
+
+body.dark-mode .rule-box.forbidden {
+  background: #2a1215; /* Dark Red Tint */
+  border-color: #a8071a;
+}
+
+body.dark-mode .rule-box ul li {
+  color: #d9d9d9;
+}
+
+/* Return Policy */
+body.dark-mode .return-policy-banner {
+  background: linear-gradient(to right, #111d2c, #002329);
+  border-color: #006d60;
+}
+
+body.dark-mode .return-badge {
+  background: #1f1f1f;
+  border-color: #00b09b;
+  box-shadow: 0 10px 20px rgba(0, 176, 155, 0.1);
+}
+
+body.dark-mode .return-step {
+  color: #d9d9d9;
+}
+
+/* Contact Info */
+body.dark-mode .contact-info-box {
+  background: #111d2c;
+  border-color: #164c7e;
+}
+
+body.dark-mode .contact-info-box p {
+  color: #d9d9d9;
+}
+
+/* VIP Section */
+body.dark-mode .vip-terms-section {
+  background: linear-gradient(to right bottom, #2b2111, #1f1f1f);
+  border-color: #876800;
+  box-shadow: 0 10px 30px rgba(255, 215, 0, 0.05);
+}
+
+body.dark-mode .vip-terms-section::before {
+  background: linear-gradient(135deg, transparent 50%, rgba(255, 215, 0, 0.1) 50%);
+}
+
+body.dark-mode .vip-terms-content p,
+body.dark-mode .vip-terms-content ul li {
+  color: #d9d9d9;
+}
+
+/* Complaint Box */
+body.dark-mode .complaint-box {
+  background: #2a1215;
+  border-left-color: #ff4d4f;
+}
+
+body.dark-mode .complaint-box p {
+  color: #d9d9d9;
+}
+
+/* Freeship Banner */
+body.dark-mode .freeship-banner {
+  background: #2a1215;
+  border-color: #5c0011;
+  color: #ff7875;
+}
+
+/* Steps */
+body.dark-mode .step-item span {
+  color: #d9d9d9;
+}
+
+body.dark-mode .step-arrow {
+  color: #434343;
+}

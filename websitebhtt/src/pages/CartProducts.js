@@ -806,7 +806,7 @@ const CartProducts = () => {
                 <List loading={loadingProductCoupons} itemLayout="horizontal" dataSource={activeProductCoupons} renderItem={(item) => (
                     <List.Item className="coupon-list-item" actions={[<Button type="primary" className="coupon-item-apply-btn" onClick={() => handleApplyCouponFromModal(item, "product")} disabled={appliedCoupon && appliedCoupon.code === item.code}>{appliedCoupon && appliedCoupon.code === item.code ? "Đã áp dụng" : "Áp dụng"}</Button>] }>
                         <List.Item.Meta avatar={<Avatar src={item.avatar} icon={<TagsOutlined />} />} title={<span className="coupon-item-name">{item.name}</span>} description={<span className="coupon-item-desc">{item.description}</span>} />
-                        <div className="coupon-item-action"><Text className="coupon-item-discount">{item.discount}</Text><Tag className="coupon-item-code">{item.code}</Tag></div>
+                        <div className="coupon-item-action"><Text className="coupon-item-discount">{item.discount}</Text><Tag className="coupon-item-code coupon-code-default">{item.code}</Tag></div>
                     </List.Item>
                 )} />
 
@@ -815,8 +815,8 @@ const CartProducts = () => {
                 <Title level={5}><CarOutlined /> Hỗ trợ vận chuyển</Title>
                 <List loading={loadingShippingCoupons} itemLayout="horizontal" dataSource={activeShippingCoupons} renderItem={(item) => (
                     <List.Item className="coupon-list-item" actions={[<Button type="primary" className="coupon-item-apply-btn" onClick={() => handleApplyCouponFromModal(item, "shipping")} disabled={appliedShippingRule && appliedShippingRule.id === item.id}>{appliedShippingRule && appliedShippingRule.id === item.id ? "Đã áp dụng" : "Áp dụng"}</Button>] }>
-                        <List.Item.Meta avatar={<Avatar style={{ backgroundColor: "#1890ff" }} icon={<CarOutlined />} />} title={<span className="coupon-item-name">{item.ruleName}</span>} description={<span className="coupon-item-desc">{item.description}</span>} />
-                        <div className="coupon-item-action"><Text className="coupon-item-discount">{item.discountType === "FREE" ? "MIỄN PHÍ SHIP" : item.discountValue}</Text><Tag className="coupon-item-code" color="green">{`Đơn hàng từ ${item.minOrderValue}`}</Tag></div>
+                        <List.Item.Meta avatar={<Avatar className="shipping-coupon-avatar" icon={<CarOutlined />} />} title={<span className="coupon-item-name">{item.ruleName}</span>} description={<span className="coupon-item-desc">{item.description}</span>} />
+                        <div className="coupon-item-action"><Text className="coupon-item-discount">{item.discountType === "FREE" ? "MIỄN PHÍ SHIP" : item.discountValue}</Text><Tag className="coupon-item-code shipping-coupon-tag" color="green">{`Đơn hàng từ ${item.minOrderValue}`}</Tag></div>
                     </List.Item>
                 )} />
             </Modal>
@@ -834,19 +834,10 @@ const CartProducts = () => {
                 width={600}
             >
                 {/* Phần hiển thị Xu tích lũy */}
-                <div style={{ 
-                    background: '#fff7e6', 
-                    padding: '16px', 
-                    borderRadius: '8px', 
-                    marginBottom: '16px',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    border: '1px solid #ffd591'
-                }}>
+                <div className="lucky-coin-section">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <Avatar 
-                            style={{ backgroundColor: '#ffec3d', color: '#fff' }} 
+                            className="lucky-coin-avatar"
                             icon={<DollarCircleFilled style={{ color: '#fa8c16', fontSize: '20px' }} />} 
                         />
                         <div>
@@ -900,7 +891,7 @@ const CartProducts = () => {
                                     avatar={
                                         <Badge count={displayQuantity} color="volcano" offset={[0, 5]} showZero>
                                             <Avatar
-                                                style={{ backgroundColor: "#ff4d4f", color: "#fff" }}
+                                                className="coupon-gift-avatar"
                                                 icon={<GiftFilled />}
                                             />
                                         </Badge>
@@ -938,7 +929,7 @@ const CartProducts = () => {
                         if (isReviewModal && itemsToReview.length > 0) {
                             // --- GIAO DIỆN MỚI CHO MODAL "ĐÃ GIAO" / "CHỜ ĐÁNH GIÁ" ---
                             return (
-                                <List.Item key={order.id} style={{ background: '#f9f9f9', padding: '16px', borderRadius: '8px', marginBottom: '16px' }}>
+                                <List.Item key={order.id} className="order-list-item">
                                     <List.Item.Meta
                                         title={<Text strong>Mã đơn hàng: {order.id}</Text>}
                                         description={
@@ -962,6 +953,7 @@ const CartProducts = () => {
                                             return (
                                                 <List.Item
                                                     key={item.product.id}
+                                                    className="order-product-item"
                                                     actions={[
                                                         <Button
                                                             type="primary"
@@ -1001,7 +993,7 @@ const CartProducts = () => {
                         // ⭐️ LOGIC MỚI CHO MODAL "ĐÃ GIAO"
                         if (isDeliveredModal && Array.isArray(order.items)) {
                             return (
-                                <List.Item key={order.id} style={{ background: '#f9f9f9', padding: '16px', borderRadius: '8px', marginBottom: '16px' }}>
+                                <List.Item key={order.id} className="order-list-item">
                                     <List.Item.Meta
                                         title={<Text strong>Mã đơn hàng: {order.id}</Text>}
                                         description={
@@ -1022,6 +1014,7 @@ const CartProducts = () => {
                                             return (
                                                 <List.Item
                                                     key={item.product.id} 
+                                                    className="order-product-item"
                                                     actions={[ // ⭐️ THÊM THÙNG RÁC
                                                         <Button type="primary" onClick={() => handleOpenReviewModal(order.id, item.product)} disabled={hasReviewed}>
                                                             {hasReviewed ? "Đã đánh giá" : "Viết đánh giá"}
@@ -1045,7 +1038,7 @@ const CartProducts = () => {
                         // ⭐️ LOGIC MỚI CHO MODAL "ĐÃ HỦY"
                         if (isCancelledModal && Array.isArray(order.items) && order.items.length > 0) {
                             return (
-                                <List.Item key={order.id} style={{ background: '#f9f9f9', padding: '16px', borderRadius: '8px', marginBottom: '16px' }}>
+                                <List.Item key={order.id} className="order-list-item">
                                     <List.Item.Meta
                                         title={<Text strong>Mã đơn hàng: {order.id}</Text>}
                                         description={
@@ -1064,6 +1057,7 @@ const CartProducts = () => {
                                             return (
                                                 <List.Item
                                                     key={item.product.id}
+                                                    className="order-product-item"
                                                     actions={[ // ⭐️ THÊM THÙNG RÁC
                                                         <Button danger type="text" icon={<DeleteOutlined />} onClick={() => handleRemoveProduct(order.id, item.product)} />
                                                     ]}
