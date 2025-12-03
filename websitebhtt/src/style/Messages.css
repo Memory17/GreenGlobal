@@ -294,7 +294,61 @@
   align-items: center;
   justify-content: center;
   height: 100%;
-  color: #9ca3af;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.no-conversation-selected::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: float 6s ease-in-out infinite;
+}
+
+.no-conversation-selected::after {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  left: -5%;
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: float 8s ease-in-out infinite reverse;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(20px);
+  }
+}
+
+.no-conversation-selected .ant-empty {
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.no-conversation-selected .ant-empty-description {
+  color: rgba(255, 255, 255, 0.95) !important;
+  font-size: 18px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.5px;
+}
+
+.no-conversation-selected .ant-empty-img-simple {
+  filter: brightness(0) invert(1) opacity(0.9);
 }
 
 /* Chat Header */
@@ -1754,5 +1808,106 @@
 .media-item.more:hover {
   background: #e5e7eb;
   color: #1f2937;
+}
+
+/* ========== THEME MODAL STYLING ========== */
+.theme-modal .ant-modal-header {
+  background: linear-gradient(135deg, #f0f9ff 0%, #f5f3ff 100%);
+  border-bottom: 2px solid #e0e7ff;
+}
+
+.theme-modal .ant-modal-title {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+/* Emoji Modal Styling */
+.emoji-modal .ant-modal-header {
+  background: linear-gradient(135deg, #fff0f6 0%, #f9f0ff 100%);
+  border-bottom: 2px solid #f0e6ff;
+}
+
+.emoji-modal .ant-modal-title {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+/* Theme color variations for sent messages */
+.theme-blue .message-wrapper.sent .message-bubble {
+  background: linear-gradient(135deg, #1677ff 0%, #0c47ce 100%);
+}
+
+.theme-red .message-wrapper.sent .message-bubble {
+  background: linear-gradient(135deg, #ff4d4f 0%, #d9363e 100%);
+}
+
+.theme-green .message-wrapper.sent .message-bubble {
+  background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);
+}
+
+.theme-purple .message-wrapper.sent .message-bubble {
+  background: linear-gradient(135deg, #722ed1 0%, #531dab 100%);
+}
+
+.theme-orange .message-wrapper.sent .message-bubble {
+  background: linear-gradient(135deg, #fa8c16 0%, #d48806 100%);
+}
+
+.theme-pink .message-wrapper.sent .message-bubble {
+  background: linear-gradient(135deg, #eb2f96 0%, #c41d7f 100%);
+}
+
+/* Message More Button (Three dots) */
+.message-more-btn {
+  opacity: 0.6;
+  transition: all 0.2s ease !important;
+  border-radius: 4px !important;
+}
+
+.message-more-btn:hover {
+  opacity: 1 !important;
+  background: rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Message Bubble Container */
+.message-bubble-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Pin Button */
+.pin-btn {
+  padding: 4px !important;
+  height: 24px !important;
+  width: 24px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.pin-btn:hover {
+  background: rgba(255, 193, 7, 0.15) !important;
+  color: #faad14 !important;
+}
+
+/* Pinned Messages Modal */
+.pinned-messages-modal .ant-modal-header {
+  background: linear-gradient(135deg, #fff7e6 0%, #ffeaa7 100%);
+  border-bottom: 2px solid #ffe58f;
+}
+
+.pinned-messages-modal .ant-modal-title {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.theme-cyan .message-wrapper.sent .message-bubble {
+  background: linear-gradient(135deg, #13c2c2 0%, #0a8080 100%);
+}
+
+.theme-gold .message-wrapper.sent .message-bubble {
+  background: linear-gradient(135deg, #faad14 0%, #d48806 100%);
 }
 

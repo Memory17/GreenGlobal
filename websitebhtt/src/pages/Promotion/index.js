@@ -3,7 +3,7 @@ import {
     Tabs, Layout, Typography, Space, Button, Table, Tag,
     Modal, Form, Input, DatePicker, Select, Switch, Card,
     Divider, Slider, List, Descriptions, Progress, Upload, message,
-    Tooltip
+    Tooltip, Row, Col
 } from 'antd';
 import {
     GiftOutlined, TagOutlined, CrownOutlined, CarOutlined, // Giữ CarOutlined cho icon sub-tab
@@ -285,10 +285,12 @@ const CampaignsManagement = () => {
 
 const CouponsTableLogic = ({ t, coupons, loading, handleEdit, handleDelete }) => {
     const columns = [
-        { title: t('promo_col_coupon_code'), dataIndex: 'code', key: 'code', render: (code) => <Tag color="orange" style={{ fontWeight: 'bold', letterSpacing: '0.5px' }}>{code}</Tag> },
-        { title: t('promo_col_coupon_value'), dataIndex: 'value', key: 'value', render: (value) => <span style={{ fontWeight: 600, color: '#3f3f3f' }}>{value}</span> },
+        { title: t('promo_col_coupon_code'), dataIndex: 'code', key: 'code', width: 120, render: (code) => <Tag color="orange" style={{ fontWeight: 'bold', letterSpacing: '0.5px' }}>{code}</Tag> },
+        { title: 'Tên Mã', dataIndex: 'name', key: 'name', width: 150, render: (name) => <span style={{ fontWeight: 600 }}>{name || 'N/A'}</span> },
+        { title: 'Mô Tả', dataIndex: 'description', key: 'description', width: 250, ellipsis: { showTitle: false }, render: (desc) => <span title={desc} style={{ fontSize: '12px', color: '#666' }}>{desc || 'N/A'}</span> },
+        { title: t('promo_col_coupon_value'), dataIndex: 'value', key: 'value', width: 100, render: (value) => <span style={{ fontWeight: 600, color: '#fa8c16' }}>{value}</span> },
         {
-            title: t('promo_col_expiry_date'), dataIndex: 'expireDate', key: 'expireDate', render: (date) => {
+            title: t('promo_col_expiry_date'), dataIndex: 'expireDate', key: 'expireDate', width: 150, render: (date) => {
                 const daysUntilExpiry = moment(date).diff(moment(), 'days');
                 let tagColor = 'blue';
                 let tagText = date;
@@ -297,7 +299,7 @@ const CouponsTableLogic = ({ t, coupons, loading, handleEdit, handleDelete }) =>
             }
         },
         {
-            title: t('promo_col_usage_count'), dataIndex: 'used', key: 'used', width: 200, render: (used, record) => {
+            title: t('promo_col_usage_count'), dataIndex: 'used', key: 'used', width: 180, render: (used, record) => {
                 const percent = Math.floor(((used || 0) / (record.limit || 1)) * 100);
                 return (
                     <Progress percent={percent} size="small" strokeColor={percent > 90 ? '#ff4d4f' : '#52c41a'} format={() => `${used || 0}/${record.limit || '∞'}`} />
@@ -305,7 +307,7 @@ const CouponsTableLogic = ({ t, coupons, loading, handleEdit, handleDelete }) =>
             }
         },
         { 
-            title: t('promo_col_actions'), key: 'action', width: 100, render: (_, record) => (
+            title: t('promo_col_actions'), key: 'action', width: 100, fixed: 'right', render: (_, record) => (
                 <Space size="middle">
                     <Tooltip title={t('promo_btn_edit')}><Button type="text" icon={<EditOutlined style={{ color: '#1890ff' }} />} size="small" onClick={() => handleEdit(record, 'coupon')} /></Tooltip>
                     <Tooltip title={t('delete')}><Button type="text" danger icon={<DeleteOutlined />} size="small" onClick={() => handleDelete(record.key, 'coupon')} /></Tooltip>
@@ -473,15 +475,41 @@ const CouponsManagement = () => {
         setLoading(true);
         try {
             if (editingType === 'coupon') {
-                const expiryDate = values.expiry.format('YYYY-MM-DD');
+                // Lấy ngày từ form values trực tiếp
+                if (!values.expiry) {
+                    message.error("Vui lòng chọn ngày hết hạn!");
+                    setLoading(false);
+                    return;
+                }
+                const expiryDate = moment.isMoment(values.expiry) 
+                    ? values.expiry.format('YYYY-MM-DD')
+                    : moment(values.expiry).format('YYYY-MM-DD');
+                
                 if (editingRecord) {
                     // Cập nhật Coupon
-                    const updatedData = { value: values.value, limit: values.limit, expireDate: expiryDate };
+                    const updatedData = { 
+                        name: values.name,
+                        value: values.value, 
+                        discount: values.value, // Alias
+                        description: values.description,
+                        limit: values.limit, 
+                        expireDate: expiryDate 
+                    };
                     await updateCoupon(editingRecord.key, updatedData);
                     message.success("Đã cập nhật Mã giảm giá thành công.");
                 } else {
                     // Tạo mới Coupon
-                    const newCouponData = { code: values.code, value: values.value, limit: values.limit || 9999, used: 0, expireDate: expiryDate };
+                    const newCouponData = { 
+                        code: values.code, 
+                        name: values.name,
+                        value: values.value, 
+                        discount: values.value, // Alias cho value
+                        description: values.description,
+                        limit: values.limit || 9999, 
+                        used: 0, 
+                        expireDate: expiryDate,
+                        status: 'active' // Mặc định active khi tạo mới
+                    };
                     await createCoupon(newCouponData);
                     message.success(`Đã tạo ${values.count} Mã giảm giá thành công.`);
                 }
@@ -501,8 +529,11 @@ const CouponsManagement = () => {
                     // await updateShippingRule(editingRecord.key, ruleData); 
                     message.success(`Đã cập nhật Quy tắc Ship thành công.`);
                 } else {
-                    await createShippingRule(ruleData);
+                    const createdRule = await createShippingRule(ruleData);
                     message.success(`Đã tạo Quy tắc Ship "${values.ruleName}" thành công.`);
+
+                    // Notify other tabs/clients to refresh shipping discounts
+                    window.dispatchEvent(new Event('promotions_updated'));
                 }
             }
             
@@ -546,6 +577,8 @@ const CouponsManagement = () => {
         if (type === 'coupon') {
             form.setFieldsValue({
                 code: record.code,
+                name: record.name || record.code,
+                description: record.description || '',
                 value: record.value.replace('%', '').replace('Freeship', '0'), 
                 limit: record.limit,
                 expiry: moment(record.expireDate, 'YYYY-MM-DD')
@@ -622,75 +655,117 @@ const CouponsManagement = () => {
 
             {/* Modal dùng chung cho cả Coupon và Shipping Rule */}
             <Modal
-                title={editingRecord ? `Chỉnh sửa ${editingType === 'coupon' ? 'Mã giảm giá' : 'Quy tắc Ship'}` : `Tạo ${editingType === 'coupon' ? 'Mã giảm giá mới' : 'Quy tắc Ship mới'}`}
+                title={editingRecord ? `✏️ Chỉnh sửa ${editingType === 'coupon' ? 'Mã giảm giá' : 'Quy tắc Ship'}` : `➕ Tạo ${editingType === 'coupon' ? 'Mã giảm giá mới' : 'Quy tắc Ship mới'}`}
                 open={isModalVisible}
                 onCancel={() => { setIsModalVisible(false); setEditingRecord(null); setEditingType(null); form.resetFields(); }}
                 footer={null}
-                width={editingType === 'shipping' ? 600 : 700} // Thay đổi kích thước modal nếu là Shipping
+                width={editingType === 'shipping' ? 650 : 750}
+                bodyStyle={{ padding: '24px' }}
             >
                 <Form form={form} layout="vertical" onFinish={handleSave}>
                     {editingType === 'coupon' ? (
                         <>
                             {/* Form Fields cho Coupon */}
-                            <Form.Item label={t('promo_label_coupon_code')} name="code" rules={[{ required: true, message: "Vui lòng nhập mã coupon!" }]}>
-                                <Input disabled={!!editingRecord} placeholder="Ví dụ: SALE10" /> 
+                            <Row gutter={16}>
+                                <Col xs={24} sm={12}>
+                                    <Form.Item label="📌 Mã Coupon" name="code" rules={[{ required: true, message: "Vui lòng nhập mã coupon!" }]}>
+                                        <Input disabled={!!editingRecord} placeholder="VD: SALE10" maxLength={20} /> 
+                                    </Form.Item>
+                                </Col>
+                                <Col xs={24} sm={12}>
+                                    <Form.Item label="📝 Tên Mã (Hiển thị cho User)" name="name" rules={[{ required: true, message: "Vui lòng nhập tên mã!" }]}>
+                                        <Input placeholder="VD: Black Friday Deal" maxLength={50} /> 
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+                            <Form.Item label="💬 Mô Tả Chi Tiết" name="description" rules={[{ required: true, message: "Vui lòng nhập mô tả!" }]}>
+                                <Input.TextArea rows={3} placeholder="VD: Giảm giá cực sốc 50% toàn bộ sản phẩm Black Friday!" maxLength={200} /> 
                             </Form.Item>
-                            <Form.Item label={t('promo_label_value')} name="value" rules={[{ required: true, message: "Vui lòng nhập giá trị!" }]}>
-                                <Input type="text" placeholder="Ví dụ: 10% hoặc 50000 VNĐ" />
-                            </Form.Item>
-                            <Form.Item label={t('promo_label_limit')} name="limit" rules={[{ required: true, message: "Vui lòng nhập giới hạn sử dụng!" }]}>
-                                <Input type="number" placeholder="Số lượng tối đa có thể sử dụng (Ví dụ: 1000)" />
-                            </Form.Item>
-                            <Form.Item label={t('promo_label_expiry')} name="expiry" rules={[{ required: true, message: "Vui lòng chọn ngày hết hạn!" }]}>
-                                <DatePicker style={{ width: '100%' }} format="YYYY-MM-DD"/>
-                            </Form.Item>
-                            {!editingRecord && (
-                                <Form.Item label={t('promo_label_batch_count')} name="count" rules={[{ required: true, message: "Vui lòng nhập số lượng tạo!" }]} initialValue={1}>
-                                    <Input type="number" min={1} />
-                                </Form.Item>
-                            )}
+                            <Row gutter={16}>
+                                <Col xs={24} sm={12}>
+                                    <Form.Item label="💰 Giá trị Giảm" name="value" rules={[{ required: true, message: "Vui lòng nhập giá trị!" }]}>
+                                        <Input type="text" placeholder="VD: 10% hoặc 50000" maxLength={20} />
+                                    </Form.Item>
+                                </Col>
+                                <Col xs={24} sm={12}>
+                                    <Form.Item label="📊 Giới hạn Sử dụng" name="limit" rules={[{ required: true, message: "Vui lòng nhập giới hạn!" }]}>
+                                        <Input type="number" placeholder="VD: 1000" min={1} />
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+                            <Row gutter={16}>
+                                <Col xs={24} sm={12}>
+                                    <Form.Item label="📅 Ngày Hết Hạn" name="expiry" rules={[{ required: true, message: "Vui lòng chọn ngày!" }]}>
+                                        <DatePicker 
+                                            style={{ width: '100%' }} 
+                                            format="YYYY-MM-DD"
+                                            placeholder="Chọn ngày hết hạn"
+                                            disabledDate={(current) => current && current < moment().startOf('day')}
+                                            getPopupContainer={(triggerNode) => triggerNode.parentNode}
+                                        />
+                                    </Form.Item>
+                                </Col>
+                                {!editingRecord && (
+                                    <Col xs={24} sm={12}>
+                                        <Form.Item label="🔢 Số Lượng Tạo" name="count" rules={[{ required: true, message: "Vui lòng nhập số lượng!" }]} initialValue={1}>
+                                            <Input type="number" min={1} max={100} placeholder="VD: 50" />
+                                        </Form.Item>
+                                    </Col>
+                                )}
+                            </Row>
                         </>
                     ) : editingType === 'shipping' ? (
                         <>
                             {/* Form Fields cho Shipping Rule */}
-                            <Form.Item label="Tên Quy tắc" name="ruleName" rules={[{ required: true }]}>
-                                <Input placeholder="Ví dụ: Miễn phí Ship cho đơn hàng lớn" />
+                            <Form.Item label="🏷️ Tên Quy tắc" name="ruleName" rules={[{ required: true }]}>
+                                <Input placeholder="VD: Miễn phí Ship cho đơn hàng lớn" maxLength={100} />
                             </Form.Item>
-                            <Form.Item label="Giá trị Đơn hàng Tối thiểu (VNĐ)" name="minOrderValue" rules={[{ required: true }]}>
-                                <Input type="number" min={0} />
-                            </Form.Item>
-                            <Form.Item label="Loại Giảm giá" name="discountType" rules={[{ required: true }]}>
-                                <Select placeholder="Chọn loại giảm giá">
-                                    <Select.Option value="FREE">Miễn phí Ship (Freeship)</Select.Option>
-                                    <Select.Option value="FIXED">Giảm giá cố định (Số tiền)</Select.Option>
-                                </Select>
-                            </Form.Item>
+                            <Row gutter={16}>
+                                <Col xs={24} sm={12}>
+                                    <Form.Item label="💵 Đơn hàng Tối thiểu (VNĐ)" name="minOrderValue" rules={[{ required: true }]}>
+                                        <Input type="number" min={0} placeholder="VD: 500000" />
+                                    </Form.Item>
+                                </Col>
+                                <Col xs={24} sm={12}>
+                                    <Form.Item label="📦 Loại Giảm giá" name="discountType" rules={[{ required: true }]}>
+                                        <Select placeholder="Chọn loại" getPopupContainer={(triggerNode) => triggerNode.parentNode}>
+                                            <Select.Option value="FREE">✈️ Miễn phí Ship</Select.Option>
+                                            <Select.Option value="FIXED">💰 Giảm giá cố định</Select.Option>
+                                        </Select>
+                                    </Form.Item>
+                                </Col>
+                            </Row>
                             <Form.Item 
                                 noStyle
                                 shouldUpdate={(prevValues, currentValues) => prevValues.discountType !== currentValues.discountType}
                             >
                                 {({ getFieldValue }) =>
                                     getFieldValue('discountType') === 'FIXED' ? (
-                                        <Form.Item label="Giá trị giảm (VNĐ)" name="discountValue" rules={[{ required: true }]}>
-                                            <Input type="number" min={1000} />
+                                        <Form.Item label="💸 Giá trị giảm (VNĐ)" name="discountValue" rules={[{ required: true }]}>
+                                            <Input type="number" min={1000} placeholder="VD: 50000" />
                                         </Form.Item>
                                     ) : null
                                 }
                             </Form.Item>
-                            <Form.Item label="Mô tả" name="description">
-                                <Input.TextArea rows={2} />
+                            <Form.Item label="📝 Mô tả" name="description">
+                                <Input.TextArea rows={2} placeholder="Mô tả thêm (tùy chọn)" maxLength={200} />
                             </Form.Item>
-                            <Form.Item label="Trạng thái kích hoạt" name="isActive" valuePropName="checked" initialValue={true}>
-                                <Switch checkedChildren="Kích hoạt" unCheckedChildren="Tạm dừng" />
+                            <Form.Item label="⚡ Trạng thái" name="isActive" valuePropName="checked" initialValue={true}>
+                                <Switch checkedChildren="✅ Kích hoạt" unCheckedChildren="⏸️ Tạm dừng" />
                             </Form.Item>
                         </>
                     ) : null}
                     
-                    <Form.Item style={{ marginTop: 24, textAlign: 'right' }}>
-                        <Button onClick={() => { setIsModalVisible(false); setEditingRecord(null); setEditingType(null); form.resetFields(); }}>{t('cancel')}</Button>
-                        <Button type="primary" htmlType="submit" loading={loading} style={{ marginLeft: 8 }}>
-                            {editingRecord ? t('promo_btn_save_changes') : t('promo_btn_create_coupon')}
-                        </Button>
+                    <Divider style={{ margin: '20px 0' }} />
+                    <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
+                        <Space>
+                            <Button size="large" onClick={() => { setIsModalVisible(false); setEditingRecord(null); setEditingType(null); form.resetFields(); }}>
+                                ❌ Hủy
+                            </Button>
+                            <Button type="primary" size="large" htmlType="submit" loading={loading} style={{ minWidth: 150 }}>
+                                {editingRecord ? '💾 Lưu Thay đổi' : '✨ Tạo Mã'}
+                            </Button>
+                        </Space>
                     </Form.Item>
                 </Form>
             </Modal>

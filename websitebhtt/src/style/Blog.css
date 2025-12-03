@@ -1103,3 +1103,88 @@
   background: transparent !important;
   transform: none;
 }
+
+/* Ensure the eye (view) item inside blog card actions stays horizontal
+   and matches the alignment of the other action buttons. This overrides
+   other global `.action-item` rules that may set column layout (e.g., in
+   `Messages.css`). */
+.card-actions .action-item {
+  display: flex; /* use flex to align icon + text */
+  flex-direction: row; /* force horizontal layout */
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px; /* mirror the button padding so alignment looks consistent */
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.card-actions .action-item .anticon,
+.card-actions .action-item svg {
+  /* Ensure SVG icons align properly next to text */
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.card-actions .action-item .action-count {
+  line-height: 1; /* avoid baseline tweaks that can wrap numbers to next line */
+}
+
+/* Match modal meta action layout (eye, comment) to be horizontal like card footer */
+.modal-post-meta .action-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+}
+.modal-post-meta .action-item .anticon,
+.modal-post-meta .action-item svg {
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 16px;
+}
+.modal-post-meta .action-item .action-count {
+  margin-left: 8px; /* already set inline, but ensure consistent spacing */
+  line-height: 1;
+}
+
+/* Force horizontal alignment and disables wrapping inside the modal.
+   Use the `.blog-detail-modal` context to avoid affecting other pages. */
+.blog-detail-modal .modal-post-meta .action-item {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 6px !important;
+  white-space: nowrap !important; /* keep icon + text on one line */
+}
+.blog-detail-modal .modal-post-meta .action-item .anticon,
+.blog-detail-modal .modal-post-meta .action-item svg {
+  display: inline-block !important;
+  vertical-align: middle !important;
+  font-size: 16px !important;
+  line-height: 1 !important;
+}
+.blog-detail-modal .modal-post-meta .action-item .action-count {
+  display: inline-block !important;
+  margin-left: 8px !important;
+  line-height: 1 !important;
+}
+
+/* Make sure the ant-space used for layout in modal centers and doesn't wrap children */
+.blog-detail-modal .modal-post-meta .ant-space,
+.blog-detail-modal .modal-post-meta > .ant-space {
+  align-items: center !important;
+  flex-wrap: nowrap !important; /* prevent children from wrapping */
+}
+
+/* Prevent each action from shrinking and ensure inline layout */
+.blog-detail-modal .modal-post-meta .action-item {
+  flex: 0 0 auto !important;
+}
+
+/* Ensure the icon + count group doesn't line-break and maintains spacing */
+.blog-detail-modal .modal-post-meta .action-item .action-count,
+.blog-detail-modal .modal-post-meta .action-item .anticon {
+  white-space: nowrap !important;
+}

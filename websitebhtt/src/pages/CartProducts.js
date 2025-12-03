@@ -1,6 +1,7 @@
 // src/pages/CartProducts.js
 import "../style/CartProducts.css";
 import React, { useState, useEffect, useCallback } from "react";
+import moment from "moment";
 import cartImg from "../assets/images/cart-icon.png";
 import cartGif from "../assets/images/cart.gif";
 import { useNavigate } from "react-router-dom";
@@ -269,54 +270,72 @@ const CartProducts = () => {
         }
     };
 
-    const handleShowCouponModal = async () => {
-        setIsCouponModalVisible(true);
+    const fetchProductCoupons = async () => {
+        setLoadingProductCoupons(true);
+        try {
+            const allCoupons = await getAllCoupons();
+            // Filter: status phải active và ngày hết hạn >= ngày hôm nay
+            return allCoupons.filter((c) => {
+                const isActive = c.status === "active";
+                const isNotExpired = !c.expireDate || c.expireDate === 'N/A' || moment(c.expireDate).isSameOrAfter(moment().startOf('day'));
+                return isActive && isNotExpired;
+            });
+        } catch (error) {
+            console.error("Lỗi khi tải mã giảm giá sản phẩm:", error);
+            message.error("Không thể tải mã giảm giá sản phẩm!");
+            return [];
+        } finally {
+            setLoadingProductCoupons(false);
+        }
+    };
 
-        const fetchProductCoupons = async () => {
-            setLoadingProductCoupons(true);
-            try {
-                const allCoupons = await getAllCoupons();
-                return allCoupons.filter((c) => c.status === "active");
-            } catch (error) {
-                console.error("Lỗi khi tải mã giảm giá sản phẩm:", error);
-                message.error("Không thể tải mã giảm giá sản phẩm!");
-                return [];
-            } finally {
-                setLoadingProductCoupons(false);
-            }
-        };
+    const fetchShippingCoupons = async () => {
+        setLoadingShippingCoupons(true);
+        try {
+            const allShipping = await getAllShippingDiscounts();
+            return allShipping.filter((s) => s.isActive === true);
+        } catch (error) {
+            console.error("Lỗi khi tải chiết khấu vận chuyển:", error);
+            message.error("Không thể tải mã giảm giá vận chuyển!");
+            return [];
+        } finally {
+            setLoadingShippingCoupons(false);
+        }
+    };
 
-        const fetchShippingCoupons = async () => {
-            setLoadingShippingCoupons(true);
-            try {
-                const allShipping = await getAllShippingDiscounts();
-                return allShipping.filter((s) => s.isActive === true);
-            } catch (error) {
-                console.error("Lỗi khi tải chiết khấu vận chuyển:", error);
-                message.error("Không thể tải mã giảm giá vận chuyển!");
-                return [];
-            } finally {
-                setLoadingShippingCoupons(false);
-            }
-        };
-
+    const loadAllCoupons = async () => {
         const [productResults, shippingResults] = await Promise.all([
             fetchProductCoupons(),
             fetchShippingCoupons(),
         ]);
-
         setActiveProductCoupons(productResults);
         setActiveShippingCoupons(shippingResults);
+    };
+
+    const handleShowCouponModal = async () => {
+        setIsCouponModalVisible(true);
+        await loadAllCoupons();
     };
 
     const handleCloseCouponModal = () => setIsCouponModalVisible(false);
 
     const handleApplyCouponFromModal = (item, type) => {
         if (type === "product") {
-            setCouponCode(item.code);
-            setAppliedCoupon(item);
-            setDiscountAmount(calculateProductDiscount(item, subtotal));
-            message.success(`Đã áp dụng mã sản phẩm: ${item.name}`);
+            // If this is a 'Freeship' coupon stored as a product coupon, treat it as a shipping discount
+            const couponValStr = String(item.value);
+            if (couponValStr === 'Freeship' || couponValStr.toLowerCase().includes('freeship')) {
+                setCouponCode(item.code);
+                setAppliedCoupon(item);
+                // apply full shipping discount
+                setAppliedShippingRule({ ruleName: item.name || item.code, discountValue: baseDeliveryFee, minOrderValue: 0 });
+                setShippingDiscountValue(baseDeliveryFee);
+                message.success(`Đã áp dụng mã freeship: ${item.name || item.code}`);
+            } else {
+                setCouponCode(item.code);
+                setAppliedCoupon(item);
+                setDiscountAmount(calculateProductDiscount(item, subtotal));
+                message.success(`Đã áp dụng mã sản phẩm: ${item.name}`);
+            }
         } else if (type === "shipping") {
             setAppliedShippingRule(item);
             const newShippingDiscount = calculateShippingDiscount(item, subtotal, baseDeliveryFee);
@@ -331,6 +350,19 @@ const CartProducts = () => {
         }
         handleCloseCouponModal();
     };
+
+    // Reload coupons when promotions are updated (e.g., new shipping rule created by admin)
+    useEffect(() => {
+        const handlePromotionsUpdate = async () => {
+            try {
+                await loadAllCoupons();
+            } catch (e) {
+                // Errors are already handled in loadAllCoupons
+            }
+        };
+        window.addEventListener('promotions_updated', handlePromotionsUpdate);
+        return () => window.removeEventListener('promotions_updated', handlePromotionsUpdate);
+    }, []);
 
     const handleApplyCoupon = async () => {
         if (!couponCode.trim()) {

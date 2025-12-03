@@ -750,13 +750,13 @@ const Blog = () => {
             </Space>
 
             <Space size="large" style={{ display: 'flex' }}>
-              <span className="action-item" style={{ fontSize: 15, color: '#555' }}>
+              <span className="action-item" style={{ fontSize: 15, color: '#555', display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
                 <EyeOutlined />
                 <span className="action-count" style={{ marginLeft: 8 }}>
                   {(selectedPost.views || 0).toLocaleString()} Lượt xem
                 </span>
               </span>
-              <span className="action-item" style={{ fontSize: 15, color: '#555' }}>
+              <span className="action-item" style={{ fontSize: 15, color: '#555', display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
                 <CommentOutlined />
                 <span className="action-count" style={{ marginLeft: 8 }}>
                   {(selectedPost.comments || 0).toLocaleString()} Bình luận

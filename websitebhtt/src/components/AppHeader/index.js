@@ -484,7 +484,8 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
                 justifyContent: "space-between",
                 alignItems: "center",
                 background: isDarkMode ? '#1e1e1e' : "#fff", // 👈 Áp dụng Dark Mode
-                padding: "10px 25px",
+                // Giảm paddings phải để nội dung bên phải sát góc; giữ padding-left để logo không sát mép
+                padding: "10px 8px 10px 25px",
             }}
         >
             {/* MENU TOGGLE (MOBILE) */}
@@ -515,13 +516,14 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
 
             {/* SEARCH (wrap for responsive hide/show) */}
             <div className="header-center-search" style={{ flex: '1 1 auto' }}>
-            <AutoComplete
+                <AutoComplete
                 dropdownMatchSelectWidth={true}
                 options={currentSearchOptions}
                 style={{ 
                     width: '100%',
                     maxWidth: 450,
-                    marginRight: 48,
+                        // Giảm khoảng cách giữa ô tìm kiếm và nhóm icon phải để tránh khoảng trống thừa
+                        marginRight: 8,
                     flex: '1 1 auto'
                 }} 
                 onSelect={onSearch}
@@ -543,7 +545,7 @@ function AppHeader({ toggleSideMenu, isDarkMode, onToggleDarkMode }) {
             </div>
 
             {/* ICONS & LANGUAGE SELECTOR */}
-            <Space size={16} align="center"> 
+            <Space size={16} align="center" style={{ marginRight: 0 }}> 
                 <Select
                     className="header-hide-on-mobile"
                     value={i18n.language}

@@ -833,9 +833,22 @@ const BlogManagementTab = () => {
   };
   
   // --- (MỚI) Logic lọc VÀ SẮP XẾP ---
+  const defaultCategories = [
+    { value: 'Khuyên Mái', label: 'Khuyên Mái' },
+    { value: 'Sản Phẩm', label: 'Sản Phẩm' },
+    { value: 'Sự Kiện', label: 'Sự Kiện' },
+    { value: 'Về Chúng Tôi', label: 'Về Chúng Tôi' },
+    { value: 'Tư Vấn', label: 'Tư Vấn' },
+    { value: 'Mẹo Hay', label: 'Mẹo Hay' },
+    { value: 'Thời Trang', label: 'Thời Trang' },
+    { value: 'Thông Báo', label: 'Thông Báo' }
+  ];
+  
   const categories = Array.from(new Set(blogPosts.map(p => p.category)))
     .filter(Boolean)
     .map(c => ({ value: c, label: c }));
+  
+  const allCategories = [...defaultCategories, ...categories.filter(c => !defaultCategories.find(dc => dc.value === c.value))];
 
   const processedPosts = React.useMemo(() => {
     // 1. Lọc (Filter)
@@ -964,7 +977,11 @@ const BlogManagementTab = () => {
             placeholder="Lọc theo danh mục"
             style={{ width: 180 }}
             allowClear
-            options={categories}
+            showSearch
+            filterOption={(input, option) =>
+              (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+            }
+            options={allCategories}
             onChange={(value) => setSelectedCategory(value)}
             value={selectedCategory}
           />
@@ -1154,8 +1171,18 @@ const BlogManagementTab = () => {
           </Form.Item>
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item name="category" label="Danh mục" rules={[{ required: true, message: 'Vui lòng nhập danh mục' }]}>
-                <Input />
+              <Form.Item name="category" label="Danh mục" rules={[{ required: true, message: 'Vui lòng chọn danh mục' }]}>
+                <Select
+                  placeholder="Chọn danh mục"
+                  allowClear
+                  showSearch
+                  optionLabelProp="label"
+                  filterOption={(input, option) =>
+                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                  }
+                  options={allCategories}
+                  getPopupContainer={(trigger) => trigger.parentElement}
+                />
               </Form.Item>
             </Col>
             <Col span={12}>

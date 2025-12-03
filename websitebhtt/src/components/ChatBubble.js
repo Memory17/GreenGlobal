@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { FloatButton, Card, List, Avatar, Typography, Input, Badge } from 'antd';
+import { FloatButton, Card, List, Avatar, Typography, Input } from 'antd';
 import {
   CloseOutlined,
   SendOutlined,
@@ -262,17 +262,42 @@ const ChatBubble = () => {
   }, [isMessengerOpen, currentUserRole, messages]);
 
   const handleImageSend = (dataUrl) => {
-    if (!dataUrl) return;
+    if (!dataUrl || !currentUser) return;
+    
+    // Tạo object ảnh message
     const imgMsg = { 
       id: Date.now(), 
       sender: currentUserRole, 
       type: 'image', 
       content: dataUrl,
+      text: dataUrl, // Lưu URL vào text để admin nhìn thấy
       timestamp: new Date(),
-      isRead: currentUserRole === 'admin' ? true : false
+      isRead: currentUserRole === 'admin' ? true : false,
+      metadata: {
+        type: 'image',
+        isImage: true
+      }
     };
     
+    // Cập nhật local state
     setMessages((prev) => [...prev, imgMsg]);
+    
+    // Gửi qua messageService để admin thấy
+    if (currentUserRole === 'user') {
+      messageService.sendMessage(
+        currentUser.id,
+        currentUser.username || currentUser.email || 'Khách hàng',
+        dataUrl, // Gửi image URL
+        'user',
+        null,
+        {
+          type: 'image',
+          isImage: true
+        }
+      );
+    }
+    
+    // Gửi qua broadcast channel
     channel.postMessage(imgMsg);
   };
 
@@ -341,6 +366,32 @@ const ChatBubble = () => {
             <div className="product-name">{m.product.name}</div>
             <div className="product-price">{m.product.price}</div>
           </div>
+        </div>
+      );
+    }
+
+    // Kiểm tra nếu m.text là URL ảnh (blob, http, base64 hoặc data URL)
+    if (m.text && (m.text.startsWith('blob:') || m.text.startsWith('http') || m.text.startsWith('data:image/') || m.text.includes('base64') || /\.(jpg|jpeg|png|gif|webp)$/i.test(m.text))) {
+      return (
+        <div className="message-bubble">
+          <img 
+            src={m.text} 
+            alt="shared" 
+            className="message-image"
+            style={{
+              maxWidth: '200px',
+              maxHeight: '300px',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              display: 'block'
+            }}
+            onClick={() => window.open(m.text, '_blank')}
+            onError={(e) => {
+              // Nếu ảnh load lỗi, hiển thị text thay thế
+              e.target.style.display = 'none';
+              e.target.parentElement.innerHTML = `<div>${m.text}</div>`;
+            }}
+          />
         </div>
       );
     }
@@ -533,29 +584,29 @@ const ChatBubble = () => {
         </div>
       )}
 
-      <Badge count={unreadCount} offset={[12, -6]} size="small">
-        <FloatButton
-          icon={isMessengerOpen ? <CloseOutlined /> : <WechatOutlined />}
-          type="primary"
-          style={{
-            right: 24,
-            bottom: calcBottom(88),
-            zIndex: 1300,
-            transform: 'scale(1.5)'
-          }}
-          onClick={toggleMessenger}
-          tooltip={<div>{isMessengerOpen ? 'Đóng Messenger' : 'Mở Messenger'}</div>}
-        />
-      </Badge>
+      <FloatButton
+        className="chat-float-button"
+        icon={isMessengerOpen ? <CloseOutlined /> : <WechatOutlined />}
+        type="primary"
+        style={{
+          right: 14,
+          bottom: calcBottom(48),
+          zIndex: 1300,
+        }}
+        badge={{ count: unreadCount, offset: [2, 5], size: 'small' }}
+        onClick={toggleMessenger}
+        tooltip={<div>{isMessengerOpen ? 'Đóng Messenger' : 'Mở Messenger'}</div>}
+      />
 
       <FloatButton
+        className="chat-float-button"
         icon={isPopupVisible ? <CloseOutlined /> : <CustomerServiceOutlined />}
         type="primary"
         style={{
-          right: 24,
-          bottom: calcBottom(24),
+          right: 14,
+          bottom: calcBottom(-20),
           zIndex: 1300,
-          transform: 'scale(1.5)',
+          // transform removed, handled in CSS
         }}
         onClick={togglePopup}
         tooltip={<div>{isPopupVisible ? 'Đóng hỗ trợ' : 'Mở hỗ trợ'}</div>}

@@ -79,7 +79,8 @@ body {
 .AppHeader .header-center-search {
   flex: 1 1 auto;
   max-width: 500px;
-  margin: 0 20px;
+  /* Giảm margin để ô tìm kiếm không tạo khoảng trống thừa bên phải */
+  margin: 0 8px;
   min-width: 200px;
 }
 
@@ -88,6 +89,8 @@ body {
   align-items: center;
   gap: 16px;
   flex-shrink: 0;
+  /* Ensure that the right group doesn't add extra margin and stays flush to the right */
+  margin-right: 0 !important;
 }
 
 /* Giữ style của Ant Design Search Input */
