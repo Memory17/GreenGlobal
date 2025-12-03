@@ -1,10 +1,27 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import LanguageDetector from 'i18next-browser-languagedetector';
+import { userResources } from './i18nUser'; // <-- IMPORT USER RESOURCES
 
 const initialLang = localStorage.getItem('appLanguage') || 'vi';
 
-const resources = {
+// Helper function to merge resources
+const mergeResources = (adminRes, userRes) => {
+  const merged = { ...adminRes };
+  Object.keys(userRes).forEach(lang => {
+    if (!merged[lang]) {
+      merged[lang] = userRes[lang];
+    } else {
+      merged[lang].translation = {
+        ...merged[lang].translation,
+        ...userRes[lang].translation
+      };
+    }
+  });
+  return merged;
+};
+
+const adminResources = {
   vi: {
     translation: {
       // GLOBAL / APP HEADER
@@ -25,6 +42,27 @@ const resources = {
       "search_results": "kết quả",
       "dark_mode_status": "Chế độ {{status}} đã được kích hoạt!",
       
+      // PROFILE SETTINGS
+      "account_settings": "Cài đặt Tài khoản",
+      "font_size": "Kích thước chữ", "font_size_desc": "Điều chỉnh kích thước chữ hiển thị",
+      "font_small": "Nhỏ", "font_medium": "Mặc định", "font_large": "Lớn",
+      "accent_color": "Màu chủ đạo", "accent_color_desc": "Chọn màu sắc nhấn cho giao diện",
+      "dark_mode": "Chế độ Tối (Dark Mode)", "dark_mode_desc": "Chuyển đổi giao diện tối để bảo vệ mắt",
+      "language_desc": "Chọn ngôn ngữ hiển thị",
+      "security": "Bảo mật", "security_login": "Bảo mật & Đăng nhập",
+      "two_factor_auth": "Xác minh 2 bước (2FA)", "two_factor_desc": "Tăng cường bảo mật cho tài khoản",
+      "change_password": "Đổi mật khẩu", "change_password_desc": "Cập nhật mật khẩu mới thường xuyên",
+      "login_history": "Lịch sử đăng nhập", "login_history_desc": "Kiểm tra các thiết bị đã đăng nhập",
+      "view_history": "Xem lịch sử",
+      "notifications": "Thông báo", "notification_settings": "Cài đặt Thông báo",
+      "promo_email": "Email khuyến mãi", "promo_email_desc": "Nhận thông tin ưu đãi qua email",
+      "order_updates": "Thông báo đơn hàng", "order_updates_desc": "Cập nhật trạng thái đơn hàng",
+      "review_updates": "Thông báo đánh giá", "review_updates_desc": "Khi có phản hồi về đánh giá của bạn",
+      "privacy": "Quyền riêng tư", "privacy_data": "Quyền riêng tư & Dữ liệu",
+      "download_data": "Tải xuống dữ liệu", "download_data_desc": "Nhận bản sao dữ liệu cá nhân của bạn",
+      "request_data": "Yêu cầu xuất dữ liệu",
+      "delete_account": "Xóa tài khoản", "delete_account_desc": "Hành động này không thể hoàn tác",
+
       "new_review": "Đánh giá mới",
       "anonymous_user": "Người dùng ẩn danh",
       "see_more": "xem thêm",
@@ -304,6 +342,27 @@ const resources = {
       "search_results": "results",
       "dark_mode_status": "Dark mode {{status}} activated!",
       
+      // PROFILE SETTINGS
+      "account_settings": "Account Settings",
+      "font_size": "Font Size", "font_size_desc": "Adjust display font size",
+      "font_small": "Small", "font_medium": "Default", "font_large": "Large",
+      "accent_color": "Accent Color", "accent_color_desc": "Choose accent color for interface",
+      "dark_mode": "Dark Mode", "dark_mode_desc": "Switch to dark mode to protect eyes",
+      "language_desc": "Choose display language",
+      "security": "Security", "security_login": "Security & Login",
+      "two_factor_auth": "Two-Factor Authentication (2FA)", "two_factor_desc": "Enhance account security",
+      "change_password": "Change Password", "change_password_desc": "Update password regularly",
+      "login_history": "Login History", "login_history_desc": "Check logged-in devices",
+      "view_history": "View History",
+      "notifications": "Notifications", "notification_settings": "Notification Settings",
+      "promo_email": "Promotional Emails", "promo_email_desc": "Receive offers via email",
+      "order_updates": "Order Updates", "order_updates_desc": "Update order status",
+      "review_updates": "Review Notifications", "review_updates_desc": "When there is feedback on your review",
+      "privacy": "Privacy", "privacy_data": "Privacy & Data",
+      "download_data": "Download Data", "download_data_desc": "Get a copy of your personal data",
+      "request_data": "Request Data Export",
+      "delete_account": "Delete Account", "delete_account_desc": "This action cannot be undone",
+
       "new_review": "New Reviews",
       "anonymous_user": "Anonymous User",
       "see_more": "see more",
@@ -574,6 +633,8 @@ const resources = {
     }
   }
 };
+
+const resources = mergeResources(adminResources, userResources);
 
 i18n
   .use(LanguageDetector)

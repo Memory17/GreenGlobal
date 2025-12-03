@@ -9,6 +9,7 @@ import {
   GoogleOutlined, LoginOutlined, FacebookFilled,
 } from "@ant-design/icons";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { loginUser } from "../data/authService";
 import "../style/Login.css"; 
 import { useAuth } from "../context/AuthContext";
@@ -30,15 +31,16 @@ const getProfileByUsername = (username) => {
 const { Title, Text, Link } = Typography;
 
 const Login = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
     // If redirected here because admin required, show a warning
     if (location.state?.reason === 'admin_required') {
-      message.warning('Vui lòng đăng nhập bằng tài khoản quản trị để truy cập trang quản trị.');
+      message.warning(t('admin_required_msg'));
     }
-  }, [location.state]);
+  }, [location.state, t]);
   const [loading, setLoading] = useState(false);
   const { login } = useAuth(); 
 
@@ -61,7 +63,7 @@ const Login = () => {
         console.log('🎨 Found and merged custom avatar from local profile.');
       }
 
-      message.success(`Chào mừng trở lại, ${userData.firstName || userData.username}!`);
+      message.success(t('login_success_msg', { name: userData.firstName || userData.username }));
       
       // Dispatch event để các component khác biết user đã login
       window.dispatchEvent(new Event('user_logged_in'));
@@ -75,7 +77,7 @@ const Login = () => {
       navigate(redirectTo);
 
     } catch (error) {
-      message.error(error.message || "Đăng nhập thất bại. Vui lòng thử lại.");
+      message.error(error.message || t('login_failed_msg'));
     } finally {
       setLoading(false);
     }
@@ -88,10 +90,10 @@ const Login = () => {
         <Col xs={0} md={12} lg={15} className="login-col-left">
           <div>
             <Title level={1} className="title-left">
-              Chào mừng đến với L-M Fashion
+              {t('welcome_title')}
             </Title>
             <Text className="text-left">
-              Vui lòng đăng nhập để truy cập tài khoản của bạn và bắt đầu mua sắm.
+              {t('login_intro')}
             </Text>
           </div>
         </Col>
@@ -100,7 +102,7 @@ const Login = () => {
         <Col xs={24} md={12} lg={9} className="login-col-right">
           <div className="login-form-container">
             <Title level={2} className="login-title">
-              Đăng nhập
+              {t('login')}
             </Title>
             <Form
               name="login"
@@ -110,26 +112,26 @@ const Login = () => {
             >
               <Form.Item
                 name="username"
-                label="Tên người dùng"
+                label={t('username')}
                 rules={[
-                  { required: true, message: "Vui lòng nhập tên người dùng!" },
+                  { required: true, message: t('username_required') },
                 ]}
               >
-                <Input placeholder="Nhập tên người dùng của bạn" className="custom-input" />
+                <Input placeholder={t('username_placeholder')} className="custom-input" />
               </Form.Item>
               <Form.Item
                 name="password"
-                label="Mật khẩu"
+                label={t('password')}
                 rules={[
-                  { required: true, message: "Vui lòng nhập mật khẩu!" },
+                  { required: true, message: t('password_required') },
                 ]}
               >
-                <Input.Password placeholder="Nhập mật khẩu của bạn" />
+                <Input.Password placeholder={t('password_placeholder')} />
               </Form.Item>
 
               <Form.Item className="form-item-no-style" style={{ marginBottom: '24px' }}>
                 <Link href="/forgot-password" style={{ float: "right" }}>
-                  Quên mật khẩu?
+                  {t('forgot_password')}
                 </Link>
               </Form.Item>
 
@@ -141,12 +143,12 @@ const Login = () => {
                   loading={loading}
                 >
                   <LoginOutlined />
-                  Đăng nhập
+                  {t('login_button')}
                 </Button>
               </Form.Item>
 
               <Form.Item className="or-login-with-form-item form-item-no-style" style={{ marginTop: '10px' }}>
-                <Text className="or-login">Hoặc đăng nhập bằng</Text>
+                <Text className="or-login">{t('or_login_with')}</Text>
               </Form.Item>
 
               <Row className="login-with" justify="center" gutter={16}>
@@ -166,8 +168,8 @@ const Login = () => {
 
               <Form.Item className="dont-have form-item-no-style" style={{ marginTop: '20px' }}>
                 <Text className="dont-have-account">
-                  Bạn chưa có tài khoản?{" "}
-                  <Link href="/register">Đăng ký ngay</Link>
+                  {t('dont_have_account')}{" "}
+                  <Link href="/register">{t('register_now')}</Link>
                 </Text>
               </Form.Item>
             </Form>

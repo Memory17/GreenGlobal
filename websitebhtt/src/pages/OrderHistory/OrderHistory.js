@@ -20,6 +20,7 @@ import {
   MailOutlined,
   ScheduleOutlined // Thêm icon cho ngày
 } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
  import '../../pages/OrderHistory/OrderHistory.css'; // Bạn có thể tạo file này để style thêm
 
 const { Title, Text } = Typography;
@@ -35,34 +36,34 @@ const formatCurrency = (amount) => {
   return `$${amount.toFixed(2)}`;
 };
 
-// Hàm helper để format ngày (Từ ISO string sang dd/MM/yyyy, HH:mm)
-const formatDate = (isoString) => {
-  if (!isoString) return 'N/A';
-  try {
-    return new Date(isoString).toLocaleDateString('vi-VN', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  } catch (error) {
-    return 'Ngày không hợp lệ';
-  }
-};
-
 // === COMPONENT CHÍNH ===
 
 const OrderHistory = () => {
+  const { t } = useTranslation();
   const { currentUser } = useAuth();
   const { orderHistory } = useOrderHistory(); // Lấy mảng lịch sử từ context
+
+  const formatDate = (isoString) => {
+    if (!isoString) return 'N/A';
+    try {
+      return new Date(isoString).toLocaleDateString('vi-VN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    } catch (error) {
+      return t('invalid_date');
+    }
+  };
 
   // TRƯỜNG HỢP 1: CHƯA ĐĂNG NHẬP
   if (!currentUser) {
     return (
       <div style={{ padding: '2rem', minHeight: '60vh' }}>
         <Card>
-          <Empty description="Vui lòng đăng nhập để xem lịch sử đơn hàng." />
+          <Empty description={t('login_to_view_history')} />
         </Card>
       </div>
     );
@@ -73,13 +74,13 @@ const OrderHistory = () => {
   if (orderHistory.length === 0) {
     return (
       <div style={{ padding: '2rem', minHeight: '60vh' }}>
-        <Title level={2}>Lịch sử Đơn hàng</Title>
+        <Title level={2}>{t('order_history_page_title')}</Title>
         <Text>
-          Xin chào <Text strong>{currentUser.email}</Text>, bạn chưa có đơn hàng nào.
+          {t('hello')} <Text strong>{currentUser.email}</Text>, {t('no_orders_yet')}
         </Text>
         <Divider />
         <Card>
-          <Empty description="Bạn chưa có đơn hàng nào." />
+          <Empty description={t('empty_orders_description')} />
         </Card>
       </div>
     );
@@ -89,10 +90,10 @@ const OrderHistory = () => {
   // (Context của chúng ta đã lưu đơn hàng mới nhất lên đầu, không cần sort)
   return (
     <div className="order-history-container" style={{ padding: '2rem' }}>
-      <Title level={2}>Lịch sử Đơn hàng</Title>
+      <Title level={2}>{t('order_history_page_title')}</Title>
       <Text>
-        Xin chào <Text strong>{currentUser.email}</Text>, bạn có tổng cộng{' '}
-        <Text strong>{orderHistory.length}</Text> đơn hàng.
+        {t('hello')} <Text strong>{currentUser.email}</Text>, {t('you_have_total')}{' '}
+        <Text strong>{orderHistory.length}</Text> {t('orders_count_suffix')}
       </Text>
       
       <Divider />
@@ -103,16 +104,16 @@ const OrderHistory = () => {
             key={order.id}
             header={
               <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px', width: '100%' }}>
-                <Text strong>Đơn hàng: {order.id}</Text>
-                <Text>Ngày đặt: {formatDate(order.orderDate)}</Text>
+                <Text strong>{t('order_label')} {order.id}</Text>
+                <Text>{t('order_date_label')} {formatDate(order.orderDate)}</Text>
                 <Tag color={order.status === 'Processing' ? 'blue' : 'green'}>
-                  {order.status || 'Processing'}
+                  {order.status === 'Processing' ? t('status_processing') : order.status}
                 </Tag>
               </div>
             }
           >
             {/* 1. Chi tiết sản phẩm */}
-            <Title level={5} style={{ marginTop: 0 }}>Chi tiết sản phẩm</Title>
+            <Title level={5} style={{ marginTop: 0 }}>{t('product_details')}</Title>
             <List
               itemLayout="horizontal"
               dataSource={order.items || []} // Đảm bảo items là mảng
@@ -120,8 +121,8 @@ const OrderHistory = () => {
                 <List.Item>
                   <List.Item.Meta
                     avatar={<Avatar src={item.product?.thumbnail} shape="square" />}
-                    title={`${item.product?.title || 'Sản phẩm không rõ'} (x${item.quantity})`}
-                    description={`Đơn giá: ${formatCurrency(item.product?.price)}`}
+                    title={`${item.product?.title || t('unknown_product')} (x${item.quantity})`}
+                    description={`${t('unit_price')} ${formatCurrency(item.product?.price)}`}
                   />
                   <div>
                     <Text strong>
@@ -135,25 +136,25 @@ const OrderHistory = () => {
             <Divider />
 
             {/* 2. Chi tiết thanh toán */}
-            <Title level={5}>Chi tiết Thanh toán</Title>
+            <Title level={5}>{t('payment_details')}</Title>
             <Descriptions bordered column={1} size="small">
-              <Descriptions.Item label="Tạm tính">
+              <Descriptions.Item label={t('subtotal')}>
                 {formatCurrency(order.totals?.subtotal)}
               </Descriptions.Item>
-              <Descriptions.Item label="Phí Vận chuyển">
+              <Descriptions.Item label={t('shipping_fee')}>
                 {formatCurrency(order.totals?.shipping)}
               </Descriptions.Item>
-              <Descriptions.Item label="Giảm giá">
+              <Descriptions.Item label={t('discount')}>
                 <Text type="danger">
                   - {formatCurrency(order.totals?.discount)}
                 </Text>
               </Descriptions.Item>
-              <Descriptions.Item label="Tổng Cộng">
+              <Descriptions.Item label={t('total_label')}>
                 <Text strong style={{ fontSize: '1.1rem' }}>
                   {formatCurrency(order.totals?.total)}
                 </Text>
               </Descriptions.Item>
-              <Descriptions.Item label="Phương thức thanh toán">
+              <Descriptions.Item label={t('payment_method_label')}>
                 {order.delivery?.payment || 'N/A'}
               </Descriptions.Item>
             </Descriptions>
@@ -161,7 +162,7 @@ const OrderHistory = () => {
             <Divider />
 
             {/* 3. Thông tin người nhận */}
-            <Title level={5}>Thông tin người nhận</Title>
+            <Title level={5}>{t('recipient_info')}</Title>
             <Descriptions bordered column={1} size="small">
               <Descriptions.Item label={<UserOutlined />}>
                 {order.delivery?.name}
@@ -177,10 +178,10 @@ const OrderHistory = () => {
                 {order.delivery?.zip ? `, ${order.delivery.zip}` : ''}
               </Descriptions.Item>
                <Descriptions.Item label={<ScheduleOutlined />}>
-                Ngày giao mong muốn: {formatDate(order.delivery?.date)}
+                {t('delivery_date_label')} {formatDate(order.delivery?.date)}
               </Descriptions.Item>
               {order.delivery?.note && (
-                <Descriptions.Item label="Ghi chú">
+                <Descriptions.Item label={t('note_label')}>
                   {order.delivery.note}
                 </Descriptions.Item>
               )}

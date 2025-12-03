@@ -11,6 +11,7 @@ import {
   CustomerServiceOutlined,
   
 } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import messageService from '../data/messageService';
 
@@ -23,6 +24,7 @@ const channel = new BroadcastChannel('chat_channel');
 const LOCAL_CHAT_KEY = 'local_chat_messages_v1';
 
 const ChatBubble = () => {
+  const { t } = useTranslation();
   const { currentUser } = useAuth();
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [isMessengerOpen, setIsMessengerOpen] = useState(false);
@@ -39,7 +41,7 @@ const ChatBubble = () => {
         const welcomeMsg = {
           id: 1,
           sender: 'admin',
-          text: 'Xin chào! Tôi là hỗ trợ. Bạn cần giúp gì?',
+          text: t('chat_welcome_msg'),
           timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
           date: new Date().toLocaleDateString('vi-VN'),
           read: false
@@ -47,7 +49,7 @@ const ChatBubble = () => {
         setMessages([welcomeMsg]);
       }
     }
-  }, [currentUser]);
+  }, [currentUser, t]);
 
   // Lắng nghe tin nhắn mới từ admin
   useEffect(() => {
@@ -219,10 +221,10 @@ const ChatBubble = () => {
     const hours = Math.floor(diff / 3600000);
     const days = Math.floor(diff / 86400000);
 
-    if (minutes < 1) return 'Vừa xong';
-    if (minutes < 60) return `${minutes}m`;
-    if (hours < 24) return `${hours}h`;
-    if (days < 7) return `${days}d`;
+    if (minutes < 1) return t('chat_just_now');
+    if (minutes < 60) return `${minutes}${t('chat_time_m')}`;
+    if (hours < 24) return `${hours}${t('chat_time_h')}`;
+    if (days < 7) return `${days}${t('chat_time_d')}`;
     
     return date.toLocaleDateString('vi-VN');
   };
@@ -294,9 +296,9 @@ const ChatBubble = () => {
   };
 
   const quickReplies = [
-    "Tôi muốn hỏi về đơn hàng",
-    "Giúp tôi hoàn trả sản phẩm",
-    "Vấn đề giao hàng"
+    t('chat_quick_order'),
+    t('chat_quick_return'),
+    t('chat_quick_shipping')
   ];
 
   const handleQuickReply = (reply) => {
@@ -356,22 +358,22 @@ const ChatBubble = () => {
     {
       id: 'zalo-247',
       icon: 'https://cdn-icons-png.flaticon.com/512/739/739178.png',
-      title: 'Hỗ trợ trực tuyến 24/7',
-      description: 'Liên hệ qua Zalo để được hỗ trợ nhanh nhất',
+      title: t('chat_support_247'),
+      description: t('chat_support_zalo_desc'),
       link: 'https://zalo.me/your-zalo-id'
     },
     {
       id: 'zalo-group',
       icon: 'https://cdn-icons-png.flaticon.com/512/739/739178.png',
-      title: 'Nhóm Zalo',
-      description: 'Cập nhật thông tin mới nhất và thảo luận',
+      title: t('chat_zalo_group'),
+      description: t('chat_zalo_group_desc'),
       link: 'https://zalo.me/g/your-zalo-group-id'
     },
     {
       id: 'telegram',
       icon: 'https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg',
-      title: 'Hỗ trợ qua Telegram',
-      description: 'Tư vấn qua kênh Telegram',
+      title: t('chat_telegram'),
+      description: t('chat_telegram_desc'),
       link: 'https://t.me/your-telegram-username'
     },
   ];
@@ -385,7 +387,7 @@ const ChatBubble = () => {
           bodyStyle={{ padding: '0 24px 24px 24px' }}
           title={
             <div className="support-popup-header">
-              <Title level={4} style={{ margin: 0 }}>Chọn kênh hỗ trợ</Title>
+              <Title level={4} style={{ margin: 0 }}>{t('chat_popup_title')}</Title>
             </div>
           }
         >
@@ -418,9 +420,9 @@ const ChatBubble = () => {
             <div className="messenger-header-left">
               <Avatar src="https://i.imgur.com/W0ESUyO.jpeg" size={48} />
               <div className="messenger-header-title" style={{ marginLeft: 12 }}>
-                <div style={{ fontWeight: 600 }}>Hỗ trợ trực tiếp</div>
+                <div style={{ fontWeight: 600 }}>{t('chat_messenger_header')}</div>
                 <div style={{ fontSize: 12, color: '#fff' }}>
-                  {isAdminTyping ? '🟢 Đang gõ...' : '🟢 Trực tuyến'}
+                  {isAdminTyping ? `🟢 ${t('chat_typing')}` : `🟢 ${t('chat_online')}`}
                 </div>
               </div>
             </div>
@@ -492,30 +494,30 @@ const ChatBubble = () => {
                     handleSendMessage();
                   }
                 }}
-                placeholder="Gửi tin nhắn..."
+                placeholder={t('chat_input_placeholder')}
               />
             </div>
 
             <div className="messenger-send-row">
               <button
                 className="icon-action-button emoji-button"
-                title="Emoji"
+                title={t('chat_emoji')}
                 onClick={() => setShowEmojiPicker((s) => !s)}
-                aria-label="Emoji picker"
+                aria-label={t('chat_emoji')}
               >
                 <SmileOutlined />
               </button>
 
               <button
                 className="icon-action-button picture-button"
-                title="Gửi ảnh"
+                title={t('chat_send_image')}
                 onClick={() => fileInputRef.current && fileInputRef.current.click()}
-                aria-label="Gửi ảnh"
+                aria-label={t('chat_send_image')}
               >
                 <PictureOutlined />
               </button>
 
-              <button className="send-icon-button" onClick={handleSendMessage} aria-label="Gửi">
+              <button className="send-icon-button" onClick={handleSendMessage} aria-label={t('chat_send')}>
                 <SendOutlined />
               </button>
             </div>
@@ -544,7 +546,7 @@ const ChatBubble = () => {
         }}
         badge={{ count: unreadCount, offset: [2, 5], size: 'small' }}
         onClick={toggleMessenger}
-        tooltip={<div>{isMessengerOpen ? 'Đóng Messenger' : 'Mở Messenger'}</div>}
+        tooltip={<div>{isMessengerOpen ? t('chat_close_messenger') : t('chat_open_messenger')}</div>}
       />
 
       <FloatButton
@@ -558,7 +560,7 @@ const ChatBubble = () => {
           // transform removed, handled in CSS
         }}
         onClick={togglePopup}
-        tooltip={<div>{isPopupVisible ? 'Đóng hỗ trợ' : 'Mở hỗ trợ'}</div>}
+        tooltip={<div>{isPopupVisible ? t('chat_close_support') : t('chat_open_support')}</div>}
       />
     </>
   );

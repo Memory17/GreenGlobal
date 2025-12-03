@@ -30,6 +30,7 @@ import {
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useCart } from "../context/CartContext"; 
 import { useAuth } from "../context/AuthContext"; // 👈 THÊM
+import { useTranslation, Trans } from "react-i18next"; // Import useTranslation
 // import { useOrderHistory } from "../context/OrderHistoryContext"; // 👈 BỎ: Không dùng nữa
 
 // 🐞 FIX: getProductById was not found in '../API'. Adding a mock implementation here.
@@ -42,6 +43,7 @@ const { Title, Text } = Typography;
 const { TextArea } = Input;
 
 const ProductDetail = () => {
+  const { t } = useTranslation(); // Initialize hook
   const navigate = useNavigate(); 
   const location = useLocation(); 
   const { id: productId } = useParams(); // 👈 Lấy ID từ URL
@@ -154,12 +156,12 @@ const ProductDetail = () => {
   // ⭐️ HÀM MỚI: Xử lý gửi trả lời (Admin & User)
   const handleReplySubmit = async (reviewId) => {
     if (!currentUser) {
-      message.warning("Vui lòng đăng nhập để trả lời.");
+      message.warning(t('login_to_reply'));
       navigate('/login');
       return;
     }
     if (!replyContent.trim()) {
-      message.warning("Vui lòng nhập nội dung trả lời.");
+      message.warning(t('enter_reply_content'));
       return;
     }
     
@@ -187,13 +189,13 @@ const ProductDetail = () => {
       });
 
       localStorage.setItem(GLOBAL_REVIEWS_KEY, JSON.stringify(updatedReviews));
-      message.success("Đã gửi câu trả lời.");
+      message.success(t('reply_success'));
       loadReviews(productId); // Tải lại danh sách
       setReplyingTo(null);
       setReplyContent("");
     } catch (error) {
       console.error("Lỗi khi trả lời:", error);
-      message.error("Có lỗi xảy ra.");
+      message.error(t('error_occurred'));
     } finally {
       setSubmittingReply(false);
     }
@@ -202,12 +204,12 @@ const ProductDetail = () => {
   // ⭐️ HÀM MỚI: Xử lý gửi đánh giá mới
   const handleReviewSubmit = async () => {
     if (!currentUser) {
-      message.warning("Vui lòng đăng nhập để viết đánh giá.");
+      message.warning(t('login_to_review'));
       navigate('/login');
       return;
     }
     if (!newReviewContent.trim()) {
-      message.warning("Vui lòng nhập nội dung đánh giá.");
+      message.warning(t('enter_review_content'));
       return;
     }
 
@@ -234,26 +236,26 @@ const ProductDetail = () => {
       allReviews.unshift(newReview); // Thêm vào đầu danh sách
       localStorage.setItem(GLOBAL_REVIEWS_KEY, JSON.stringify(allReviews));
       
-      message.success("Cảm ơn bạn đã đánh giá sản phẩm!");
+      message.success(t('review_success'));
       loadReviews(productId);
       setNewReviewContent("");
       setNewRating(5);
     } catch (error) {
       console.error("Lỗi khi gửi đánh giá:", error);
-      message.error("Có lỗi xảy ra.");
+      message.error(t('error_occurred'));
     } finally {
       setSubmittingReview(false);
     }
   };
 
   if (loading) {
-    return <div style={{ padding: "100px", textAlign: "center" }}><Spin size="large" /></div>;
+    return <div style={{ padding: "100px", textAlign: "center" }}><Spin size="large" tip={t('loading_product_detail')} /></div>;
   }
 
   if (!product && !loading) {
     return (
       <div style={{ padding: "100px", textAlign: "center" }}>
-        <Empty description="Không tìm thấy sản phẩm. Đang quay về trang sản phẩm...">
+        <Empty description={t('product_not_found')}>
           {setTimeout(() => navigate("/products"), 2000)}
         </Empty>
       </div>
@@ -270,7 +272,7 @@ const ProductDetail = () => {
 
   const checkValidity = () => {
     if (!product || value <= 0 || availableStock === 0 || value > availableStock) {
-        message.warning('Vui lòng chọn số lượng hợp lệ.');
+        message.warning(t('please_select_valid_quantity'));
         return false;
     }
     return true;
@@ -281,7 +283,7 @@ const ProductDetail = () => {
     if (!checkValidity()) return;
     
     addToCart(product, value);
-    message.success(`Đã thêm ${value} sản phẩm "${product.title}" vào giỏ hàng!`);
+    message.success(t('added_to_cart_success', { count: value, title: product.title }));
   };
   
   // HÀM XỬ LÝ MUA NGAY
@@ -290,7 +292,7 @@ const ProductDetail = () => {
 
     addToCart(product, value);
     
-    message.info('Đang chuyển hướng đến trang thanh toán...');
+    message.info(t('redirecting_to_checkout'));
     navigate('/checkout'); 
   };
 
@@ -331,7 +333,7 @@ const ProductDetail = () => {
                 <Image
                   key={index}
                   src={img} 
-                  alt={`ảnh nhỏ ${index + 1}`}
+                  alt={t('thumbnail_alt', { index: index + 1 })}
                   preview={false}
                   style={{
                     width: 80,
@@ -370,7 +372,7 @@ const ProductDetail = () => {
         <Col xs={24} md={12}>
           <Title level={3}>{product.title}</Title>
           <Text type="secondary" style={{ textTransform: 'capitalize' }}>
-            Thương hiệu: {product.brand || 'Không có thông tin'}
+            {t('brand')}: {product.brand || t('no_info')}
           </Text>
 
           <div style={{ margin: "16px 0" }}>
@@ -393,16 +395,16 @@ const ProductDetail = () => {
 
           {/* === HIỂN THỊ SỐ LƯỢNG TỒN KHO === */}
           <Text strong style={{ display: 'block', marginBottom: '8px' }}>
-            Tồn kho: 
+            {t('stock')}: 
             <Text style={{ marginLeft: 8, color: availableStock > 10 ? '#389e0d' : availableStock > 0 ? '#faad14' : '#cf1322' }}>
-                {availableStock > 0 ? `${availableStock} sản phẩm` : 'Hết hàng'}
+                {availableStock > 0 ? t('products_count', { count: availableStock }) : t('out_of_stock')}
             </Text>
           </Text>
 
           {/* === CHỌN SỐ LƯỢNG === */}
           <div className="select-quantity">
             <Text strong>
-              Số lượng mua
+              {t('quantity')}
             </Text>
             <Space className="quantity-product-cart" style={{ marginBottom: 0 }}> 
               <Button 
@@ -431,7 +433,7 @@ const ProductDetail = () => {
                 disabled={availableStock === 0} 
                 onClick={handleAddToCart} 
               >
-                Thêm vào giỏ hàng
+                {t('add_to_cart')}
               </Button>
             </Col>
             <Col span={12} className="buy-now">
@@ -443,7 +445,7 @@ const ProductDetail = () => {
                 disabled={availableStock === 0} 
                 onClick={handleBuyNow}
               >
-                Mua ngay
+                {t('buy_now')}
               </Button>
             </Col>
           </Row>
@@ -461,16 +463,16 @@ const ProductDetail = () => {
           
           {/* FORM VIẾT ĐÁNH GIÁ */}
           <div className="review-form-container">
-            <Title level={4}>Viết đánh giá của bạn</Title>
+            <Title level={4}>{t('write_your_review')}</Title>
             {currentUser ? (
               <Space direction="vertical" style={{ width: '100%' }}>
                 <Space>
-                  <Text>Đánh giá:</Text>
+                  <Text>{t('rating')}</Text>
                   <Rate value={newRating} onChange={setNewRating} />
                 </Space>
                 <TextArea 
                   rows={4} 
-                  placeholder="Chia sẻ cảm nhận của bạn về sản phẩm..." 
+                  placeholder={t('share_your_thoughts')}
                   value={newReviewContent}
                   onChange={(e) => setNewReviewContent(e.target.value)}
                 />
@@ -480,34 +482,38 @@ const ProductDetail = () => {
                   loading={submittingReview}
                   icon={<SendOutlined />}
                 >
-                  Gửi đánh giá
+                  {t('submit_review')}
                 </Button>
               </Space>
             ) : (
               <Space>
-                <Text>Vui lòng <Button type="link" onClick={() => navigate('/login')} style={{ padding: 0 }}>đăng nhập</Button> để viết đánh giá.</Text>
+                <Text>
+                  <Trans i18nKey="login_to_review_prompt">
+                    Vui lòng <Button type="link" onClick={() => navigate('/login')} style={{ padding: 0 }}>đăng nhập</Button> để viết đánh giá.
+                  </Trans>
+                </Text>
               </Space>
             )}
           </div>
 
-          <Title level={4}>Đánh giá từ khách hàng ({reviews.length})</Title>
+          <Title level={4}>{t('customer_reviews', { count: reviews.length })}</Title>
           
           {/* Bộ lọc đánh giá */}
           <div style={{ marginBottom: 20 }}>
             <Space>
-              <span style={{ fontWeight: 500 }}>Lọc theo:</span>
+              <span style={{ fontWeight: 500 }}>{t('filter_by')}</span>
               <Select
                 value={filterRating}
                 bordered={false}
                 style={{ width: 150, backgroundColor: 'transparent' }}
                 onChange={(value) => setFilterRating(value)}
                 options={[
-                  { value: 'all', label: `Tất cả (${reviews.length})` },
-                  { value: 5, label: `5 Sao (${reviewCounts[5] || 0})` },
-                  { value: 4, label: `4 Sao (${reviewCounts[4] || 0})` },
-                  { value: 3, label: `3 Sao (${reviewCounts[3] || 0})` },
-                  { value: 2, label: `2 Sao (${reviewCounts[2] || 0})` },
-                  { value: 1, label: `1 Sao (${reviewCounts[1] || 0})` },
+                  { value: 'all', label: t('all_reviews', { count: reviews.length }) },
+                  { value: 5, label: t('stars_count', { count: 5, total: reviewCounts[5] || 0 }) },
+                  { value: 4, label: t('stars_count', { count: 4, total: reviewCounts[4] || 0 }) },
+                  { value: 3, label: t('stars_count', { count: 3, total: reviewCounts[3] || 0 }) },
+                  { value: 2, label: t('stars_count', { count: 2, total: reviewCounts[2] || 0 }) },
+                  { value: 1, label: t('stars_count', { count: 1, total: reviewCounts[1] || 0 }) },
                 ]}
               />
             </Space>
@@ -516,21 +522,14 @@ const ProductDetail = () => {
           <List
             itemLayout="horizontal"
             dataSource={filteredReviews}
-            locale={{ emptyText: "Chưa có đánh giá nào phù hợp." }}
+            locale={{ emptyText: t('no_matching_reviews') }}
             renderItem={(review) => {
               const isFocus = location.state?.reviewToFocus === review.id;
               return (
               <div 
                 key={review.id} 
                 ref={el => reviewRefs.current[review.id] = el} 
-                style={{ 
-                  background: isFocus ? '#fffbe6' : 'transparent',
-                  border: isFocus ? '1px solid #ffe58f' : 'none',
-                  borderRadius: '8px',
-                  padding: '0 16px',
-                  marginBottom: '8px',
-                  transition: 'all 0.3s'
-                }}
+                className={`review-item ${isFocus ? 'review-item-focused' : ''}`}
               >
                 <List.Item>
                   <List.Item.Meta
@@ -542,7 +541,7 @@ const ProductDetail = () => {
                     }
                     title={
                       <Space>
-                        <Text strong>{review.user || 'Người dùng ẩn danh'}</Text>
+                        <Text strong>{review.user || t('anonymous_user')}</Text>
                         <Text type="secondary" style={{ fontSize: 12 }}>
                           {new Date(review.date).toLocaleDateString('vi-VN')}
                         </Text>
@@ -569,8 +568,8 @@ const ProductDetail = () => {
                        avatar={<Avatar src={reply.userAvatar || "https://api.dicebear.com/7.x/adventurer/svg?seed=User"} icon={<UserOutlined />} />}
                        title={
                         <Space>
-                           <Text strong>{reply.user || 'Người dùng'}</Text>
-                           {reply.role === 'admin' && <Text type="secondary" style={{ fontSize: 12, border: '1px solid #ccc', padding: '0 4px', borderRadius: 4 }}>QTV</Text>}
+                           <Text strong>{reply.user || t('user')}</Text>
+                           {reply.role === 'admin' && <Text type="secondary" style={{ fontSize: 12, border: '1px solid #ccc', padding: '0 4px', borderRadius: 4 }}>{t('admin')}</Text>}
                            <Text type="secondary" style={{ fontSize: 12 }}>
                              {new Date(reply.date).toLocaleString('vi-VN')}
                            </Text>
@@ -590,14 +589,14 @@ const ProductDetail = () => {
                         setReplyingTo(review.id);
                         setReplyContent(""); // Đảm bảo ô input luôn trống khi bắt đầu
                       }}>
-                        Trả lời
+                        {t('reply')}
                       </Button>
                     ) : (
                       <Form onFinish={() => handleReplySubmit(review.id)}>
                         <Space.Compact style={{ width: '100%' }}>
                           <TextArea
                             rows={2}
-                            placeholder={`Trả lời ${review.user}...`}
+                            placeholder={t('reply_to_user', { user: review.user })}
                             value={replyContent}
                             onChange={(e) => setReplyContent(e.target.value)}
                           />

@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { Button, Rate, Tag } from "antd";
 import { FireFilled, ShoppingCartOutlined, LeftOutlined, RightOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 import "../style/HotDeal.css";
 
 const HotDeal = ({ products, onProductClick, onBuyNow, onAddToCart }) => {
+  const { t } = useTranslation();
   const [startIndex, setStartIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -66,8 +68,8 @@ const HotDeal = ({ products, onProductClick, onBuyNow, onAddToCart }) => {
   return (
     <div className="hot-deal-container">
       <div className="hot-deal-header-simple">
-        <h2><FireFilled style={{color: '#ff4d4f'}} /> HOT DEALS</h2>
-        <p>Săn deal hời - Giá cực sốc</p>
+        <h2><FireFilled style={{color: '#ff4d4f'}} /> {t('hot_deals_title')}</h2>
+        <p>{t('hot_deals_subtitle')}</p>
       </div>
 
       <div className="hot-deal-content-wrapper">
@@ -93,7 +95,7 @@ const HotDeal = ({ products, onProductClick, onBuyNow, onAddToCart }) => {
             </div>
             <div className="hero-content">
                 <div className="hero-meta">
-                    <Tag color="#f50">#1 Best Price</Tag>
+                    <Tag color="#f50">{t('best_price_tag')}</Tag>
                     <Rate disabled defaultValue={heroProduct.rating} style={{ fontSize: 14 }} />
                 </div>
                 <h3 className="hero-title">{heroProduct.title}</h3>
@@ -102,7 +104,7 @@ const HotDeal = ({ products, onProductClick, onBuyNow, onAddToCart }) => {
                 
                 <div className="hero-actions">
                     <Button type="primary" size="large" className="buy-now-btn" onClick={(e) => { e.stopPropagation(); onBuyNow(e, heroProduct); }}>
-                        Mua Ngay
+                        {t('buy_now')}
                     </Button>
                     <Button size="large" icon={<ShoppingCartOutlined />} onClick={(e) => { e.stopPropagation(); onAddToCart(e, heroProduct); }} />
                 </div>

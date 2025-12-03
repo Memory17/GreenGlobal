@@ -43,11 +43,13 @@ import {
 // ⭐ BƯỚC 1: Import hàm getMergedProducts
 import { getMergedProducts } from "../API";
 import { useCart } from "../context/CartContext"; 
+import { useTranslation } from "react-i18next"; // Import useTranslation
 
 const { Title } = Typography;
 const { Meta } = Card;
 
 function Product() {
+  const { t } = useTranslation(); // Initialize hook
   const { addToCart } = useCart();
   const navigate = useNavigate();
 
@@ -91,11 +93,11 @@ function Product() {
 
     } catch (err) {
       console.error("Lỗi khi tải tất cả sản phẩm:", err);
-      message.error("Không thể tải danh sách sản phẩm.");
+      message.error(t('error_loading_products'));
       setProducts([]);
       setFilteredProducts([]);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -171,7 +173,7 @@ function Product() {
   const handleCategoryClick = (categorySlug) => {
     if (categorySlug === null) {
       if (selectedCategorySlug !== null) {
-        message.info("Đang hiển thị tất cả sản phẩm.");
+        message.info(t('info_showing_all_products'));
       }
       setSelectedCategorySlug(null);
       setFilteredProducts(products); 
@@ -184,7 +186,7 @@ function Product() {
     setSelectedCategorySlug(categorySlug);
     const categoryProducts = products.filter(p => p.category === categorySlug);
     setFilteredProducts(categoryProducts);
-    message.success(`Đang hiển thị sản phẩm từ danh mục ${categorySlug}.`);
+    message.success(t('info_showing_category', { category: categorySlug }));
   };
 
   const handleProductClick = (product) => {
@@ -194,20 +196,20 @@ function Product() {
   const handleBuyNow = (e, product) => {
     e.stopPropagation(); 
     const buyNowItem = { product: product, quantity: 1 };
-    message.loading("Đang chuyển đến trang thanh toán...", 0.5);
+    message.loading(t('loading_checkout'), 0.5);
     navigate("/checkout", { state: { buyNowItems: [buyNowItem] } });
   };
 
   const handleAddToCartClick = (e, product) => {
     e.stopPropagation(); 
     addToCart(product); 
-    message.success(`Đã thêm sản phẩm "${product.title}" vào giỏ hàng.`);
+    message.success(t('added_to_cart_message', { title: product.title }));
   };
 
   if (loading && products.length === 0 && categories.length === 0) {
     return (
       <Spin
-        tip="Đang tải dữ liệu..."
+        tip={t('loading_data')}
         style={{ display: "block", margin: "50px auto" }}
       />
     );
@@ -231,17 +233,17 @@ function Product() {
       {/* ------------------------------------------- */}
       <div style={{ marginBottom: "40px" }}>
         <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-           <Title level={3} style={{ color: '#333', margin: 0 }}>☀️ Danh Mục Nổi Bật</Title>
+           <Title level={3} style={{ color: '#333', margin: 0 }}>{t('featured_categories_title')}</Title>
         </div>
         
         <Row gutter={[24, 24]}>
           {[
-            { key: 'smartphones', title: 'Điện Thoại', img: 'https://tinyurl.com/y3nm9j8x' },
-            { key: 'laptops', title: 'Laptop', img: 'https://tinyurl.com/bhndmjk2' },
-            { key: 'skincare', title: 'Chăm Sóc Da', img: 'https://tinyurl.com/yjrzc3fu' },
-            { key: 'groceries', title: 'Hàng Tạp Hóa', img: 'https://tinyurl.com/2y3kznyc' },
-            { key: 'home-decoration', title: 'Nội thất', img: 'https://tinyurl.com/msrmhyry' },
-            { key: 'fragrances', title: 'Nước Hoa', img: 'https://tinyurl.com/nhkc6wve' }
+            { key: 'smartphones', title: t('cat_smartphones'), img: 'https://tinyurl.com/y3nm9j8x' },
+            { key: 'laptops', title: t('cat_laptops'), img: 'https://tinyurl.com/bhndmjk2' },
+            { key: 'skincare', title: t('cat_skincare'), img: 'https://tinyurl.com/yjrzc3fu' },
+            { key: 'groceries', title: t('cat_groceries'), img: 'https://tinyurl.com/2y3kznyc' },
+            { key: 'home-decoration', title: t('cat_home_decoration'), img: 'https://tinyurl.com/msrmhyry' },
+            { key: 'fragrances', title: t('cat_fragrances'), img: 'https://tinyurl.com/nhkc6wve' }
           ].map((cat) => (
             <Col xs={24} sm={12} md={8} key={cat.key}>
               <div
@@ -258,7 +260,7 @@ function Product() {
                 <div className="category-overlay-content">
                   <h3 className="featured-category-title">{cat.title}</h3>
                   <span className="category-product-count">
-                    {categoryCounts[cat.key] || 0} Sản phẩm
+                    {categoryCounts[cat.key] || 0} {t('product_count_suffix')}
                   </span>
                 </div>
               </div>
@@ -273,7 +275,7 @@ function Product() {
       <div className="category-section-header">
         <Title level={4} style={{ margin: 0 }}>
           <span role="img" aria-label="tag" style={{ marginRight: 8 }}>🏷️</span> 
-          Bạn muốn mua gì ?
+          {t('what_to_buy')}
         </Title>
       </div>
       
@@ -286,7 +288,7 @@ function Product() {
             onClick={() => handleCategoryClick(null)}
             className={`category-pill ${selectedCategorySlug === null ? 'active' : ''}`}
           >
-            Tất Cả Sản Phẩm
+            {t('all_products_btn') || t('all_products')}
           </Button>
 
           {categories.map((category) => (
@@ -313,7 +315,7 @@ function Product() {
         <div className="filter-search-wrapper">
             <SearchOutlined className="search-icon" />
             <Input 
-                placeholder="Tìm kiếm sản phẩm..." 
+                placeholder={t('search_placeholder')} 
                 bordered={false} 
                 className="modern-search-input"
                 value={searchQuery}
@@ -336,7 +338,7 @@ function Product() {
                 content={
                     <div className="filter-popup-content">
                         <div className="filter-popup-header">
-                            <span>Khoảng giá</span>
+                            <span>{t('price_range_label')}</span>
                             <span className="price-values">${priceRange[0]} - ${priceRange[1]}</span>
                         </div>
                         <Slider
@@ -355,7 +357,7 @@ function Product() {
                     className={`filter-pill-btn ${priceRange[0] > 0 || priceRange[1] < maxPrice ? 'active' : ''}`}
                     icon={<DollarOutlined />}
                 >
-                    Giá bán
+                    {t('price_btn')}
                     {(priceRange[0] > 0 || priceRange[1] < maxPrice) && <span className="filter-dot"></span>}
                 </Button>
             </Popover>
@@ -368,8 +370,8 @@ function Product() {
                 content={
                     <div className="filter-popup-content">
                         <div className="filter-popup-header">
-                            <span>Đánh giá tối thiểu</span>
-                            <span>{minRating} sao</span>
+                            <span>{t('min_rating_label')}</span>
+                            <span>{t('rating_stars', { count: minRating })}</span>
                         </div>
                         <Rate 
                             value={minRating} 
@@ -383,7 +385,7 @@ function Product() {
                     className={`filter-pill-btn ${minRating > 0 ? 'active' : ''}`}
                     icon={<StarOutlined />}
                 >
-                    Đánh giá
+                    {t('rating_btn')}
                     {minRating > 0 && <span className="filter-dot"></span>}
                 </Button>
             </Popover>
@@ -400,7 +402,7 @@ function Product() {
                         setPriceRange([0, maxPrice]);
                     }}
                 >
-                    Xóa lọc
+                    {t('clear_filter')}
                 </Button>
             )}
         </div>
@@ -414,32 +416,32 @@ function Product() {
       <Divider>
         {selectedCategorySlug
           ? ` ${selectedCategorySlug.toUpperCase().replace(/-/g, " ")}`
-          : "Tất Cả Sản Phẩm"}
+          : t('all_products')}
       </Divider>
 
       <Row gutter={[16, 16]}>
         {loading ? ( 
           <Col span={24} style={{ textAlign: "center", padding: "50px" }}>
             <Spin
-              tip={`Đang tải sản phẩm ${
-                selectedCategorySlug ? `của ${selectedCategorySlug}` : "..."
+              tip={`${t('loading_products')} ${
+                selectedCategorySlug ? `(${selectedCategorySlug})` : "..."
               }`}
             />
           </Col>
         ) : !loading && filteredProducts.length === 0 && selectedCategorySlug ? ( 
           <Col span={24} style={{ textAlign: "center", padding: "50px" }}>
             <p>
-              Không có sản phẩm nào trong danh mục "
+              {t('no_products_in_category')} "
               {selectedCategorySlug.replace(/-/g, " ")}".
             </p>
           </Col>
         ) : !loading && displayProducts.length === 0 ? ( 
           <Col span={24} style={{ textAlign: "center", padding: "50px" }}>
             <Title level={5} type="secondary">
-              Không tìm thấy sản phẩm nào phù hợp
+              {t('no_products_found')}
             </Title>
             <p>
-              Vui lòng thử điều chỉnh bộ lọc tìm kiếm, giá, hoặc đánh giá của bạn.
+              {t('adjust_filter_hint')}
             </p>
           </Col>
         ) : (
@@ -490,7 +492,7 @@ function Product() {
                     product.stock < 10 ? "low-stock" : ""
                   }`}
                 >
-                  In Stock: {product.stock || "??"}
+                  {t('in_stock')}: {product.stock || "??"}
                 </div>
 
                 <div className="product-actions">
@@ -501,10 +503,10 @@ function Product() {
                     onClick={(e) => handleBuyNow(e, product)}
                     disabled={product.stock === 0}
                   >
-                    Mua Ngay
+                    {t('buy_now')}
                   </Button>
 
-                  <Tooltip title="Thêm vào giỏ hàng">
+                  <Tooltip title={t('add_to_cart')}>
                     <ShoppingCartOutlined
                       className="add-to-cart-icon"
                       onClick={(e) => handleAddToCartClick(e, product)}
@@ -543,7 +545,7 @@ function Product() {
             </div>
             
             <div className="flash-countdown">
-                <p>Kết thúc trong</p>
+                <p>{t('ends_in')}</p>
                 <div className="timer-display">
                     {formatTime(timeLeft).split(":").map((t, i) => (
                         <React.Fragment key={i}>
@@ -555,7 +557,7 @@ function Product() {
             </div>
 
             <Button type="primary" size="large" className="view-all-flash-btn">
-                Xem Tất Cả <ArrowRightOutlined />
+                {t('view_all')} <ArrowRightOutlined />
             </Button>
         </div>
 
@@ -605,7 +607,7 @@ function Product() {
                                     <div className="progress-track">
                                         <div className="progress-bar-fire" style={{ width: `${soldPercent}%` }}></div>
                                     </div>
-                                    <span className="sold-text">Đã bán {Math.floor(Math.random() * 40 + 1)}</span>
+                                    <span className="sold-text">{t('sold')} {Math.floor(Math.random() * 40 + 1)}</span>
                                 </div>
 
                                 <div className="flash-action-group">
@@ -615,9 +617,9 @@ function Product() {
                                         className="flash-buy-btn"
                                         onClick={(e) => handleBuyNow(e, product)}
                                     >
-                                        Mua Ngay
+                                        {t('buy_now')}
                                     </Button>
-                                    <Tooltip title="Thêm vào giỏ hàng">
+                                    <Tooltip title={t('add_to_cart')}>
                                         <div className="flash-cart-icon-wrapper" onClick={(e) => handleAddToCartClick(e, product)}>
                                             <ShoppingCartOutlined />
                                         </div>
@@ -632,7 +634,7 @@ function Product() {
             ) : (
                 <div style={{ width: '100%', height: '300px', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
                     <Spin size="large" />
-                    <p style={{ marginTop: 10, color: '#999' }}>Đang tải ưu đãi...</p>
+                    <p style={{ marginTop: 10, color: '#999' }}>{t('loading_deals')}</p>
                 </div>
             )}
         </div>

@@ -39,25 +39,25 @@ import PayPal from "../assets/images/paypal.png";
 import GooglePay from "../assets/images/gpay.png";
 import redbullLogo from "../assets/images/redbull.png";
 
+import { useTranslation } from "react-i18next"; // Import useTranslation
+
 const { Text, Title } = Typography;
 
 const About = () => {
+  const { t } = useTranslation(); // Initialize hook
 
   return (
     <div className="about-us-page">
       {/* (Phần đầu giữ nguyên) */}
       <div className="title-about">
         <Title level={2} className="title-left-about">
-          Sứ Mệnh Của Chúng Tôi: <br />
-          Trải Nghiệm Mua Sắm Tốt Nhất
+          {t('about_mission_title')}
         </Title>
         <div className="title-right-about">
-          <Text strong>Cam Kết Của Chúng Tôi</Text>
+          <Text strong>{t('about_commitment_title')}</Text>
           <br />
           <Text>
-            Mục tiêu của chúng tôi là mang đến cho bạn một nền tảng mua sắm trực tuyến
-            liền mạch, an toàn và thú vị. Chúng tôi tin tưởng vào việc cung cấp
-            không chỉ sản phẩm, mà còn là sự an tâm và hài lòng.
+            {t('about_commitment_desc')}
           </Text>
         </div>
       </div>
@@ -74,15 +74,13 @@ const About = () => {
                 src="https://images.pexels.com/photos/105028/pexels-photo-105028.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
                 alt="Sản phẩm đa dạng"
               />
-              <Title level={4}>Sản Phẩm Đa Dạng</Title>
+              <Title level={4}>{t('about_diverse_products')}</Title>
               <Text>
-                Từ thời trang, công nghệ đến đồ gia dụng, chúng tôi tự hào mang đến
-                hàng ngàn sản phẩm được chọn lọc kỹ lưỡng,
-                đáp ứng mọi nhu cầu của bạn.
+                {t('about_diverse_products_desc')}
               </Text>
               <br />
               <Button type="secondary">
-                Xem Sản Phẩm
+                {t('view_products')}
                 <ArrowRightOutlined />
               </Button>
             </div>
@@ -93,15 +91,13 @@ const About = () => {
                 src="https://images.pexels.com/photos/4393021/pexels-photo-4393021.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
                 alt="Giao hàng nhanh"
               />
-              <Title level={4}>Giao Hàng Thần Tốc</Title>
+              <Title level={4}>{t('about_fast_delivery')}</Title>
               <Text>
-                Với hệ thống kho bãi hiện đại và đối tác vận chuyển tin cậy,
-                đơn hàng của bạn sẽ được xử lý và giao đến tay bạn
-                trong thời gian nhanh nhất.
+                {t('about_fast_delivery_desc')}
               </Text>
               <br />
               <Button type="secondary">
-                Theo Dõi Đơn
+                {t('track_order')}
                 <ArrowRightOutlined />
               </Button>
             </div>
@@ -112,15 +108,13 @@ const About = () => {
                 src="https://images.pexels.com/photos/5632398/pexels-photo-5632398.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
                 alt="Chất lượng đảm bảo"
               />
-              <Title level={4}>Chất Lượng Đảm Bảo</Title>
+              <Title level={4}>{t('about_quality_guaranteed')}</Title>
               <Text>
-                Chúng tôi cam kết 100% sản phẩm là hàng chính hãng,
-                với chính sách bảo hành và đổi trả rõ ràng,
-                minh bạch để bảo vệ quyền lợi khách hàng.
+                {t('about_quality_guaranteed_desc')}
               </Text>
               <br />
               <Button type="secondary">
-                Xem Chính Sách
+                {t('view_policy')}
                 <ArrowRightOutlined />
               </Button>
             </div>
@@ -133,19 +127,17 @@ const About = () => {
         <Row className="high-quality-row" gutter={32}>
           
           <Col className="high-quality-col-left" xs={24} md={12}>
-            <Text>Giá Trị Vượt Trội</Text>
+            <Text>{t('about_value_title')}</Text>
             <br />
             <Title level={2}>
-              Sản Phẩm Chất Lượng Cao <br /> Với Mức Giá Tốt Nhất
+              {t('about_high_quality_title')}
             </Title>
             <Text className="text-content-2">
-              Chúng tôi làm việc trực tiếp với các nhà cung cấp uy tín để
-              cắt giảm chi phí trung gian, đảm bảo bạn luôn nhận được
-              sản phẩm chất lượng với mức giá cạnh tranh và công bằng nhất.
+              {t('about_high_quality_desc')}
             </Text>
             <br />
             <Button type="primary" className="high-quality-button">
-              Mua Sắm Ngay
+              {t('shop_now')}
             </Button>
           </Col>
 
@@ -163,7 +155,7 @@ const About = () => {
       <div className="social-proof-section">
         <div className="title-about" style={{ paddingBottom: '2rem', justifyContent: 'center' }}>
           <Title level={2} className="title-left-about" style={{ textAlign: 'center', width: '100%' }}>
-            Khách Hàng Nói Gì Về Chúng Tôi
+            {t('about_testimonials_title')}
           </Title>
         </div>
         
@@ -173,21 +165,21 @@ const About = () => {
             <div className="stat-item">
               <UsergroupAddOutlined className="stat-icon" />
               <Title level={2} className="stat-number">100,000+</Title>
-              <Text className="stat-label">Khách Hàng Hài Lòng</Text>
+              <Text className="stat-label">{t('about_stats_customers')}</Text>
             </div>
           </Col>
           <Col xs={24} md={8}>
             <div className="stat-item">
               <TrophyOutlined className="stat-icon" />
-              <Title level={2} className="stat-number">5 Năm</Title>
-              <Text className="stat-label">Kinh Nghiệm Phục Vụ</Text>
+              <Title level={2} className="stat-number">5 {t('about_stats_experience').split(' ')[0]}</Title>
+              <Text className="stat-label">{t('about_stats_experience')}</Text>
             </div>
           </Col>
           <Col xs={24} md={8}>
             <div className="stat-item">
               <ShoppingOutlined className="stat-icon" />
               <Title level={2} className="stat-number">1,000,000+</Title>
-              <Text className="stat-label">Đơn Hàng Đã Giao</Text>
+              <Text className="stat-label">{t('about_stats_orders')}</Text>
             </div>
           </Col>
         </Row>
@@ -248,13 +240,13 @@ const About = () => {
       <div className="milestones-section">
         <div className="title-about">
           <Title level={2} className="title-left-about">
-            Hành Trình Của Chúng Tôi
+            {t('about_journey_title')}
           </Title>
           <div className="title-right-about">
-            <Text strong>Những Dấu Mốc Đáng Nhớ</Text>
+            <Text strong>{t('about_milestones_title')}</Text>
             <br />
             <Text>
-              Từ những bước đi đầu tiên cho đến ngày hôm nay, chúng tôi đã không ngừng nỗ lực để mang đến trải nghiệm mua sắm tốt nhất.
+              {t('about_milestones_desc')}
             </Text>
           </div>
         </div>
@@ -268,9 +260,9 @@ const About = () => {
               <Card className="timeline-card" bordered={false}>
                 <div className="timeline-header">
                   <span className="timeline-year-badge">2020</span>
-                  <Title level={4} style={{ margin: '10px 0 5px' }}>Thành Lập Công Ty</Title>
+                  <Title level={4} style={{ margin: '10px 0 5px' }}>{t('milestone_2020_title')}</Title>
                 </div>
-                <Text>Khởi đầu với niềm đam mê cháy bỏng và 5 thành viên sáng lập tại một văn phòng nhỏ, đặt nền móng cho sứ mệnh phục vụ khách hàng.</Text>
+                <Text>{t('milestone_2020_desc')}</Text>
               </Card>
             </div>
             <div className="timeline-marker">
@@ -297,9 +289,9 @@ const About = () => {
               <Card className="timeline-card" bordered={false}>
                 <div className="timeline-header">
                   <span className="timeline-year-badge blue">2021</span>
-                  <Title level={4} style={{ margin: '10px 0 5px' }}>Đạt 10.000 Khách Hàng</Title>
+                  <Title level={4} style={{ margin: '10px 0 5px' }}>{t('milestone_2021_title')}</Title>
                 </div>
-                <Text>Mở rộng quy mô kho bãi và nhận được sự tin tưởng từ cộng đồng người tiêu dùng, đánh dấu bước tăng trưởng vượt bậc.</Text>
+                <Text>{t('milestone_2021_desc')}</Text>
               </Card>
             </div>
           </div>
@@ -310,9 +302,9 @@ const About = () => {
               <Card className="timeline-card" bordered={false}>
                 <div className="timeline-header">
                   <span className="timeline-year-badge red">2022</span>
-                  <Title level={4} style={{ margin: '10px 0 5px' }}>Ra Mắt Ứng Dụng Di Động</Title>
+                  <Title level={4} style={{ margin: '10px 0 5px' }}>{t('milestone_2022_title')}</Title>
                 </div>
-                <Text>Phát hành ứng dụng trên iOS và Android, mang đến trải nghiệm mua sắm tiện lợi mọi lúc mọi nơi cho khách hàng.</Text>
+                <Text>{t('milestone_2022_desc')}</Text>
               </Card>
             </div>
             <div className="timeline-marker">
@@ -339,9 +331,9 @@ const About = () => {
               <Card className="timeline-card" bordered={false}>
                 <div className="timeline-header">
                   <span className="timeline-year-badge purple">2024</span>
-                  <Title level={4} style={{ margin: '10px 0 5px' }}>Vươn Tầm Quốc Tế</Title>
+                  <Title level={4} style={{ margin: '10px 0 5px' }}>{t('milestone_2024_title')}</Title>
                 </div>
-                <Text>Bắt đầu hợp tác với các thương hiệu toàn cầu và mở rộng thị trường xuất khẩu, khẳng định vị thế thương hiệu.</Text>
+                <Text>{t('milestone_2024_desc')}</Text>
               </Card>
             </div>
           </div>
@@ -352,16 +344,13 @@ const About = () => {
       {/* (Phần Meet the team giữ nguyên) */}
       <div className="title-about">
         <Title level={2} className="title-left-about">
-          Gặp Gỡ Đội Ngũ <br />
-          Sáng Lập
+          {t('meet_team_title')}
         </Title>
         <div className="title-right-about">
-          <Text strong>Đội Ngũ Tâm Huyết</Text>
+          <Text strong>{t('meet_team_subtitle')}</Text>
           <br />
           <Text>
-            Chúng tôi là một đội ngũ đam mê công nghệ và thương mại điện tử,
-            luôn nỗ lực không ngừng để cải tiến nền tảng và
-            mang đến sự hài lòng tối đa cho khách hàng.
+            {t('meet_team_desc')}
           </Text>
         </div>
       </div>
@@ -379,8 +368,7 @@ const About = () => {
               <Text className="name-member">Doan Ba Luc</Text>
               <Rate defaultValue={5} disabled /> <br />
               <Text className="member-text">
-                Founder & CEO - Lèo lái con thuyền, đảm bảo
-                mọi hoạt động và trải nghiệm của bạn luôn trơn tru.
+                {t('member_1_role')}
               </Text>
               <br />
               <div className="social-icons2">
@@ -401,8 +389,7 @@ const About = () => {
               <Text className="name-member">Doan Ba Min</Text>
               <Rate defaultValue={5} disabled /> <br />
               <Text className="member-text">
-                Head of Products - Đam mê tìm kiếm và mang về
-                những sản phẩm công nghệ mới nhất cho khách hàng.
+                {t('member_2_role')}
               </Text>
               <br />
               <div className="social-icons2">
@@ -423,8 +410,7 @@ const About = () => {
               <Text className="name-member">Doan Van Hau</Text>
               <Rate defaultValue={5} disabled /> <br />
               <Text className="member-text">
-                Head of Operations - Đảm bảo đơn hàng của bạn
-                được đóng gói an toàn và giao đến tận tay nhanh nhất.
+                {t('member_3_role')}
               </Text>
               <br />
               <div className="social-icons2">
@@ -442,7 +428,7 @@ const About = () => {
       <div className="partners-section">
         <div className="title-about" style={{ paddingBottom: '1rem', justifyContent: 'center' }}>
           <Title level={2} className="title-left-about" style={{ textAlign: 'center', width: '100%' }}>
-            Đối Tác & Chứng Nhận
+            {t('partners_title')}
           </Title>
         </div>
         <div className="partners-logos-container">
@@ -455,7 +441,7 @@ const About = () => {
           <div className="partner-logo-item">
              <div className="cert-badge">
                 <SafetyCertificateOutlined style={{ fontSize: '30px', color: '#52c41a' }} />
-                <Text strong style={{ marginLeft: 8 }}>SSL Secure</Text>
+                <Text strong style={{ marginLeft: 8 }}>{t('ssl_secure')}</Text>
              </div>
           </div>
         </div>
@@ -470,39 +456,37 @@ const About = () => {
           />
         </div>
         <div className="welcome-website-content">
-          <Title level={2}> Chào Mừng Đến Với Cửa Hàng!</Title>
+          <Title level={2}> {t('welcome_store_title')}</Title>
           <Text className="welcome-website-text">
-            Khám phá hàng ngàn sản phẩm tuyệt vời đang chờ bạn.
-            Chúng tôi tự tin mang đến cho bạn những giá trị
-            tốt nhất mà bạn không thể tìm thấy ở nơi khác.
+            {t('welcome_store_desc')}
           </Text>
           <div className="advantages-options">
             <div className="advantages-options-div">
-              <CheckCircleFilled style={{color:"rgb(6, 190, 6)"}}/><Text className="advantages-options-text">Sản Phẩm Chính Hãng</Text>
+              <CheckCircleFilled style={{color:"rgb(6, 190, 6)"}}/><Text className="advantages-options-text">{t('advantage_genuine')}</Text>
             </div>
             <div className="advantages-options-div">
-              <CheckCircleFilled style={{color:"rgb(6, 190, 6)"}}/><Text className="advantages-options-text">Giao Hàng Siêu Tốc</Text>
-            </div>
-          </div>
-          <div className="advantages-options">
-            <div className="advantages-options-div">
-              <CheckCircleFilled style={{color:"rgb(6, 190, 6)"}}/><Text className="advantages-options-text">Giá Cả Cạnh Tranh</Text>
-            </div>
-            <div className="advantages-options-div">
-              <CheckCircleFilled style={{color:"rgb(6, 190, 6)"}}/><Text className="advantages-options-text">Chất Lượng Tốt Nhất</Text>
+              <CheckCircleFilled style={{color:"rgb(6, 190, 6)"}}/><Text className="advantages-options-text">{t('advantage_fast_delivery')}</Text>
             </div>
           </div>
           <div className="advantages-options">
             <div className="advantages-options-div">
-              <CheckCircleFilled style={{color:"rgb(6, 190, 6)"}}/><Text className="advantages-options-text">Hỗ Trợ 24/7</Text>
+              <CheckCircleFilled style={{color:"rgb(6, 190, 6)"}}/><Text className="advantages-options-text">{t('advantage_competitive_price')}</Text>
             </div>
             <div className="advantages-options-div">
-              <CheckCircleFilled style={{color:"rgb(6, 190, 6)"}}/><Text className="advantages-options-text">Thanh Toán An Toàn</Text>
+              <CheckCircleFilled style={{color:"rgb(6, 190, 6)"}}/><Text className="advantages-options-text">{t('advantage_best_quality')}</Text>
+            </div>
+          </div>
+          <div className="advantages-options">
+            <div className="advantages-options-div">
+              <CheckCircleFilled style={{color:"rgb(6, 190, 6)"}}/><Text className="advantages-options-text">{t('advantage_support_247')}</Text>
+            </div>
+            <div className="advantages-options-div">
+              <CheckCircleFilled style={{color:"rgb(6, 190, 6)"}}/><Text className="advantages-options-text">{t('advantage_secure_payment')}</Text>
             </div>
           </div>
           <div className="button-know">
-            <Button className="button-know-primary" type="primary">Buy Now</Button>
-            <Button className="button-know-secondary" type="secondary">Know More</Button>
+            <Button className="button-know-primary" type="primary">{t('btn_buy_now')}</Button>
+            <Button className="button-know-secondary" type="secondary">{t('btn_know_more')}</Button>
           </div>
         </div>
       </div>

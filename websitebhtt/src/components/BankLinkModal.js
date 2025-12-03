@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, Form, Input, Select, Button, message, Typography, Space } from 'antd';
 import { BankOutlined, CreditCardOutlined, UserOutlined, SafetyCertificateOutlined, LockOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import '../style/BankLinkModal.css';
 
 const { Option } = Select;
@@ -17,6 +18,7 @@ const banks = [
 ];
 
 const BankLinkModal = ({ visible, onClose }) => {
+  const { t } = useTranslation();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [selectedBank, setSelectedBank] = useState(null);
@@ -31,7 +33,7 @@ const BankLinkModal = ({ visible, onClose }) => {
       // Simulate API call
       setTimeout(() => {
         setLoading(false);
-        message.success('Liên kết ngân hàng thành công!');
+        message.success(t('bank_link_success'));
         form.resetFields();
         setSelectedBank(null);
         setCardNumber('');
@@ -61,7 +63,7 @@ const BankLinkModal = ({ visible, onClose }) => {
       title={
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <SafetyCertificateOutlined style={{ color: '#1890ff', fontSize: '24px' }} />
-          <span>Liên Kết Ngân Hàng</span>
+          <span>{t('bank_link_title')}</span>
         </div>
       }
       open={visible}
@@ -89,8 +91,8 @@ const BankLinkModal = ({ visible, onClose }) => {
           </div>
           <div className="card-bottom">
             <div className="card-holder">
-              <div className="card-holder-label">Card Holder</div>
-              <div className="card-holder-name">{cardName || 'YOUR NAME'}</div>
+              <div className="card-holder-label">{t('card_holder_label')}</div>
+              <div className="card-holder-name">{cardName || t('card_holder_placeholder')}</div>
             </div>
             <div className="card-brand">
               {selectedBank ? selectedBank.shortName : 'BANK'}
@@ -108,11 +110,11 @@ const BankLinkModal = ({ visible, onClose }) => {
       >
         <Form.Item
           name="bankId"
-          label="Chọn Ngân Hàng"
-          rules={[{ required: true, message: 'Vui lòng chọn ngân hàng!' }]}
+          label={t('select_bank_label')}
+          rules={[{ required: true, message: t('select_bank_required') }]}
         >
           <Select 
-            placeholder="Chọn ngân hàng của bạn" 
+            placeholder={t('select_bank_placeholder')} 
             onChange={handleBankChange}
             size="large"
             suffixIcon={<BankOutlined />}
@@ -142,16 +144,16 @@ const BankLinkModal = ({ visible, onClose }) => {
 
         <Form.Item
           name="accountNumber"
-          label="Số Tài Khoản"
+          label={t('account_number_label')}
           rules={[
-            { required: true, message: 'Vui lòng nhập số tài khoản!' },
-            { pattern: /^[0-9]+$/, message: 'Số tài khoản chỉ chứa số!' },
-            { min: 6, message: 'Số tài khoản quá ngắn!' }
+            { required: true, message: t('account_number_required') },
+            { pattern: /^[0-9]+$/, message: t('account_number_numeric') },
+            { min: 6, message: t('account_number_min') }
           ]}
         >
           <Input 
             prefix={<CreditCardOutlined style={{ color: '#1890ff' }} />} 
-            placeholder="Nhập số tài khoản ngân hàng" 
+            placeholder={t('account_number_placeholder')} 
             size="large"
             className="modern-input"
             onChange={(e) => setCardNumber(e.target.value)}
@@ -161,15 +163,15 @@ const BankLinkModal = ({ visible, onClose }) => {
 
         <Form.Item
           name="accountName"
-          label="Tên Chủ Tài Khoản"
+          label={t('account_name_label')}
           rules={[
-            { required: true, message: 'Vui lòng nhập tên chủ tài khoản!' },
-            { pattern: /^[a-zA-Z\s]+$/, message: 'Tên không chứa ký tự đặc biệt!' }
+            { required: true, message: t('account_name_required') },
+            { pattern: /^[a-zA-Z\s]+$/, message: t('account_name_pattern') }
           ]}
         >
           <Input 
             prefix={<UserOutlined style={{ color: '#1890ff' }} />} 
-            placeholder="NGUYEN VAN A" 
+            placeholder={t('account_name_placeholder')} 
             style={{ textTransform: 'uppercase' }}
             size="large"
             className="modern-input"
@@ -180,7 +182,7 @@ const BankLinkModal = ({ visible, onClose }) => {
         <div className="security-note">
           <LockOutlined style={{ color: '#52c41a', fontSize: '18px' }} />
           <Text style={{ fontSize: '13px', color: '#555' }}>
-            Thông tin của bạn được mã hóa 256-bit và bảo mật tuyệt đối theo tiêu chuẩn PCI DSS.
+            {t('security_note')}
           </Text>
         </div>
 
@@ -194,7 +196,7 @@ const BankLinkModal = ({ visible, onClose }) => {
             onClick={handleOk}
             className="submit-btn-gradient"
           >
-            LIÊN KẾT NGAY
+            {t('link_now_button')}
           </Button>
         </Form.Item>
       </Form>

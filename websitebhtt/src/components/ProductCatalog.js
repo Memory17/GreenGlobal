@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { Spin, Button } from 'antd';
 import { ArrowRightOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { getProductsByFullUrl } from '../data/productService';
+import { useTranslation } from "react-i18next";
 import '../style/ProductCatalog.css';
 
 const ProductCatalog = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   
   // Store full lists of products
@@ -138,11 +140,11 @@ const ProductCatalog = () => {
             
             <div className="catalog-specs">
               <div className="spec-item">
-                  <span className="spec-label">Thương hiệu</span>
+                  <span className="spec-label">{t('brand')}</span>
                   <span className="spec-value">{product.brand || 'N/A'}</span>
               </div>
               <div className="spec-item">
-                  <span className="spec-label">Đánh giá</span>
+                  <span className="spec-label">{t('rating_btn')}</span>
                   <span className="spec-value">{product.rating} ⭐</span>
               </div>
             </div>
@@ -150,7 +152,7 @@ const ProductCatalog = () => {
 
           <div className="catalog-list-action">
             <Button type="primary" shape="round" size="large" className="catalog-action-btn">
-               Xem Chi Tiết <ArrowRightOutlined />
+               {t('view_details')} <ArrowRightOutlined />
             </Button>
           </div>
         </div>
@@ -161,14 +163,14 @@ const ProductCatalog = () => {
   return (
     <section className="catalog-section">
       <div className="catalog-header">
-        <h2 className="catalog-title">✨ Bộ Sưu Tập Xu Hướng</h2>
-        <p className="catalog-subtitle">Khám phá những sản phẩm được yêu thích nhất tuần qua</p>
+        <h2 className="catalog-title">{t('catalog_title')}</h2>
+        <p className="catalog-subtitle">{t('catalog_subtitle')}</p>
       </div>
 
       <div className="catalog-list-container">
-        {renderCatalogItem('fashion', "Thời Trang Nữ", 0)}
-        {renderCatalogItem('furniture', "Nội Thất Cao Cấp", 1)}
-        {renderCatalogItem('tech', "Công Nghệ & Điện Tử", 2)}
+        {renderCatalogItem('fashion', t('catalog_fashion'), 0)}
+        {renderCatalogItem('furniture', t('catalog_furniture'), 1)}
+        {renderCatalogItem('tech', t('catalog_tech'), 2)}
       </div>
     </section>
   );

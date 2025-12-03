@@ -30,26 +30,28 @@ import {
 } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import dayjs from "dayjs"; // <-- Nhớ cài đặt dayjs
+import { useTranslation } from 'react-i18next';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
 
 const ReviewOrder = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
 
   // Nhận dữ liệu BAN ĐẦU từ location.state
   const initialDelivery = location.state?.delivery || {
-    name: "Chưa xác định",
-    phone: "Chưa xác định",
-    email: "Chưa xác định",
-    address: "Chưa xác định",
-    city: "Chưa xác định",
-    state: "Chưa xác định",
-    zip: "Chưa xác định",
+    name: t('not_specified') || "Chưa xác định",
+    phone: t('not_specified') || "Chưa xác định",
+    email: t('not_specified') || "Chưa xác định",
+    address: t('not_specified') || "Chưa xác định",
+    city: t('not_specified') || "Chưa xác định",
+    state: t('not_specified') || "Chưa xác định",
+    zip: t('not_specified') || "Chưa xác định",
     date: null,
-    note: "Không có",
-    payment: "Chưa chỉ định",
+    note: t('none') || "Không có",
+    payment: t('not_specified') || "Chưa chỉ định",
   };
   const { items, totals } = location.state || {
     items: [],
@@ -125,7 +127,7 @@ const ReviewOrder = () => {
   // Cấu hình cột bảng
   const columns = [
     {
-      title: "Sản phẩm",
+      title: t('products'),
       dataIndex: "name",
       key: "product",
       render: (text, record) => (
@@ -142,22 +144,22 @@ const ReviewOrder = () => {
       ),
     },
     {
-      title: "Kho",
+      title: t('stock'),
       dataIndex: "stock",
       key: "stock",
       render: (stock) => (
         <Text type={stock > 0 ? "success" : "danger"}>
-          {stock > 0 ? "Còn hàng" : "Hết hàng"}
+          {stock > 0 ? t('in_stock') : t('out_of_stock')}
         </Text>
       ),
     },
     {
-      title: "SL",
+      title: t('qty'),
       dataIndex: "qty",
       key: "qty",
     },
     {
-      title: "Thành tiền",
+      title: t('amount'),
       dataIndex: "subtotal",
       key: "subtotal",
       render: (val) => <Text strong>${val}</Text>,
@@ -182,13 +184,21 @@ const ReviewOrder = () => {
         month: "long",
         day: "numeric",
       })
-    : "Chưa chỉ định";
+    : t('not_specified') || "Chưa chỉ định";
+
+  const getPaymentMethodLabel = (method) => {
+    switch (method) {
+      case "Online Payment": return t('payment_online_short');
+      case "Card on Delivery": return t('payment_card_on_delivery');
+      case "POS on Delivery": return t('payment_pos_on_delivery');
+      default: return method;
+    }
+  };
 
   return (
     <div className="review-order">
       <Text className="big-title">
-        ✅️ Bạn gần hoàn tất rồi. Vui lòng xem lại thông tin bên dưới và đặt
-        hàng.
+        {t('review_order_message')}
       </Text>
       <br />
       <EnvironmentFilled style={{ color: "green" }} /> <br />
@@ -200,14 +210,14 @@ const ReviewOrder = () => {
           <Title level={3} className="ship-to-title">
             <span className="title-content-wrapper">
               <TruckFilled style={{ color: "green", marginRight: "10px" }} />
-              Giao hàng đến
+              {t('ship_to')}
             </span>
             <Text
               strong
               className="change-info-text"
               onClick={showShipToModal}
             >
-              THAY ĐỔI
+              {t('change')}
               <EditOutlined style={{ marginLeft: 5, color: "#1890ff" }} />
             </Text>
           </Title>
@@ -223,7 +233,7 @@ const ReviewOrder = () => {
                 <Descriptions.Item
                   label={
                     <>
-                      <UserOutlined /> Tên
+                      <UserOutlined /> {t('full_name')}
                     </>
                   }
                 >
@@ -232,7 +242,7 @@ const ReviewOrder = () => {
                 <Descriptions.Item
                   label={
                     <>
-                      <PhoneOutlined /> SĐT
+                      <PhoneOutlined /> {t('phone_number')}
                     </>
                   }
                 >
@@ -241,7 +251,7 @@ const ReviewOrder = () => {
                 <Descriptions.Item
                   label={
                     <>
-                      <MailOutlined /> Email
+                      <MailOutlined /> {t('email')}
                     </>
                   }
                 >
@@ -250,7 +260,7 @@ const ReviewOrder = () => {
                 <Descriptions.Item
                   label={
                     <>
-                      <HomeOutlined /> Địa chỉ
+                      <HomeOutlined /> {t('address')}
                     </>
                   }
                 >
@@ -258,21 +268,21 @@ const ReviewOrder = () => {
                     currentDelivery.zip || ""
                   }`}
                 </Descriptions.Item>
-                <Descriptions.Item label="Ngày giao">
+                <Descriptions.Item label={t('delivery_date_label')}>
                   {formattedDate}
                 </Descriptions.Item>
                 <Descriptions.Item
                   label={
                     <>
-                      <ProfileOutlined /> Ghi chú
+                      <ProfileOutlined /> {t('note')}
                     </>
                   }
                 >
-                  {currentDelivery.note || "Không có"}
+                  {currentDelivery.note || t('none')}
                 </Descriptions.Item>
               </Descriptions>
             ) : (
-              <Text>Không có thông tin giao hàng.</Text>
+              <Text>{t('no_delivery_info')}</Text>
             )}
           </div>
         </Col>
@@ -284,14 +294,14 @@ const ReviewOrder = () => {
               <CreditCardOutlined
                 style={{ color: "green", marginRight: "10px" }}
               />
-              Thanh toán
+              {t('payment_method')}
             </span>
             <Text
               strong
               className="change-info-text"
               onClick={() => showPaymentModal()}
             >
-              THAY ĐỔI
+              {t('change')}
               <EditOutlined style={{ marginLeft: 5, color: "#1890ff" }} />
             </Text>
           </Title>
@@ -301,20 +311,20 @@ const ReviewOrder = () => {
             </div>
             <div className="visa-title">
               <Title className="visa-name" level={3}>
-                {paymentMethod}
+                {getPaymentMethodLabel(paymentMethod)}
               </Title>
             </div>
             <div className="billing-address">
               <Text className="billing-address-title" strong>
-                Địa chỉ Thanh toán:{" "}
+                {t('billing_address')}{" "}
               </Text>
               <Text className="billing-address-detail">
-                {currentDelivery?.address || "Chưa xác định"}
+                {currentDelivery?.address || t('not_specified')}
               </Text>
             </div>
             <Divider dashed />
             <div className="add-gift">
-              <Text className="apply-gift">{paymentMethod}</Text>
+              <Text className="apply-gift">{getPaymentMethodLabel(paymentMethod)}</Text>
             </div>
           </div>
         </Col>
@@ -326,19 +336,19 @@ const ReviewOrder = () => {
               <FileDoneOutlined
                 style={{ color: "green", marginRight: "10px" }}
               />
-              Tóm Tắt
+              {t('summary')}
             </span>
           </Title>
           <div className="summary-review-div">
             <div className="subtotal">
-              <Text className="subtotal-text">Tạm tính</Text>
+              <Text className="subtotal-text">{t('subtotal')}</Text>
               <Text className="subtotal-value">
                 ${totals.subtotal.toFixed(2)}
               </Text>
             </div>
             <div className="shipping">
               <Text className="shipping-text" style={{ color: "red" }}>
-                Giảm giá
+                {t('discount')}
               </Text>
               <Text className="shipping-value" style={{ color: "red" }}>
                 -${totals.discount.toFixed(2)}
@@ -347,9 +357,9 @@ const ReviewOrder = () => {
             {(luckyDiscountValue > 0) && (
                 <div className="shipping">
                   <Text className="shipping-text" style={{ color: "#fa8c16" }}>
-                    Phần thưởng vòng quay
+                    {t('lucky_wheel_reward')}
                     {totals.appliedLuckyCoupon ? ` (${totals.appliedLuckyCoupon.label})` : ''}
-                    {totals.useLuckyCoins && totals.appliedLuckyCoupon ? ' + Xu' : (totals.useLuckyCoins ? ' (Xu)' : '')}
+                    {totals.useLuckyCoins && totals.appliedLuckyCoupon ? ` + ${t('lucky_coins')}` : (totals.useLuckyCoins ? ` (${t('lucky_coins')})` : '')}
                   </Text>
                   <Text className="shipping-value" style={{ color: "#fa8c16" }}>
                     -${luckyDiscountValue.toFixed(2)}
@@ -357,14 +367,14 @@ const ReviewOrder = () => {
                 </div>
             )}
             <div className="shipping">
-              <Text className="shipping-text">Phí vận chuyển</Text>
+              <Text className="shipping-text">{t('shipping_fee')}</Text>
               <Text className="shipping-value">
                 ${totals.shipping.toFixed(2)}
               </Text>
             </div>
             <Divider />
             <div className="total">
-              <Text className="total-text">Tổng cộng</Text>
+              <Text className="total-text">{t('total')}</Text>
               <Text className="total-value-review">
                 ${totals.total.toFixed(2)}
               </Text>
@@ -375,14 +385,14 @@ const ReviewOrder = () => {
                 type="primary"
                 onClick={() => navigate("/")}
               >
-                Quay lại Trang chủ
+                {t('back_to_home')}
               </Button>
               <Button
                 className="cancel-order"
                 type="secondary"
                 onClick={() => navigate("/contact")}
               >
-                Liên hệ Hỗ trợ
+                {t('contact_support')}
               </Button>
             </div>
           </div>
@@ -392,7 +402,7 @@ const ReviewOrder = () => {
       {/* --- HÀNG 2: CHI TIẾT ĐƠN HÀNG --- */}
       <div className="order-detail-review">
         <EnvironmentFilled className="icon-order-detail" /> <br />
-        <Title level={3}>Chi Tiết Đơn Hàng</Title>
+        <Title level={3}>{t('order_details')}</Title>
       </div>
 
       <Row className="order-detail-and-method" gutter={16}>
@@ -402,12 +412,12 @@ const ReviewOrder = () => {
               <div className="shipping-from">
                 <EnvironmentFilled className="icon-shipping-from" />
                 <Text className="text-shipping-from">
-                  GIAO HÀNG TỪ{" "}
+                  {t('shipping_from')}{" "}
                   <b>586 Nguyễn Hữu Thọ, Sơn Trà, TP Đà Nẵng</b>
                 </Text>
                 <br />
                 <Text className="note-text">
-                  Cần có chữ ký khi nhận hàng.
+                  {t('signature_required')}
                 </Text>
                 <Divider dashed style={{ borderWidth: "1px" }} />
 
@@ -427,32 +437,32 @@ const ReviewOrder = () => {
 
       {/* --- MODAL THAY ĐỔI PHƯƠNG THỨC THANH TOÁN --- */}
       <Modal
-        title="Thay Đổi Phương Thức Thanh Toán"
+        title={t('change_payment_method_title')}
         visible={isPaymentModalVisible}
         onOk={() => handlePaymentOk(paymentMethod)}
         onCancel={handlePaymentCancel}
-        okText="Xác nhận"
-        cancelText="Hủy"
+        okText={t('confirm')}
+        cancelText={t('cancel_btn')}
       >
         <Radio.Group
           onChange={(e) => setPaymentMethod(e.target.value)}
           value={paymentMethod}
           style={{ display: "flex", flexDirection: "column", gap: 16 }}
         >
-          <Radio value="Online Payment">Thanh toán Online</Radio>
-          <Radio value="Card on Delivery">Thanh toán bằng Thẻ khi nhận hàng</Radio>
-          <Radio value="POS on Delivery">Thanh toán qua POS khi nhận hàng</Radio>
+          <Radio value="Online Payment">{t('payment_online_short')}</Radio>
+          <Radio value="Card on Delivery">{t('payment_card_on_delivery')}</Radio>
+          <Radio value="POS on Delivery">{t('payment_pos_on_delivery')}</Radio>
         </Radio.Group>
       </Modal>
 
       {/* --- MODAL CHỈNH SỬA THÔNG TIN GIAO HÀNG --- */}
       <Modal
-        title="Chỉnh Sửa Thông Tin Giao Hàng"
+        title={t('edit_shipping_info_title')}
         visible={isShipToModalVisible}
         onOk={handleShipToOk}
         onCancel={handleShipToCancel}
-        okText="Lưu Thay Đổi"
-        cancelText="Hủy"
+        okText={t('save_changes')}
+        cancelText={t('cancel_btn')}
         width={600}
       >
         <Form
@@ -468,58 +478,58 @@ const ReviewOrder = () => {
             <Col span={12}>
               <Form.Item
                 name="name"
-                label="Họ và Tên"
-                rules={[{ required: true, message: "Vui lòng nhập tên!" }]}
+                label={t('full_name')}
+                rules={[{ required: true, message: t('validate_name') }]}
               >
-                <Input prefix={<UserOutlined />} placeholder="Họ và Tên đầy đủ" />
+                <Input prefix={<UserOutlined />} placeholder={t('full_name_placeholder')} />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
                 name="phone"
-                label="Số Điện Thoại"
+                label={t('phone_number')}
                 rules={[
-                  { required: true, message: "Vui lòng nhập SĐT!" },
+                  { required: true, message: t('validate_phone') },
                 ]}
               >
-                <Input prefix={<PhoneOutlined />} placeholder="Số Điện Thoại" />
+                <Input prefix={<PhoneOutlined />} placeholder={t('phone_number')} />
               </Form.Item>
             </Col>
           </Row>
           <Form.Item
             name="email"
-            label="Email"
+            label={t('email')}
             rules={[
-              { required: true, message: "Vui lòng nhập email!" },
-              { type: "email", message: "Email không hợp lệ!" },
+              { required: true, message: t('validate_email') },
+              { type: "email", message: t('validate_email_invalid') },
             ]}
           >
-            <Input prefix={<MailOutlined />} placeholder="Địa chỉ Email" />
+            <Input prefix={<MailOutlined />} placeholder={t('email_placeholder')} />
           </Form.Item>
           <Form.Item
             name="address"
-            label="Địa chỉ chi tiết"
-            rules={[{ required: true, message: "Vui lòng nhập địa chỉ!" }]}
+            label={t('detailed_address')}
+            rules={[{ required: true, message: t('validate_address') }]}
           >
-            <Input prefix={<HomeOutlined />} placeholder="Địa chỉ Đường/Số nhà" />
+            <Input prefix={<HomeOutlined />} placeholder={t('address_placeholder')} />
           </Form.Item>
           <Row gutter={16}>
             <Col span={8}>
               <Form.Item
                 name="city"
-                label="Thành phố"
-                rules={[{ required: true, message: "Vui lòng nhập thành phố!" }]}
+                label={t('city')}
+                rules={[{ required: true, message: t('validate_city') }]}
               >
-                <Input placeholder="Thành phố" />
+                <Input placeholder={t('city')} />
               </Form.Item>
             </Col>
             <Col span={8}>
               <Form.Item
                 name="state"
-                label="Quận/Tỉnh"
-                rules={[{ required: true, message: "Vui lòng chọn Tỉnh/Quận!" }]}
+                label={t('state_province')}
+                rules={[{ required: true, message: t('validate_state') }]}
               >
-                <Select placeholder="Chọn Tỉnh/Quận">
+                <Select placeholder={t('select_state')}>
                   <Option value="Việt Nam">Việt Nam</Option>
                   <Option value="Bồ Đào Nha">Bồ Đào Nha</Option>
                   <Option value="Thái Lan">Thái Lan</Option>
@@ -529,24 +539,24 @@ const ReviewOrder = () => {
             <Col span={8}>
               <Form.Item
                 name="zip"
-                label="Mã Bưu điện (ZIP Code)"
-                rules={[{ required: true, message: "Vui lòng nhập mã ZIP!" }]}
+                label={t('zip_code')}
+                rules={[{ required: true, message: t('validate_zip') }]}
               >
-                <Input placeholder="Mã ZIP" />
+                <Input placeholder={t('zip_placeholder')} />
               </Form.Item>
             </Col>
           </Row>
           <Form.Item
             name="date"
-            label="Ngày Giao hàng"
-            rules={[{ required: true, message: "Vui lòng chọn ngày giao!" }]}
+            label={t('delivery_date_label')}
+            rules={[{ required: true, message: t('validate_date') }]}
           >
             <DatePicker style={{ width: "100%" }} format="YYYY-MM-DD" />
           </Form.Item>
-          <Form.Item name="note" label="Ghi chú Giao hàng">
+          <Form.Item name="note" label={t('delivery_note_label')}>
             <Input.TextArea
               prefix={<ProfileOutlined />}
-              placeholder="Thêm ghi chú cho người giao hàng"
+              placeholder={t('delivery_note_placeholder')}
               rows={3}
             />
           </Form.Item>

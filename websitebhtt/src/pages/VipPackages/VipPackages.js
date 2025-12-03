@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './VipPackages.css';
 import { message, Modal, Collapse } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { 
   CrownOutlined, 
   CheckCircleOutlined, 
@@ -29,6 +30,7 @@ import { Link } from 'react-router-dom';
 const { Panel } = Collapse;
 
 const VipPackages = () => {
+  const { t } = useTranslation();
   const [showAll, setShowAll] = useState(false);
   
   useEffect(() => {
@@ -37,14 +39,14 @@ const VipPackages = () => {
 
   const handleBuyPackage = (packageName) => {
     Modal.confirm({
-      title: 'Xác nhận mua gói',
-      content: `Bạn có chắc chắn muốn đăng ký gói ${packageName} không?`,
-      okText: 'Đồng ý',
-      cancelText: 'Hủy',
+      title: t('vip_confirm_title'),
+      content: t('vip_confirm_content', { package: packageName }),
+      okText: t('vip_confirm_ok'),
+      cancelText: t('vip_confirm_cancel'),
       onOk() {
         // Giả lập gọi API mua gói
         setTimeout(() => {
-          message.success(`Chúc mừng! Bạn đã đăng ký thành công gói ${packageName}.`);
+          message.success(t('vip_success_msg', { package: packageName }));
         }, 1000);
       }
     });
@@ -60,48 +62,48 @@ const VipPackages = () => {
   const packages = [
     {
       id: 'member',
-      name: 'Member',
-      price: 'Miễn phí',
+      name: t('pkg_member'),
+      price: t('vip_val_free'),
       period: '',
       icon: <UserOutlined />,
       className: 'silver',
       features: [
-        'Tích điểm đổi quà',
-        'Tham gia các đợt sale thông thường',
-        'Hỗ trợ tiêu chuẩn',
-        'Nhận thông báo khuyến mãi'
+        t('feat_points'),
+        t('feat_sale'),
+        t('feat_support_std'),
+        t('feat_promo_notif')
       ]
     },
     {
       id: 'vip',
-      name: 'VIP',
+      name: t('pkg_vip'),
       price: '299.000',
-      period: '/ tháng',
+      period: t('vip_val_month'),
       icon: <CrownOutlined />,
       className: 'gold',
-      badge: 'Phổ biến',
+      badge: t('vip_val_popular'),
       features: [
-        'Giảm 5% toàn bộ đơn hàng',
-        'Tặng 1-2 voucher mua sắm/tháng',
-        'Miễn phí ship đơn từ 500k',
-        'Ưu tiên hỗ trợ khách hàng'
+        t('feat_discount_5'),
+        t('feat_voucher_1_2'),
+        t('feat_free_ship_500'),
+        t('feat_support_prio')
       ]
     },
     {
       id: 'vip-plus',
-      name: 'VIP+',
+      name: t('pkg_vip_plus'),
       price: '699.000',
-      period: '/ tháng',
+      period: t('vip_val_month'),
       icon: <SketchOutlined />,
       className: 'platinum featured',
-      badge: 'Đẳng cấp nhất',
+      badge: t('vip_val_elite'),
       features: [
-        'Giảm 8-10% toàn bộ đơn hàng',
-        'Voucher khủng & Mua sớm Flash Sale',
-        'Đặc quyền mua sản phẩm giới hạn',
-        'Thời gian đổi trả lên tới 60 ngày',
-        'Ưu tiên xử lý đơn hàng siêu tốc',
-        'Quà tặng tri ân định kỳ'
+        t('feat_discount_8_10'),
+        t('feat_voucher_huge'),
+        t('feat_limit_prod'),
+        t('feat_return_60'),
+        t('feat_process_fast'),
+        t('feat_gift_periodic')
       ]
     }
   ];
@@ -109,84 +111,84 @@ const VipPackages = () => {
   const extraPackages = [
     {
       id: 'vip-savings',
-      name: 'VIP Tiết Kiệm',
+      name: t('pkg_vip_savings'),
       price: '149.000',
-      period: '/ tháng',
+      period: t('vip_val_month'),
       icon: <WalletOutlined />,
       className: 'silver',
       features: [
-        'Giảm 3-5% toàn bộ đơn',
-        'Nhiều voucher theo mùa',
-        'Ưu đãi combo tạp hóa & quần áo'
+        t('feat_discount_3_5'),
+        t('feat_voucher_season'),
+        t('feat_combo_grocery')
       ]
     },
     {
       id: 'vip-fashion',
-      name: 'VIP Thời Trang',
+      name: t('pkg_vip_fashion'),
       price: '199.000',
-      period: '/ tháng',
+      period: t('vip_val_month'),
       icon: <SkinOutlined />,
       className: 'gold',
       features: [
-        'Ưu tiên xem BST mới',
-        'Giảm sâu thời trang & giày',
-        'Đổi size linh hoạt',
-        'Ưu đãi mua theo set'
+        t('feat_prio_new_coll'),
+        t('feat_discount_deep'),
+        t('feat_change_size'),
+        t('feat_buy_set')
       ]
     },
     {
       id: 'vip-family',
-      name: 'VIP Gia Đình',
+      name: t('pkg_vip_family'),
       price: '249.000',
-      period: '/ tháng',
+      period: t('vip_val_month'),
       icon: <HomeOutlined />,
       className: 'silver',
       features: [
-        'Combo tạp hóa giá tốt',
-        'Giảm ship đơn lớn',
-        'Voucher gia dụng & nội thất nhỏ'
+        t('feat_combo_family'),
+        t('feat_ship_large'),
+        t('feat_voucher_home')
       ]
     },
     {
       id: 'vip-decor',
-      name: 'VIP Nội Thất',
+      name: t('pkg_vip_decor'),
       price: '299.000',
-      period: '/ tháng',
+      period: t('vip_val_month'),
       icon: <AppstoreOutlined />,
       className: 'gold',
       features: [
-        'Ưu đãi mua theo bộ',
-        'Giảm giá đơn trị giá lớn',
-        'Đổi trả linh hoạt nội thất'
+        t('feat_buy_suite'),
+        t('feat_discount_large'),
+        t('feat_return_furn')
       ]
     },
     {
       id: 'vip-sale',
-      name: 'VIP Siêu Sale',
+      name: t('pkg_vip_sale'),
       price: '349.000',
-      period: '/ tháng',
+      period: t('vip_val_month'),
       icon: <FireOutlined />,
       className: 'platinum',
       features: [
-        'Vào sớm Flash Sale',
-        'Đặt trước Hot Deal',
-        'Voucher độc quyền',
-        'Số lượng giới hạn'
+        t('feat_early_flash'),
+        t('feat_preorder_hot'),
+        t('feat_voucher_excl'),
+        t('feat_limit_qty')
       ]
     },
     {
       id: 'vip-business',
-      name: 'VIP Doanh Nhân',
+      name: t('pkg_vip_business'),
       price: '1.999.000',
-      period: '/ tháng',
+      period: t('vip_val_month'),
       icon: <TrophyOutlined />,
       className: 'platinum featured',
-      badge: 'Thượng lưu',
+      badge: t('vip_val_luxury'),
       features: [
-        'Giảm giá cao nhất hệ thống',
-        'Ưu tiên xử lý đơn',
-        'Quà tri ân định kỳ',
-        'Chăm sóc riêng 1:1'
+        t('feat_discount_max'),
+        t('feat_process_fast'),
+        t('feat_gift_periodic'),
+        t('feat_care_1_1')
       ]
     }
   ];
@@ -196,38 +198,38 @@ const VipPackages = () => {
   const privileges = [
     {
       icon: <GlobalOutlined />,
-      title: 'Mua Sắm Toàn Cầu',
-      desc: 'Tiếp cận các bộ sưu tập giới hạn từ khắp nơi trên thế giới.'
+      title: t('vip_privilege_1_title'),
+      desc: t('vip_privilege_1_desc')
     },
     {
       icon: <SkinOutlined />,
-      title: 'Stylist Riêng',
-      desc: 'Được tư vấn phong cách thời trang cá nhân bởi chuyên gia hàng đầu.'
+      title: t('vip_privilege_2_title'),
+      desc: t('vip_privilege_2_desc')
     },
     {
       icon: <ThunderboltOutlined />,
-      title: 'Giao Hàng Hỏa Tốc',
-      desc: 'Nhận hàng trong vòng 2h tại nội thành và 24h toàn quốc.'
+      title: t('vip_privilege_3_title'),
+      desc: t('vip_privilege_3_desc')
     },
     {
       icon: <GiftOutlined />,
-      title: 'Quà Tặng Độc Quyền',
-      desc: 'Nhận các món quà giá trị vào các dịp lễ tết và sinh nhật.'
+      title: t('vip_privilege_4_title'),
+      desc: t('vip_privilege_4_desc')
     }
   ];
 
   const faqs = [
     {
-      question: 'Làm sao để nâng cấp gói thành viên?',
-      answer: 'Bạn có thể nâng cấp gói bất kỳ lúc nào bằng cách chọn gói mới và thanh toán phần chênh lệch. Thời hạn gói sẽ được tính lại từ đầu.'
+      question: t('vip_faq_1_q'),
+      answer: t('vip_faq_1_a')
     },
     {
-      question: 'Quyền lợi có được áp dụng ngay sau khi mua không?',
-      answer: 'Có, ngay sau khi thanh toán thành công, tài khoản của bạn sẽ được cập nhật trạng thái VIP và hưởng mọi đặc quyền ngay lập tức.'
+      question: t('vip_faq_2_q'),
+      answer: t('vip_faq_2_a')
     },
     {
-      question: 'Tôi có thể hủy gói thành viên không?',
-      answer: 'Gói thành viên không hỗ trợ hoàn tiền sau khi đã kích hoạt. Tuy nhiên, bạn có thể tắt tính năng tự động gia hạn bất cứ lúc nào.'
+      question: t('vip_faq_3_q'),
+      answer: t('vip_faq_3_a')
     }
   ];
 
@@ -236,21 +238,21 @@ const VipPackages = () => {
       {/* Hero Section */}
       <div className="vip-hero">
         <div className="vip-hero-content">
-          <h1>Nâng Cấp VIP - Đặc Quyền Thượng Lưu</h1>
+          <h1>{t('vip_page_title')}</h1>
           <ul className="vip-hero-benefits">
-            <li><CheckCircleOutlined /> Tiết kiệm hơn với ưu đãi giảm giá độc quyền</li>
-            <li><CheckCircleOutlined /> Miễn phí vận chuyển & Giao hàng hỏa tốc</li>
-            <li><CheckCircleOutlined /> Quà tặng sinh nhật & Voucher mua sắm hàng tháng</li>
+            <li><CheckCircleOutlined /> {t('vip_hero_benefit_1')}</li>
+            <li><CheckCircleOutlined /> {t('vip_hero_benefit_2')}</li>
+            <li><CheckCircleOutlined /> {t('vip_hero_benefit_3')}</li>
           </ul>
           <button className="vip-hero-btn" onClick={scrollToPackages}>
-            Đăng Ký Ngay <ArrowRightOutlined />
+            {t('vip_register_now')} <ArrowRightOutlined />
           </button>
         </div>
       </div>
 
       <div className="vip-header">
-        <h2>Chọn Gói Phù Hợp Với Bạn</h2>
-        <p>Đa dạng lựa chọn, tối ưu chi phí, tối đa quyền lợi</p>
+        <h2>{t('vip_header_title')}</h2>
+        <p>{t('vip_header_subtitle')}</p>
       </div>
 
       <div id="vip-packages-list" className="vip-packages-grid">
@@ -275,7 +277,7 @@ const VipPackages = () => {
               className="vip-btn"
               onClick={() => handleBuyPackage(pkg.name)}
             >
-              Đăng Ký Ngay
+              {t('vip_register_now')}
             </button>
           </div>
         ))}
@@ -283,7 +285,7 @@ const VipPackages = () => {
 
       <div className="vip-view-more-container">
         <button className="vip-view-more-btn" onClick={() => setShowAll(!showAll)}>
-          {showAll ? 'THU GỌN' : 'XEM THÊM CÁC GÓI KHÁC'}
+          {showAll ? t('vip_collapse') : t('vip_view_more')}
         </button>
       </div>
 
@@ -291,27 +293,27 @@ const VipPackages = () => {
 
       {/* Current Offers for VIP */}
       <div className="vip-offers-section">
-        <h2 className="vip-section-title">Ưu Đãi Độc Quyền Tháng Này</h2>
+        <h2 className="vip-section-title">{t('vip_offers_title')}</h2>
         <div className="vip-offers-banner">
           <div className="vip-offer-item">
             <div className="offer-icon"><FireOutlined /></div>
             <div className="offer-content">
-              <h3>Flash Sale Nội Bộ</h3>
-              <p>Giảm thêm 20% cho 50+ sản phẩm hot nhất</p>
+              <h3>{t('vip_offer_1_title')}</h3>
+              <p>{t('vip_offer_1_desc')}</p>
             </div>
           </div>
           <div className="vip-offer-item">
             <div className="offer-icon"><GiftOutlined /></div>
             <div className="offer-content">
-              <h3>Quà Tặng Mùa Hè</h3>
-              <p>Tặng set mỹ phẩm mini cho đơn từ 1 triệu</p>
+              <h3>{t('vip_offer_2_title')}</h3>
+              <p>{t('vip_offer_2_desc')}</p>
             </div>
           </div>
           <div className="vip-offer-item">
             <div className="offer-icon"><ThunderboltOutlined /></div>
             <div className="offer-content">
-              <h3>Mã Giảm Giá Thêm</h3>
-              <p>Nhập mã <strong>VIPSUMMER</strong> giảm 50k</p>
+              <h3>{t('vip_offer_3_title')}</h3>
+              <p dangerouslySetInnerHTML={{ __html: t('vip_offer_3_desc') }}></p>
             </div>
           </div>
         </div>
@@ -321,22 +323,22 @@ const VipPackages = () => {
 
       {/* Who Should Use */}
       <div className="vip-target-section">
-        <h2 className="vip-section-title">Ai Nên Nâng Cấp VIP?</h2>
+        <h2 className="vip-section-title">{t('vip_target_title')}</h2>
         <div className="vip-target-grid">
           <div className="vip-target-card">
             <div className="target-icon"><ShoppingOutlined /></div>
-            <h3>Tín Đồ Mua Sắm</h3>
-            <p>Bạn thường xuyên mua quần áo, giày dép mỗi tháng? Gói VIP sẽ giúp bạn tiết kiệm đáng kể với ưu đãi giảm giá trên mọi đơn hàng.</p>
+            <h3>{t('vip_target_1_title')}</h3>
+            <p>{t('vip_target_1_desc')}</p>
           </div>
           <div className="vip-target-card">
             <div className="target-icon"><HomeOutlined /></div>
-            <h3>Người Nội Trợ</h3>
-            <p>Gia đình hay đặt tạp hóa, đồ gia dụng online? Miễn phí vận chuyển và voucher hàng tháng là chân ái dành cho bạn.</p>
+            <h3>{t('vip_target_2_title')}</h3>
+            <p>{t('vip_target_2_desc')}</p>
           </div>
           <div className="vip-target-card">
             <div className="target-icon"><AppstoreOutlined /></div>
-            <h3>Yêu Thích Nội Thất</h3>
-            <p>Bạn đang trang trí nhà cửa và mua các món đồ giá trị lớn? Đặc quyền đổi trả và bảo hành của VIP+ sẽ giúp bạn yên tâm tuyệt đối.</p>
+            <h3>{t('vip_target_3_title')}</h3>
+            <p>{t('vip_target_3_desc')}</p>
           </div>
         </div>
       </div>
@@ -345,30 +347,30 @@ const VipPackages = () => {
 
       {/* Savings Example */}
       <div className="vip-savings-section">
-        <h2 className="vip-section-title">Bài Toán Tiết Kiệm</h2>
+        <h2 className="vip-section-title">{t('vip_savings_title')}</h2>
         <div className="vip-savings-container">
           <div className="vip-savings-scenario">
-            <h3><CalculatorOutlined /> Ví Dụ Thực Tế</h3>
-            <p className="scenario-desc">Giả sử mỗi tháng bạn mua <strong>3 đơn hàng</strong>, trung bình <strong>500.000đ/đơn</strong>.</p>
+            <h3><CalculatorOutlined /> {t('vip_savings_example')}</h3>
+            <p className="scenario-desc" dangerouslySetInnerHTML={{ __html: t('vip_savings_desc') }}></p>
             <div className="savings-breakdown">
               <div className="breakdown-row">
-                <span>Tiền ship trung bình:</span>
+                <span>{t('vip_savings_ship')}</span>
                 <span className="cost">90.000đ</span>
               </div>
               <div className="breakdown-row">
-                <span>Giảm giá trực tiếp (5%):</span>
+                <span>{t('vip_savings_discount')}</span>
                 <span className="cost">75.000đ</span>
               </div>
               <div className="breakdown-row">
-                <span>Voucher tháng:</span>
+                <span>{t('vip_savings_voucher')}</span>
                 <span className="cost">50.000đ</span>
               </div>
               <div className="breakdown-total">
-                <span>Tổng tiết kiệm với VIP:</span>
-                <span className="total-save">215.000đ / tháng</span>
+                <span>{t('vip_savings_total')}</span>
+                <span className="total-save">215.000đ {t('vip_val_month')}</span>
               </div>
             </div>
-            <p className="savings-note">Chỉ với 299k/tháng, bạn đã "lãi" ngay từ tháng đầu tiên!</p>
+            <p className="savings-note">{t('vip_savings_note')}</p>
           </div>
         </div>
       </div>
@@ -377,47 +379,47 @@ const VipPackages = () => {
 
       {/* Comparison Table */}
       <div className="vip-comparison-section">
-        <h2 className="vip-section-title">So Sánh Quyền Lợi</h2>
+        <h2 className="vip-section-title">{t('vip_comparison_title')}</h2>
         <div className="vip-comparison-table-wrapper">
           <table className="vip-comparison-table">
             <thead>
               <tr>
-                <th>Quyền Lợi</th>
-                <th>Thành Viên</th>
-                <th className="highlight">VIP</th>
-                <th className="premium">VIP+</th>
+                <th>{t('vip_col_benefit')}</th>
+                <th>{t('vip_col_member')}</th>
+                <th className="highlight">{t('vip_col_vip')}</th>
+                <th className="premium">{t('vip_col_vip_plus')}</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>Giảm giá đơn hàng</td>
+                <td>{t('vip_row_discount')}</td>
                 <td>-</td>
                 <td>5%</td>
                 <td>8-10%</td>
               </tr>
               <tr>
-                <td>Voucher mua sắm</td>
+                <td>{t('vip_row_voucher')}</td>
                 <td>-</td>
-                <td>1-2/tháng</td>
-                <td>Voucher khủng</td>
+                <td>1-2/{t('vip_val_month').replace('/ ', '')}</td>
+                <td>{t('feat_voucher_huge')}</td>
               </tr>
               <tr>
-                <td>Miễn phí vận chuyển</td>
+                <td>{t('vip_row_shipping')}</td>
                 <td>-</td>
-                <td>Đơn {'>'} 500k</td>
-                <td>Không giới hạn</td>
+                <td>{t('feat_free_ship_500')}</td>
+                <td>{t('feat_free_ship_500').replace('500k', '0đ')}</td>
               </tr>
               <tr>
-                <td>Thời gian đổi trả</td>
-                <td>7 ngày</td>
-                <td>15 ngày</td>
-                <td>60 ngày</td>
+                <td>{t('vip_row_return')}</td>
+                <td>7 {t('days')}</td>
+                <td>15 {t('days')}</td>
+                <td>60 {t('days')}</td>
               </tr>
               <tr>
-                <td>Hỗ trợ khách hàng</td>
-                <td>Tiêu chuẩn</td>
-                <td>Ưu tiên</td>
-                <td>Siêu tốc 1:1</td>
+                <td>{t('vip_row_support')}</td>
+                <td>{t('feat_support_std')}</td>
+                <td>{t('feat_support_prio')}</td>
+                <td>{t('feat_care_1_1')}</td>
               </tr>
             </tbody>
           </table>
@@ -428,19 +430,19 @@ const VipPackages = () => {
 
       {/* Social Proof */}
       <div className="vip-testimonials-section">
-        <h2 className="vip-section-title">Khách Hàng Nói Gì Về VIP?</h2>
+        <h2 className="vip-section-title">{t('vip_testimonials_title')}</h2>
         <div className="vip-stats-banner">
           <div className="vip-stat-item">
             <span className="stat-number">10,000+</span>
-            <span className="stat-label">Thành viên VIP</span>
+            <span className="stat-label">{t('pkg_vip')} Member</span>
           </div>
           <div className="vip-stat-item">
             <span className="stat-number">4.9/5</span>
-            <span className="stat-label">Đánh giá hài lòng</span>
+            <span className="stat-label">{t('avg_rating')}</span>
           </div>
           <div className="vip-stat-item">
             <span className="stat-number">98%</span>
-            <span className="stat-label">Gia hạn gói</span>
+            <span className="stat-label">{t('vip_renewal_rate')}</span>
           </div>
         </div>
         <div className="vip-testimonials-grid">
@@ -449,7 +451,7 @@ const VipPackages = () => {
             <p className="testimonial-text">"Từ khi nâng cấp lên VIP+, mình tiết kiệm được cả triệu tiền ship mỗi tháng. Quà tặng sinh nhật cũng rất xịn!"</p>
             <div className="testimonial-user">
               <span className="user-name">Nguyễn Thu Hà</span>
-              <span className="user-badge">VIP+ Member</span>
+              <span className="user-badge">{t('pkg_vip_plus')} Member</span>
             </div>
           </div>
           <div className="vip-testimonial-card">
@@ -457,7 +459,7 @@ const VipPackages = () => {
             <p className="testimonial-text">"Gói VIP Thời Trang rất phù hợp với mình. Được xem trước bộ sưu tập mới và mua với giá ưu đãi."</p>
             <div className="testimonial-user">
               <span className="user-name">Trần Minh Tuấn</span>
-              <span className="user-badge">VIP Thời Trang</span>
+              <span className="user-badge">{t('pkg_vip_fashion')}</span>
             </div>
           </div>
           <div className="vip-testimonial-card">
@@ -465,7 +467,7 @@ const VipPackages = () => {
             <p className="testimonial-text">"Dịch vụ hỗ trợ khách hàng của gói Doanh Nhân thực sự đẳng cấp. Xử lý vấn đề cực nhanh."</p>
             <div className="testimonial-user">
               <span className="user-name">Lê Văn Hùng</span>
-              <span className="user-badge">VIP Doanh Nhân</span>
+              <span className="user-badge">{t('pkg_vip_business')}</span>
             </div>
           </div>
         </div>
@@ -475,31 +477,31 @@ const VipPackages = () => {
 
       {/* Guide & Process */}
       <div className="vip-guide-section">
-        <h2 className="vip-section-title">Quy Trình Đăng Ký Đơn Giản</h2>
+        <h2 className="vip-section-title">{t('vip_guide_title')}</h2>
         <div className="vip-steps">
           <div className="vip-step">
             <div className="step-number">1</div>
-            <h3>Chọn Gói</h3>
-            <p>Lựa chọn gói VIP phù hợp với nhu cầu mua sắm của bạn.</p>
+            <h3>{t('vip_step_1_title')}</h3>
+            <p>{t('vip_step_1_desc')}</p>
           </div>
           <div className="vip-step">
             <div className="step-number">2</div>
-            <h3>Thanh Toán</h3>
-            <p>Thanh toán an toàn qua thẻ, ví điện tử hoặc chuyển khoản.</p>
+            <h3>{t('vip_step_2_title')}</h3>
+            <p>{t('vip_step_2_desc')}</p>
           </div>
           <div className="vip-step">
             <div className="step-number">3</div>
-            <h3>Kích Hoạt</h3>
-            <p>Hệ thống tự động kích hoạt đặc quyền VIP ngay lập tức.</p>
+            <h3>{t('vip_step_3_title')}</h3>
+            <p>{t('vip_step_3_desc')}</p>
           </div>
         </div>
-        <p className="vip-guide-note">* Gói sẽ tự động gia hạn hàng tháng. Bạn có thể hủy gia hạn bất cứ lúc nào trong phần cài đặt tài khoản.</p>
+        <p className="vip-guide-note">{t('vip_guide_note')}</p>
       </div>
 
       <div className="vip-section-divider"></div>
 
       <div className="vip-privileges-section">
-        <h2 className="vip-section-title">Đặc Quyền Thượng Lưu</h2>
+        <h2 className="vip-section-title">{t('vip_privileges_title')}</h2>
         <div className="vip-privileges-grid">
           {privileges.map((item, index) => (
             <div key={index} className="vip-privilege-card">
@@ -515,19 +517,19 @@ const VipPackages = () => {
 
       {/* Quick Terms */}
       <div className="vip-quick-terms">
-        <h2 className="vip-section-title">Lưu Ý Quan Trọng</h2>
+        <h2 className="vip-section-title">{t('vip_terms_title')}</h2>
         <div className="quick-terms-content">
           <div className="term-item">
             <InfoCircleOutlined className="term-icon" />
-            <p>Gói VIP sẽ tự động gia hạn hàng tháng. Bạn có thể hủy bất cứ lúc nào trong phần Cài đặt tài khoản.</p>
+            <p>{t('vip_term_1')}</p>
           </div>
           <div className="term-item">
             <InfoCircleOutlined className="term-icon" />
-            <p>Ưu đãi giảm giá trực tiếp không áp dụng đồng thời với một số chương trình Flash Sale đặc biệt.</p>
+            <p>{t('vip_term_2')}</p>
           </div>
           <div className="term-item">
             <InfoCircleOutlined className="term-icon" />
-            <p>Quà tặng sinh nhật sẽ được gửi vào ví voucher của bạn vào ngày đầu tiên của tháng sinh nhật.</p>
+            <p>{t('vip_term_3')}</p>
           </div>
         </div>
       </div>
@@ -536,7 +538,7 @@ const VipPackages = () => {
 
       {/* FAQ Section */}
       <div className="vip-faq-section">
-        <h2 className="vip-section-title">Câu Hỏi Thường Gặp</h2>
+        <h2 className="vip-section-title">{t('vip_faq_title')}</h2>
         <Collapse ghost expandIconPosition="end" className="vip-faq-collapse">
           {faqs.map((faq, index) => (
             <Panel header={faq.question} key={index}>
@@ -551,17 +553,17 @@ const VipPackages = () => {
       {/* Policy & Support */}
       <div className="vip-support-section">
         <div className="vip-support-links">
-          <Link to="/terms-and-policies">Điều khoản sử dụng</Link>
+          <Link to="/terms-and-policies">{t('terms_and_policies')}</Link>
           <span className="separator">•</span>
-          <Link to="/terms-and-policies">Chính sách hoàn tiền</Link>
+          <Link to="/terms-and-policies">{t('refund_policy')}</Link>
           <span className="separator">•</span>
-          <Link to="/terms-and-policies">Điều kiện ưu đãi</Link>
+          <Link to="/terms-and-policies">{t('vip_conditions')}</Link>
         </div>
         <div className="vip-support-contact">
-          <h3>Cần hỗ trợ thêm?</h3>
-          <p>Đội ngũ CSKH chuyên biệt cho VIP luôn sẵn sàng 24/7</p>
+          <h3>{t('vip_support_contact')}</h3>
+          <p>{t('vip_support_desc')}</p>
           <button className="vip-contact-btn">
-            <QuestionCircleOutlined /> Chat Với Chuyên Viên
+            <QuestionCircleOutlined /> {t('vip_chat_support')}
           </button>
         </div>
       </div>

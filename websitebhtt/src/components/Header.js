@@ -37,11 +37,13 @@ import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { searchProducts } from "../data/productService"; // MỚI: Import hàm search
 import "../style/Header.css";
+import { useTranslation } from "react-i18next"; // <-- IMPORT TRANSLATION
 
 const { Header } = Layout;
 const { Text } = Typography;
 
 const AppHeader = () => {
+  const { t } = useTranslation(); // <-- USE HOOK
   const navigate = useNavigate();
   const location = useLocation(); // MỚI: Hook location
   const [showCategories, setShowCategories] = useState(false);
@@ -248,7 +250,7 @@ const AppHeader = () => {
 
   const handleLogout = () => {
     logout();
-    message.success("Bạn đã đăng xuất.");
+    message.success(t('logout_success'));
     navigate("/login");
   };
 
@@ -278,29 +280,29 @@ const AppHeader = () => {
   // Menu cho desktop
   // Menu cho desktop
   const menuItems = [
-    { key: "home", label: "Trang Chủ", onClick: () => navigate("/") },
+    { key: "home", label: t('home'), onClick: () => navigate("/") },
     {
       key: "product",
       // SỬA: Label giờ chỉ còn là văn bản
-      label: "Sản Phẩm",
+      label: t('products'),
 
       // SỬA: Chuyển các sự kiện ra ngoài làm thuộc tính của Menu.Item
       onClick: () => navigate("/products"),
       onMouseEnter: () => setShowCategories(true),
       onMouseLeave: () => setShowCategories(false),
     },
-    { key: "about", label: "Giới Thiệu", onClick: () => navigate("/about") },
-    { key: "contact", label: "Liên Hệ", onClick: () => navigate("/contact") },
-    { key: "blog", label: "Blog", onClick: () => navigate("/blog") },
+    { key: "about", label: t('about'), onClick: () => navigate("/about") },
+    { key: "contact", label: t('contact'), onClick: () => navigate("/contact") },
+    { key: "blog", label: t('blog'), onClick: () => navigate("/blog") },
   ]; // Dropdown cho user (dùng chung)
 
   const userMenu = {
     items: [
-      { key: "1", label: "Hồ Sơ", onClick: () => navigate("/profile") },
-      { key: "2", label: "Đăng xuất", onClick: handleLogout },
+      { key: "1", label: t('my_account'), onClick: () => navigate("/profile") },
+      { key: "2", label: t('logout'), onClick: handleLogout },
       {
         key: "3",
-        label: "Lịch sử mua sắm",
+        label: t('order_history'),
         onClick: () => navigate("/order-history"),
       },
     ],
@@ -347,7 +349,7 @@ const AppHeader = () => {
             >
               <Input
                 className="modern-search-input"
-                placeholder="Tìm kiếm sản phẩm..."
+                placeholder={t('search_placeholder')}
                 // Icon kính lúp nằm bên trái
 
                 // Nút tìm kiếm tùy chỉnh nằm bên phải
@@ -393,14 +395,10 @@ const AppHeader = () => {
                   </div>
                   <div style={{ flex: 1 }}>
                     <Text strong className="cart-popover-title">
-                      Đừng quên giỏ hàng!
+                      {t('cart')}
                     </Text>
                     <Text type="secondary" className="cart-popover-desc">
-                      Bạn đang có{" "}
-                      <Text strong type="danger" style={{ fontSize: "15px" }}>
-                        {totalItems}
-                      </Text>{" "}
-                      sản phẩm đang chờ thanh toán.
+                      {t('cart_reminder', { count: totalItems })}
                     </Text>
                   </div>
                 </div>
@@ -428,7 +426,7 @@ const AppHeader = () => {
                     navigate("/cart");
                   }}
                 >
-                  Thanh toán ngay
+                  {t('checkout')}
                 </Button>
               </div>
             }
@@ -471,7 +469,7 @@ const AppHeader = () => {
               icon={<LogoutOutlined />}
               className="header-logout-btn" // THÊM MỚI
             >
-              Đăng xuất
+              {t('logout')}
             </Button>
           ) : (
             <Button
@@ -480,7 +478,7 @@ const AppHeader = () => {
               icon={<LoginOutlined />}
               className="header-login-btn" // THÊM MỚI
             >
-              Đăng nhập
+              {t('login')}
             </Button>
           )}
         </div>
@@ -512,7 +510,7 @@ const AppHeader = () => {
 
       {/* ⭐️ THÊM: Drawer hiển thị thông báo */}
       <Drawer
-        title={`Thông báo (${notifications.length})`}
+        title={t('notification_title', { count: notifications.length })}
         placement="right"
         onClose={() => setIsNotificationsOpen(false)}
         open={isNotificationsOpen}
@@ -522,7 +520,7 @@ const AppHeader = () => {
         <List
           itemLayout="horizontal"
           dataSource={notifications}
-          locale={{ emptyText: "Bạn chưa có thông báo nào." }}
+          locale={{ emptyText: t('notification_empty') }}
           renderItem={(item) => (
             <List.Item
               className={item.isNew ? "notification-new" : ""}
@@ -552,7 +550,7 @@ const AppHeader = () => {
                       alignItems: "center",
                     }}
                   >
-                    <Text strong>Admin đã trả lời bạn</Text>
+                    <Text strong>{t('notification_admin_reply')}</Text>
                     <Text type="secondary" style={{ fontSize: 12 }}>
                       {new Date(item.date).toLocaleDateString("vi-VN")}
                     </Text>
@@ -561,7 +559,7 @@ const AppHeader = () => {
                 description={
                   <>
                     <Text>
-                      về đánh giá cho sản phẩm <b>{item.productTitle}</b>
+                      {t('notification_reply_about')} <b>{item.productTitle}</b>
                     </Text>
                     <p
                       style={{
@@ -584,7 +582,7 @@ const AppHeader = () => {
       {/* Lưu ý: Chức năng gợi ý chưa được thêm cho thanh search trong Drawer */}
       {/* Bạn có thể áp dụng logic tương tự nếu muốn */}
       <Drawer
-        title="Menu"
+        title={t('menu_title')}
         placement="right"
         onClose={closeDrawer}
         open={drawerVisible}
@@ -593,7 +591,7 @@ const AppHeader = () => {
       >
         <div style={{ padding: "12px 16px" }}>
           <Input.Search
-            placeholder="Tìm sản phẩm..."
+            placeholder={t('search_product_placeholder')}
             allowClear
             onSearch={handleDrawerSearch}
             className="drawer-search"
@@ -601,25 +599,25 @@ const AppHeader = () => {
         </div>
         <Menu mode="vertical" style={{ borderRight: 0 }}>
           <Menu.Item key="home" onClick={() => handleDrawerNavigate("/")}>
-            Trang Chủ
+            {t('home')}
           </Menu.Item>
           <Menu.Item
             key="product"
             onClick={() => handleDrawerNavigate("/products")}
           >
-            Sản Phẩm
+            {t('products')}
           </Menu.Item>
           <Menu.Item key="about" onClick={() => handleDrawerNavigate("/about")}>
-            Giới Thiệu
+            {t('about')}
           </Menu.Item>
           <Menu.Item
             key="contact"
             onClick={() => handleDrawerNavigate("/contact")}
           >
-            Liên Hệ
+            {t('contact')}
           </Menu.Item>
           <Menu.Item key="blog" onClick={() => handleDrawerNavigate("/blog")}>
-            Blog
+            {t('blog')}
           </Menu.Item>
         </Menu>
 
@@ -634,7 +632,7 @@ const AppHeader = () => {
             onClick={() => handleDrawerNavigate("/cart")}
             block
           >
-            Giỏ hàng ({totalItems})
+            {t('cart_with_count', { count: totalItems })}
           </Button>
 
           {isLoggedIn ? (
@@ -644,7 +642,7 @@ const AppHeader = () => {
                 onClick={() => handleDrawerNavigate("/profile")}
                 block
               >
-                Hồ Sơ ({currentUser?.username || "User"})
+                {t('profile_with_name', { name: currentUser?.username || "User" })}
               </Button>
               <Button
                 icon={<LogoutOutlined />}
@@ -656,7 +654,7 @@ const AppHeader = () => {
                 danger
                 block
               >
-                Đăng xuất
+                {t('logout')}
               </Button>
             </>
           ) : (
@@ -666,7 +664,7 @@ const AppHeader = () => {
               type="primary"
               block
             >
-              Đăng nhập
+              {t('login')}
             </Button>
           )}
         </Space>

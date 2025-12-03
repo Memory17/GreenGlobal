@@ -1,5 +1,6 @@
 import React from "react";
 import "../style/Contact.css"; // Đảm bảo đã import file CSS
+import { useTranslation } from "react-i18next"; // Import useTranslation
 import {
   Typography,
   Row,
@@ -28,6 +29,8 @@ import {
 const { Title, Text } = Typography;
 
 const Contact = () => {
+  const { t } = useTranslation(); // Initialize hook
+
   // Extracted submit handler to preserve original functionality
   const handleSubmit = async (values) => {
     try {
@@ -36,7 +39,7 @@ const Contact = () => {
       const rawMsg = (values.message || '').trim();
       const firstLine = rawMsg.split(/\r?\n/)[0] || '';
       const MAX_TITLE = 80;
-      const titleForTicket = firstLine.length > MAX_TITLE ? firstLine.slice(0, MAX_TITLE - 3) + '...' : firstLine || `Liên hệ: ${values.name}`;
+      const titleForTicket = firstLine.length > MAX_TITLE ? firstLine.slice(0, MAX_TITLE - 3) + '...' : firstLine || t('contact_from', { name: values.name });
 
       const payload = {
         // title is the message content (first line, trimmed)
@@ -50,13 +53,13 @@ const Contact = () => {
       };
       const saved = saveSupportTicket(payload);
       if (saved) {
-        message.success('Message sent successfully! Support team has received your ticket.');
+        message.success(t('message_sent_success'));
       } else {
-        message.error('Failed to submit message. Please try again later.');
+        message.error(t('message_sent_fail'));
       }
     } catch (e) {
       console.error('Contact form submit failed', e);
-      message.error('Failed to send message.');
+      message.error(t('message_sent_error'));
     }
   };
 
@@ -64,28 +67,28 @@ const Contact = () => {
   const contactInfo = [
     { 
       icon: MailOutlined, 
-      label: 'Email Hỗ Trợ', 
+      label: t('support_email'), 
       value: 'hello@company.com', 
       href: 'mailto:hello@company.com',
-      description: 'Gửi email cho chúng tôi bất cứ lúc nào!',
+      description: t('email_desc'),
       color: '#3b82f6',
       bgColor: '#eff6ff'
     },
     { 
       icon: PhoneOutlined, 
-      label: 'Hotline Tư Vấn', 
+      label: t('hotline'), 
       value: '+1 (555) 123-4567', 
       href: 'tel:+15551234567',
-      description: 'Hỗ trợ 24/7 từ thứ 2 đến thứ 6',
+      description: t('hotline_desc'),
       color: '#10b981',
       bgColor: '#ecfdf5'
     },
     { 
       icon: EnvironmentOutlined, 
-      label: 'Văn Phòng Chính', 
+      label: t('main_office'), 
       value: '279 Mai Dang Chon, Hoa Quy, Da Nang City', 
       href: null,
-      description: 'Ghé thăm văn phòng của chúng tôi',
+      description: t('office_desc'),
       color: '#f43f5e',
       bgColor: '#fff1f2'
     }
@@ -102,51 +105,51 @@ const Contact = () => {
     <div className="contact-page-wrapper">
       <div className="contact-container">
         <div className="contact-header">
-          <Title level={1}>Liên Hệ</Title>
-          <Text className="contact-subtitle">Bạn có câu hỏi hoặc muốn hợp tác? Chúng tôi rất mong nhận được phản hồi từ bạn.</Text>
+          <Title level={1}>{t('contact_title')}</Title>
+          <Text className="contact-subtitle">{t('contact_subtitle')}</Text>
         </div>
 
         <div className="contact-main-grid">
           <div className="contact-left-column">
             <div className="contact-card contact-form-card">
             <div className="form-header">
-              <Title level={3}>Gửi tin nhắn cho chúng tôi</Title>
-              <Text type="secondary">Chúng tôi sẽ phản hồi sớm nhất có thể</Text>
+              <Title level={3}>{t('send_message_title')}</Title>
+              <Text type="secondary">{t('send_message_desc')}</Text>
             </div>
             <Form layout="vertical" className="contact-form" onFinish={handleSubmit} requiredMark={false}>
               <Row gutter={24}>
                 <Col xs={24} sm={12}>
-                  <Form.Item name="name" label="Họ và Tên" rules={[{ required: true, message: 'Vui lòng nhập tên' }]}>
-                    <Input placeholder="Nguyễn Văn A" prefix={<UserOutlined className="input-icon" />} size="large" />
+                  <Form.Item name="name" label={t('full_name')} rules={[{ required: true, message: t('validate_name') }]}>
+                    <Input placeholder={t('input_name_placeholder')} prefix={<UserOutlined className="input-icon" />} size="large" />
                   </Form.Item>
                 </Col>
                 <Col xs={24} sm={12}>
-                  <Form.Item name="email" label="Địa chỉ Email" rules={[{ required: true, message: 'Vui lòng nhập email' }, { type: 'email', message: 'Email không hợp lệ' }]}>
-                    <Input placeholder="john@example.com" prefix={<MailOutlined className="input-icon" />} size="large" />
+                  <Form.Item name="email" label={t('email')} rules={[{ required: true, message: t('validate_email') }, { type: 'email', message: t('validate_email_invalid') }]}>
+                    <Input placeholder={t('input_email_placeholder')} prefix={<MailOutlined className="input-icon" />} size="large" />
                   </Form.Item>
                 </Col>
               </Row>
 
               <Row gutter={24}>
                 <Col xs={24} sm={12}>
-                  <Form.Item name="phone" label="Số Điện Thoại" rules={[{ required: true, message: 'Vui lòng nhập số điện thoại' }]}>
-                    <Input placeholder="0912 345 678" prefix={<PhoneOutlined className="input-icon" />} size="large" />
+                  <Form.Item name="phone" label={t('phone')} rules={[{ required: true, message: t('validate_phone') }]}>
+                    <Input placeholder={t('input_phone_placeholder')} prefix={<PhoneOutlined className="input-icon" />} size="large" />
                   </Form.Item>
                 </Col>
                 <Col xs={24} sm={12}>
-                  <Form.Item name="subject" label="Chủ đề" rules={[{ required: true, message: 'Vui lòng nhập chủ đề' }]}>
-                    <Input placeholder="Chúng tôi có thể giúp gì cho bạn?" prefix={<MessageOutlined className="input-icon" />} size="large" />
+                  <Form.Item name="subject" label={t('subject')} rules={[{ required: true, message: t('validate_subject') }]}>
+                    <Input placeholder={t('input_subject_placeholder')} prefix={<MessageOutlined className="input-icon" />} size="large" />
                   </Form.Item>
                 </Col>
               </Row>
 
-              <Form.Item name="message" label="Tin nhắn" rules={[{ required: true, message: 'Vui lòng nhập tin nhắn' }]}>
-                <Input.TextArea autoSize={{ minRows: 6, maxRows: 15 }} placeholder="Hãy cho chúng tôi biết thêm về yêu cầu của bạn..." showCount maxLength={500} />
+              <Form.Item name="message" label={t('message_label')} rules={[{ required: true, message: t('validate_message') }]}>
+                <Input.TextArea autoSize={{ minRows: 6, maxRows: 15 }} placeholder={t('input_message_placeholder')} showCount maxLength={500} />
               </Form.Item>
 
               <Form.Item>
                 <Button type="primary" htmlType="submit" block size="large" className="contact-submit-btn" icon={<SendOutlined />}>
-                  Gửi Tin Nhắn
+                  {t('send_message')}
                 </Button>
               </Form.Item>
             </Form>
@@ -154,8 +157,8 @@ const Contact = () => {
 
           <div className="contact-card contact-social-card">
             <div className="social-header">
-              <Title level={4}>Kết nối với chúng tôi</Title>
-              <Text>Theo dõi để không bỏ lỡ những ưu đãi hấp dẫn nhất</Text>
+              <Title level={4}>{t('connect_with_us')}</Title>
+              <Text>{t('follow_us_desc')}</Text>
             </div>
             <div className="contact-social-grid">
               {socialLinks.map((social, index) => {
@@ -183,7 +186,7 @@ const Contact = () => {
 
           <div className="contact-info-column">
             <div className="contact-card contact-info-card">
-              <Title level={4}>Thông tin liên hệ</Title>
+              <Title level={4}>{t('footer_contact_info')}</Title>
               <div className="space-y-6">
                 {contactInfo.map((item, index) => {
                   const Icon = item.icon;
@@ -217,27 +220,27 @@ const Contact = () => {
                 <div className="hours-icon-wrapper">
                   <ClockCircleOutlined />
                 </div>
-                <Title level={4}>Giờ làm việc</Title>
+                <Title level={4}>{t('working_hours')}</Title>
               </div>
               
               <div className="hours-list">
                 <div className="hours-item">
-                  <span className="day-label">Thứ Hai - Thứ Sáu</span>
+                  <span className="day-label">{t('mon_fri')}</span>
                   <span className="time-badge open">09:00 - 18:00</span>
                 </div>
                 <div className="hours-item">
-                  <span className="day-label">Thứ Bảy</span>
+                  <span className="day-label">{t('sat')}</span>
                   <span className="time-badge partial">10:00 - 16:00</span>
                 </div>
                 <div className="hours-item">
-                  <span className="day-label">Chủ Nhật</span>
-                  <span className="time-badge closed">Đóng cửa</span>
+                  <span className="day-label">{t('sun')}</span>
+                  <span className="time-badge closed">{t('closed')}</span>
                 </div>
               </div>
 
               <div className="hours-note">
                 <CheckCircleOutlined />
-                <span>Hỗ trợ trực tuyến 24/7 qua Email</span>
+                <span>{t('online_support_247')}</span>
               </div>
             </div>
           </div>
@@ -255,7 +258,7 @@ const Contact = () => {
             <div className="contact-map-overlay">
               <EnvironmentOutlined className="map-icon" />
               <div className="map-text">
-                <h3>Trụ sở chính</h3>
+                <h3>{t('headquarters')}</h3>
                 <p>279 Mai Dang Chon, Hoa Quy, Da Nang City</p>
               </div>
             </div>

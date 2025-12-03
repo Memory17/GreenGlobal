@@ -3,16 +3,24 @@ import React, { useState } from 'react';
 import { Typography, Input, Empty, Button, Row, Col } from 'antd';
 import { QuestionCircleOutlined, SearchOutlined, PlusOutlined, MinusOutlined, CustomerServiceOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { qnaData } from '../../data/qaaService.js';
 import './QaA.css'; // Import file CSS
 
 const { Title, Text } = Typography;
 
 const QaA = () => {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [activeId, setActiveId] = useState(null);
 
-  const filteredData = qnaData.filter(item =>
+  const translatedData = qnaData.map(item => ({
+    ...item,
+    question: t(`faq_q_${item.id}`),
+    answer: t(`faq_a_${item.id}`)
+  }));
+
+  const filteredData = translatedData.filter(item =>
     item.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.answer.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -25,14 +33,14 @@ const QaA = () => {
     <div className="qna-page-wrapper">
       <div className="qna-header-section">
         <Title level={2} className="qna-page-title">
-          <QuestionCircleOutlined className="qna-title-icon" /> Câu Hỏi Thường Gặp (FAQ)
+          <QuestionCircleOutlined className="qna-title-icon" /> {t('faq_title')}
         </Title>
-        <Text className="qna-subtitle">Chúng tôi có thể giúp gì cho bạn?</Text>
+        <Text className="qna-subtitle">{t('faq_subtitle')}</Text>
 
         <div className="qna-search-container">
           <Input
             size="large"
-            placeholder="Tìm kiếm câu hỏi..."
+            placeholder={t('search_faq_placeholder')}
             prefix={<SearchOutlined />}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -68,7 +76,7 @@ const QaA = () => {
             })}
           </Row>
         ) : (
-          <Empty description="Không tìm thấy câu hỏi phù hợp" style={{ marginTop: 40 }} />
+          <Empty description={t('no_faq_found')} style={{ marginTop: 40 }} />
         )}
       </div>
 
@@ -78,13 +86,13 @@ const QaA = () => {
           <div className="qna-contact-content-wrapper">
             <CustomerServiceOutlined className="qna-contact-icon" />
             <div className="qna-contact-info">
-              <Title level={4} className="qna-contact-title">Bạn vẫn chưa tìm thấy câu trả lời?</Title>
-              <Text className="qna-contact-text">Đội ngũ hỗ trợ của chúng tôi luôn sẵn sàng giúp đỡ bạn giải quyết mọi vấn đề.</Text>
+              <Title level={4} className="qna-contact-title">{t('still_have_questions')}</Title>
+              <Text className="qna-contact-text">{t('support_desc')}</Text>
             </div>
           </div>
           <Link to="/contact">
             <Button type="primary" size="large" className="qna-contact-btn">
-              Liên hệ hỗ trợ ngay
+              {t('contact_support_now')}
             </Button>
           </Link>
         </div>

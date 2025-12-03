@@ -13,6 +13,7 @@ import {
   SendOutlined
 } from '@ant-design/icons';
 import '../style/Blog.css';
+import { useTranslation } from "react-i18next"; // Import useTranslation
 
 
 const { Search } = Input;
@@ -386,6 +387,7 @@ export const saveStoredBlogPosts = (posts) => {
 
 
 const Blog = () => {
+  const { t } = useTranslation(); // Initialize hook
   const [allPosts, setAllPosts] = useState(() => getStoredBlogPosts());
   const [newComment, setNewComment] = useState("");
   const [form] = Form.useForm();
@@ -529,10 +531,10 @@ const Blog = () => {
       <div className="blog-header">
         <div className="header-content">
           <h1 className="blog-title">
-            <span className="title-gradient">Blog</span> Kiến Thức
+            <span className="title-gradient">Blog</span> {t('blog_title').replace('Blog', '')}
           </h1>
           <p className="blog-subtitle">
-            Khám phá những thông tin, sự kiện, sản phẩm mới nhất được cập nhật của chúng tôi
+            {t('blog_subtitle')}
           </p>
         </div>
       </div>
@@ -541,7 +543,7 @@ const Blog = () => {
         <div className="filter-content">
           <div className="search-wrapper">
             <Search
-              placeholder="Tìm kiếm bài viết..."
+              placeholder={t('search_blog_placeholder')}
               allowClear
               size="large"
               prefix={<SearchOutlined className="search-icon" />}
@@ -567,7 +569,7 @@ const Blog = () => {
             >
               {categories.map(cat => (
                 <Option key={cat} value={cat}>
-                  {cat === 'all' ? 'Tất cả' : cat}
+                  {cat === 'all' ? t('all_categories') : cat}
                 </Option>
               ))}
             </Select>
@@ -580,7 +582,7 @@ const Blog = () => {
             showZero
             style={{ backgroundColor: '#10b981' }}
           />
-          <span className="count-text">bài viết</span>
+          <span className="count-text">{t('blog_title').split(' ')[0].toLowerCase()}</span>
         </div>
       </div>
 
@@ -628,7 +630,7 @@ const Blog = () => {
                       <div className="author-details">
                         <span className="author-name">{post.author}</span>
                         <span className="post-date">
-                          <ClockCircleOutlined /> {post.date} • {post.readTime}
+                          <ClockCircleOutlined /> {post.date} • {post.readTime.replace('phút đọc', t('read_time_min'))}
                         </span>
                       </div>
                     </div>
@@ -636,7 +638,7 @@ const Blog = () => {
 
                   <div className="card-actions">
                     <Space size="large">
-                      <Tooltip title="Lượt xem">
+                      <Tooltip title={t('most_viewed')}>
                         <span className="action-item">
                           <EyeOutlined />
                           <span className="action-count">{(post.views || 0).toLocaleString()}</span>
@@ -657,7 +659,7 @@ const Blog = () => {
                         </Button>
                       </Tooltip>
 
-                      <Tooltip title="Bình luận">
+                      <Tooltip title={t('comments')}>
                         <Button
                           type="text"
                           className="action-button"
@@ -674,7 +676,7 @@ const Blog = () => {
                       className="read-more-btn"
                       onClick={() => handleReadMore(post)}
                     >
-                      Đọc thêm
+                      {t('read_more')}
                     </Button>
                   </div>
                 </div>
@@ -684,7 +686,7 @@ const Blog = () => {
         ) : (
           <div className="empty-state">
             <Empty
-              description="Không tìm thấy bài viết nào"
+              description={t('no_posts_found')}
               image={Empty.PRESENTED_IMAGE_SIMPLE}
             />
           </div>
@@ -753,13 +755,13 @@ const Blog = () => {
               <span className="action-item" style={{ fontSize: 15, color: '#555' }}>
                 <EyeOutlined />
                 <span className="action-count" style={{ marginLeft: 8 }}>
-                  {(selectedPost.views || 0).toLocaleString()} Lượt xem
+                  {(selectedPost.views || 0).toLocaleString()} {t('most_viewed')}
                 </span>
               </span>
               <span className="action-item" style={{ fontSize: 15, color: '#555' }}>
                 <CommentOutlined />
                 <span className="action-count" style={{ marginLeft: 8 }}>
-                  {(selectedPost.comments || 0).toLocaleString()} Bình luận
+                  {(selectedPost.comments || 0).toLocaleString()} {t('comments')}
                 </span>
               </span>
             </Space>
@@ -778,7 +780,7 @@ const Blog = () => {
             )}
 
             <div className="comment-section">
-              <h3 className="comment-title">Bình luận ({selectedPost.comments})</h3>
+              <h3 className="comment-title">{t('comments')} ({selectedPost.comments})</h3>
 
               <List
                 className="comment-list"
@@ -818,7 +820,7 @@ const Blog = () => {
                     <TextArea
                       value={newComment}
                       onChange={(e) => setNewComment(e.target.value)}
-                      placeholder="Viết bình luận của bạn..."
+                      placeholder={t('write_comment_placeholder')}
                       autoSize={{ minRows: 1, maxRows: 4 }}
                       className="comment-input"
                     />

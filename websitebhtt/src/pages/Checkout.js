@@ -77,7 +77,7 @@ const Checkout = () => {
     isUserDisconnected,
     isMetaMaskInstalled,
   } = useWeb3();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const currency = i18n.language === 'vi' ? 'VND' : 'USD';
 
   // --- States (giữ nguyên) ---
@@ -111,11 +111,11 @@ const Checkout = () => {
   const total = subtotal + deliveryFee - discount;
 
   const discountLabel = passedState.appliedCouponName
-    ? `Giảm giá (${passedState.appliedCouponName})`
-    : "Giảm giá";
+    ? `${t('discount')} (${passedState.appliedCouponName})`
+    : t('discount');
   const shippingLabel = passedState.appliedShippingRuleName
-    ? `Phí Vận chuyển (${passedState.appliedShippingRuleName})`
-    : "Phí Vận chuyển";
+    ? `${t('shipping_fee')} (${passedState.appliedShippingRuleName})`
+    : t('shipping_fee');
 
   // Track account changes to trigger component re-render
 
@@ -165,7 +165,7 @@ const Checkout = () => {
 
     // If balance insufficient, show a warning
     if (walletBalanceNum < ethAmountNum) {
-      message.error('Số dư ví không đủ để thanh toán. Vui lòng kiểm tra ví.');
+      message.error(t('wallet_balance_error_msg'));
       return false;
     }
 
@@ -180,7 +180,7 @@ const Checkout = () => {
       return true;
     }
     console.debug('[Checkout] Crypto payment failed ->', result);
-    message.error(result?.error || 'Thanh toán bằng Crypto thất bại.');
+    message.error(result?.error || t('crypto_payment_failed_msg'));
     return false;
   };
 
@@ -207,13 +207,13 @@ const Checkout = () => {
   const handleConfirmOrder = async () => {
     // 1. Kiểm tra giỏ hàng / buy-now items
     if (effectiveItems.length === 0) {
-      message.warning("Không có sản phẩm để thanh toán.");
+      message.warning(t('no_products_to_pay'));
       return;
     }
 
     // 2. KIỂM TRA ĐĂNG NHẬP (THÊM MỚI)
     if (!currentUser) {
-      message.error("Vui lòng đăng nhập để hoàn tất đơn hàng.");
+      message.error(t('login_to_complete_order'));
       navigate('/login'); // Chuyển đến trang đăng nhập
       return;
     }
@@ -251,7 +251,7 @@ const Checkout = () => {
     } catch (errorInfo) {
       console.log("Validation Failed:", errorInfo);
       if (errorInfo.errorFields && errorInfo.errorFields.length > 0) {
-        message.error("Vui lòng điền đầy đủ thông tin bắt buộc.");
+        message.error(t('fill_required_info'));
       }
     }
   };
@@ -292,7 +292,7 @@ const Checkout = () => {
   // --- PHẦN RENDER JSX (giữ nguyên) ---
   return (
     <div className="checkout-page-container">
-      <Title level={2} className="checkout-title">Hoàn Tất Thanh Toán</Title>
+      <Title level={2} className="checkout-title">{t('checkout_title')}</Title>
 
       <Row gutter={[32, 32]}>
         {/* Cột bên trái: Thông tin và Thanh toán */}
@@ -301,74 +301,74 @@ const Checkout = () => {
           <Form form={form} layout="vertical" className="checkout-form">
 
             {/* 1. Thông tin Giao Hàng */}
-            <Card title="1. Thông Tin Giao Hàng" className="checkout-card">
+            <Card title={`1. ${t('shipping_info')}`} className="checkout-card">
               <Row gutter={16}>
                 <Col xs={24} sm={12}>
                   <Form.Item
                     name="name"
-                    rules={[{ required: true, message: 'Vui lòng nhập họ và tên!' }]}
+                    rules={[{ required: true, message: t('enter_full_name') }]}
                   >
-                    <Input prefix={<UserOutlined />} placeholder="Họ và Tên" />
+                    <Input prefix={<UserOutlined />} placeholder={t('full_name')} />
                   </Form.Item>
                 </Col>
                 <Col xs={24} sm={12}>
                   <Form.Item
                     name="phone"
-                    rules={[{ required: true, message: 'Vui lòng nhập SĐT!' }]}
+                    rules={[{ required: true, message: t('enter_phone_number') }]}
                   >
-                    <Input prefix={<PhoneOutlined />} placeholder="Số Điện Thoại" />
+                    <Input prefix={<PhoneOutlined />} placeholder={t('phone_number')} />
                   </Form.Item>
                 </Col>
               </Row>
               <Form.Item
                 name="email"
                 rules={[
-                  { required: true, message: 'Vui lòng nhập email!' },
-                  { type: 'email', message: 'Email không hợp lệ!' }
+                  { required: true, message: t('enter_email') },
+                  { type: 'email', message: t('validate_email_invalid') }
                 ]}
               >
-                <Input prefix={<MailOutlined />} placeholder="Email" />
+                <Input prefix={<MailOutlined />} placeholder={t('email')} />
               </Form.Item>
               <Form.Item
                 name="address"
-                rules={[{ required: true, message: 'Vui lòng nhập địa chỉ!' }]}
+                rules={[{ required: true, message: t('enter_address') }]}
               >
-                <Input prefix={<HomeOutlined />} placeholder="Địa chỉ (Số nhà, Tên đường, Phường/Xã)" />
+                <Input prefix={<HomeOutlined />} placeholder={t('address')} />
               </Form.Item>
               <Row gutter={16}>
                 <Col xs={24} sm={12}>
                   <Form.Item
                     name="city"
-                    rules={[{ required: true, message: 'Vui lòng nhập Tỉnh/Thành phố!' }]}
+                    rules={[{ required: true, message: t('city_required') }]}
                   >
-                    <Input prefix={<EnvironmentOutlined />} placeholder="Tỉnh / Thành phố" />
+                    <Input prefix={<EnvironmentOutlined />} placeholder={t('city')} />
                   </Form.Item>
                 </Col>
                 <Col xs={24} sm={12}>
                   <Form.Item
                     name="state"
-                    rules={[{ required: true, message: 'Vui lòng nhập Quận/Huyện!' }]}
+                    rules={[{ required: true, message: t('district_required') }]}
                   >
-                    <Input prefix={<EnvironmentOutlined />} placeholder="Quận / Huyện" />
+                    <Input prefix={<EnvironmentOutlined />} placeholder={t('district')} />
                   </Form.Item>
                 </Col>
               </Row>
               <Form.Item name="zip" >
-                <Input prefix={<EnvironmentOutlined />} placeholder="Mã Zip/Bưu điện (Không bắt buộc)" />
+                <Input prefix={<EnvironmentOutlined />} placeholder={t('zip_code_placeholder')} />
               </Form.Item>
             </Card>
 
             {/* 2. Lịch Giao Hàng */}
-            <Card title="2. Lịch Hẹn Giao Hàng" className="checkout-card">
+            <Card title={t('scheduled_delivery_title')} className="checkout-card">
               <Row gutter={16}>
                 <Col xs={24} sm={12}>
                   <Form.Item
                     name="date"
-                    rules={[{ required: true, message: 'Vui lòng chọn ngày giao!' }]}
+                    rules={[{ required: true, message: t('select_delivery_date') }]}
                   >
                     <DatePicker
                       style={{ width: '100%' }}
-                      placeholder="Chọn ngày giao"
+                      placeholder={t('select_delivery_date')}
                       format="DD/MM/YYYY"
                       suffixIcon={<ScheduleOutlined />}
                     />
@@ -376,29 +376,29 @@ const Checkout = () => {
                 </Col>
                 <Col xs={24} sm={12}>
                   <Form.Item name="note">
-                    <TextArea rows={1} placeholder="Ghi chú cho người giao hàng..." />
+                    <TextArea rows={1} placeholder={t('enter_note')} />
                   </Form.Item>
                 </Col>
               </Row>
             </Card>
 
             {/* 3. Phương Thức Thanh Toán */}
-            <Card title="3. Phương Thức Thanh Toán" className="checkout-card">
+            <Card title={`3. ${t('payment_method')}`} className="checkout-card">
               <Form.Item
                 name="payment"
-                rules={[{ required: true, message: 'Vui lòng chọn phương thức thanh toán!' }]}
+                rules={[{ required: true, message: t('select_payment_method') }]}
                 className="payment-form-item"
               >
                 <Radio.Group style={{ width: '100%' }}>
                   <Space direction="vertical" style={{ width: '100%' }}>
                     <Radio value="Online Payment" className="payment-radio">
-                      <CreditCardOutlined /> Thanh toán Online (Thẻ Tín dụng/Ghi nợ)
+                      <CreditCardOutlined /> {t('payment_online')}
                     </Radio>
                     <Radio value="Card on Delivery" className="payment-radio">
-                      <WalletOutlined /> Quẹt Thẻ khi Nhận hàng (POS)
+                      <WalletOutlined /> {t('payment_pos')}
                     </Radio>
                     <Radio value="Cash on Delivery" className="payment-radio">
-                      <DollarCircleOutlined /> Thanh toán bằng Tiền mặt (COD)
+                      <DollarCircleOutlined /> {t('payment_cod_full')}
                     </Radio>
                     
                     {/* 🔥 THANH TOÁN CRYPTO - MetaMask */}
@@ -409,10 +409,10 @@ const Checkout = () => {
                           alt="MetaMask" 
                           style={{ width: 24, height: 24 }} 
                         />
-                        <span>Thanh toán bằng Crypto (MetaMask)</span>
+                        <span>{t('crypto_payment_note')}</span>
                         {walletStatus ? (
                           <Tag color="green" style={{ marginLeft: 'auto' }}>
-                            <CheckCircleOutlined /> Đã kết nối
+                            <CheckCircleOutlined /> {t('wallet_connected')}
                           </Tag>
                         ) : (
                           <Tag color="orange" style={{ marginLeft: 'auto' }}>
@@ -463,7 +463,7 @@ const Checkout = () => {
                               height: 48,
                             }}
                           >
-                            {isConnecting ? 'Đang kết nối...' : 'Kết nối ví MetaMask'}
+                            {isConnecting ? t('processing_payment') : t('connect_wallet')}
                           </Button>
                         ) : (
                             <div>
@@ -481,7 +481,7 @@ const Checkout = () => {
                                 </span>
                               </div>
                               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                                <span style={{ opacity: 0.8 }}>Số dư:</span>
+                                <span style={{ opacity: 0.8 }}>{t('balance')}:</span>
                                 <span style={{ fontWeight: 600 }}>{parseFloat(balance).toFixed(4)} ETH</span>
                               </div>
                               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -509,7 +509,7 @@ const Checkout = () => {
                                 </>
                               ) : (
                                 <div style={{ fontSize: 14, color: '#ffc107' }}>
-                                  ⚠️ Giỏ hàng trống - Vui lòng thêm sản phẩm
+                                  ⚠️ {t('empty_cart')}
                                 </div>
                               )}
                             </div>
@@ -561,7 +561,7 @@ const Checkout = () => {
 
         {/* Cột bên phải: Tóm Tắt Đơn Hàng */}
         <Col xs={24} lg={8}>
-          <Card title="Tóm Tắt Đơn Hàng" className="order-summary-card">
+          <Card title={t('order_summary')} className="order-summary-card">
             <List
               itemLayout="horizontal"
               dataSource={effectiveItems}
@@ -578,7 +578,7 @@ const Checkout = () => {
             <Divider className="summary-divider" />
 
             <div className="summary-row">
-              <Text>Tạm tính</Text>
+              <Text>{t('subtotal')}</Text>
               <Text strong>${subtotal.toFixed(2)}</Text>
             </div>
             <div className="summary-row">
@@ -592,7 +592,7 @@ const Checkout = () => {
 
             <Divider className="summary-divider" />
             <div className="summary-row total">
-              <Title level={4}>Tổng Cộng</Title>
+              <Title level={4}>{t('total')}</Title>
               <Title level={4} className="total-price">
                 ${total.toFixed(2)}
               </Title>
@@ -614,7 +614,7 @@ const Checkout = () => {
             
             {selectedPayment === 'Crypto Payment' && !isBalanceSufficient && (
               <div style={{ marginBottom: 12, padding: 10, borderRadius: 8, background: 'rgba(255,82,82,0.06)', color: '#ff4d4f', fontWeight: 600 }}>
-                ⚠️ Số dư ví của bạn ({walletEth.toFixed(4)} ETH) không đủ để thanh toán ({requiredEth.toFixed(4)} ETH). Vui lòng nạp thêm hoặc chọn phương thức khác.
+                ⚠️ {t('wallet_balance_error')} ({walletEth.toFixed(4)} ETH) &lt; ({requiredEth.toFixed(4)} ETH).
               </div>
             )}
 
@@ -627,7 +627,7 @@ const Checkout = () => {
               disabled={effectiveItems.length === 0 || isProcessingPayment || (selectedPayment === 'Crypto Payment' && !isBalanceSufficient)}
               loading={isProcessingPayment}
             >
-              {isProcessingPayment ? 'Đang xử lý thanh toán...' : 'Xác Nhận Đơn Hàng'}
+              {isProcessingPayment ? t('processing_payment') : t('place_order')}
             </Button>
           </Card>
         </Col>
@@ -639,10 +639,10 @@ const Checkout = () => {
           <div className="order-success-div">
             <Result
               status="success"
-              title="Cảm ơn bạn đã đặt hàng!"
+              title={t('order_success_title')}
               subTitle={
                 <>
-                  <Text className="text-success">Mã đơn hàng của bạn: </Text>
+                  <Text className="text-success">{t('order_success_msg')} </Text>
                   {/* Bạn có thể lấy ID đơn hàng thật từ Context nếu muốn,
                       nhưng làm vậy sẽ phức tạp hơn. Giữ tạm mã giả: */}
                   <div className="id-order-succcess">#LM20251027</div>
@@ -651,10 +651,10 @@ const Checkout = () => {
               extra={
                 <div className="order-success-details">
                   <Descriptions column={1} size="small" bordered>
-                    <Descriptions.Item label="Giao hàng dự kiến">
+                    <Descriptions.Item label={t('expected_delivery')}>
                       <b>Thứ Sáu, 30/10/2025</b>
                     </Descriptions.Item>
-                    <Descriptions.Item label="Email xác nhận gửi tới">
+                    <Descriptions.Item label={t('confirmation_email_to')}>
                       <b>{deliveryInfo?.email || "N/A"}</b>
                     </Descriptions.Item>
                   </Descriptions>
@@ -682,14 +682,14 @@ const Checkout = () => {
                           alt="MetaMask" 
                           style={{ width: 20, height: 20 }} 
                         />
-                        Thanh toán Blockchain thành công!
+                        {t('blockchain_payment_success')}
                       </div>
                       
                       <Descriptions column={1} size="small" style={{ fontSize: '0.85rem' }}>
-                        <Descriptions.Item label="Số tiền">
+                        <Descriptions.Item label={t('amount')}>
                           <b>{cryptoTxInfo.amountETH} ETH</b> (~${cryptoTxInfo.amountUSD})
                         </Descriptions.Item>
-                        <Descriptions.Item label="Transaction Hash">
+                        <Descriptions.Item label={t('transaction_hash')}>
                           <a 
                             href={`https://etherscan.io/tx/${cryptoTxInfo.transactionHash}`}
                             target="_blank"
@@ -703,7 +703,7 @@ const Checkout = () => {
                             {cryptoTxInfo.transactionHash.substring(0, 16)}...
                           </a>
                         </Descriptions.Item>
-                        <Descriptions.Item label="Block">
+                        <Descriptions.Item label={t('block')}>
                           #{cryptoTxInfo.blockNumber}
                         </Descriptions.Item>
                       </Descriptions>
@@ -711,8 +711,7 @@ const Checkout = () => {
                   )}
 
                   <Text className="spam-warning">
-                    Vui lòng kiểm tra thư mục <b>Spam</b> nếu bạn không thấy
-                    email.
+                    <span dangerouslySetInnerHTML={{ __html: t('check_spam_folder') }} />
                   </Text>
 
                   <Text
@@ -728,7 +727,7 @@ const Checkout = () => {
                       })
                     }
                   >
-                    Xem lại đơn hàng
+                    {t('review_order')}
                   </Text>
 
                   <Button
@@ -738,7 +737,7 @@ const Checkout = () => {
                     style={{ marginTop: 24, width: "100%" }}
                     className="confirm-order-btn"
                   >
-                    Tiếp Tục Mua Sắm
+                    {t('continue_shopping')}
                   </Button>
                 </div>
               }

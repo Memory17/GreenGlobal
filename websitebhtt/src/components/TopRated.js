@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Card, Button, Typography, Row, Col } from "antd";
 import { StarFilled, ShoppingCartOutlined, ThunderboltOutlined, TrophyOutlined, CrownFilled, LeftOutlined, RightOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 import "../style/TopRated.css";
 
 const { Meta } = Card;
 const { Title, Text } = Typography;
 
 const TopRated = ({ products, onProductClick, onBuyNow, onAddToCart }) => {
+  const { t } = useTranslation();
   const [currentIndex, setCurrentIndex] = useState(0);
   
   // Filter products with rating >= 4.5
@@ -64,9 +66,9 @@ const TopRated = ({ products, onProductClick, onBuyNow, onAddToCart }) => {
                 <div className="icon-wrapper">
                     <TrophyOutlined className="top-rated-main-icon" />
                 </div>
-                <Title level={2} className="top-rated-title">TOP RATED</Title>
+                <Title level={2} className="top-rated-title">{t('top_rated_title')}</Title>
                 <div className="divider-line"></div>
-                <Text className="top-rated-subtitle">Sản phẩm được đánh giá cao nhất từ khách hàng</Text>
+                <Text className="top-rated-subtitle">{t('top_rated_subtitle')}</Text>
                 
                 <div className="nav-buttons">
                     <Button shape="circle" icon={<LeftOutlined />} onClick={handlePrev} className="nav-btn" />
@@ -83,7 +85,7 @@ const TopRated = ({ products, onProductClick, onBuyNow, onAddToCart }) => {
                     {highlightProduct && (
                         <Col xs={24} md={10} lg={10} className="highlight-col">
                             <div className="highlight-card-wrapper">
-                                <div className="crown-badge"><CrownFilled /> #1 Choice</div>
+                                <div className="crown-badge"><CrownFilled /> {t('top_rated_choice')}</div>
                                 <Card
                                     hoverable
                                     onClick={() => onProductClick(highlightProduct)}
@@ -104,7 +106,7 @@ const TopRated = ({ products, onProductClick, onBuyNow, onAddToCart }) => {
                                         
                                         <div className="highlight-actions">
                                             <Button type="primary" size="large" icon={<ThunderboltOutlined />} className="highlight-buy-btn" onClick={(e) => onBuyNow(e, highlightProduct)}>
-                                                Mua Ngay
+                                                {t('buy_now')}
                                             </Button>
                                             <Button size="large" icon={<ShoppingCartOutlined />} className="highlight-cart-btn" onClick={(e) => onAddToCart(e, highlightProduct)} />
                                         </div>

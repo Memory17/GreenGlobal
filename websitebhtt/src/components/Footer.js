@@ -1,6 +1,7 @@
 import React from "react";
 import { Typography, Row, Col, Input, Button } from "antd";
 import "../style/AppFooter.css";
+import { useTranslation } from "react-i18next"; // <-- IMPORT TRANSLATION
 
 // Import images (giữ nguyên như của bạn)
 import footerLogo from "../assets/images/logo2.jpg";
@@ -27,6 +28,8 @@ import {
 const { Text, Title } = Typography;
 
 const AppFooter = () => {
+  const { t } = useTranslation(); // <-- USE HOOK
+
   return (
     <div className="footer">
       <div className="footer-overlay"></div> {/* Lớp phủ tạo hiệu ứng nền */}
@@ -38,41 +41,41 @@ const AppFooter = () => {
             <img src={footerLogo} alt="Brand Logo" className="main-logo" />
           </div>
           <div className="subscribe-section">
-            <Text className="subscribe-title">Subscribe to our news</Text>
+            <Text className="subscribe-title">{t('promo_email_desc')}</Text>
             <div className="subscribe-input-group">
               <Input
                 className="footer-input"
-                placeholder="Enter your Email..."
+                placeholder={t('email')}
                 prefix={<SendOutlined className="input-icon"/>}
               />
               <Button className="footer-button" type="primary">
-                Join Now
+                {t('register_now')}
               </Button>
             </div>
           </div>
           <Text className="footer-copyright">
-            © Gaith 2025. All Rights Reserved.
+            {t('footer_copyright')}
           </Text>
         </Col>
 
         {/* --- COLUMN 2: QUICK LINKS --- */}
         <Col xs={12} md={3} className="footer-col-links">
-          <Title level={5} className="footer-heading">Quick Links</Title>
+          <Title level={5} className="footer-heading">{t('footer_quick_links')}</Title>
           <div className="link-list">
-            <Text className="link-item">Shop</Text>
-            <Text className="link-item">About Us</Text>
-            <Text className="link-item">Blogs</Text>
+            <Text className="link-item">{t('products')}</Text>
+            <Text className="link-item">{t('about')}</Text>
+            <Text className="link-item">{t('blog')}</Text>
             <Text className="link-item">FAQ</Text>
-            <Text className="link-item">Customer Service</Text>
-            <Text className="link-item">Contact Us</Text>
+            <Text className="link-item">{t('footer_customer_support')}</Text>
+            <Text className="link-item">{t('contact')}</Text>
           </div>
         </Col>
 
         {/* --- COLUMN 3: LEGAL LINKS --- */}
         <Col xs={12} md={3} className="footer-col-links">
-          <Title level={5} className="footer-heading">Legal</Title>
+          <Title level={5} className="footer-heading">{t('privacy_data')}</Title>
           <div className="link-list">
-            <Text className="link-item">Privacy Policy</Text>
+            <Text className="link-item">{t('privacy')}</Text>
             <Text className="link-item">Terms & Conditions</Text>
             <Text className="link-item">Imprint</Text>
             <Text className="link-item">Cookie Policy</Text>
@@ -89,11 +92,11 @@ const AppFooter = () => {
 
         {/* --- COLUMN 4: CONTACT --- */}
         <Col xs={12} md={3} className="footer-col-links">
-          <Title level={5} className="footer-heading">Contact</Title>
+          <Title level={5} className="footer-heading">{t('contact')}</Title>
           <div className="link-list">
             <Text className="link-item">support@gaith.com</Text>
             <Text className="link-item">+84 909 000 111</Text>
-            <Text className="link-item">123 Street, City</Text>
+            <Text className="link-item">{t('footer_address')}: 123 Street, City</Text>
           </div>
         </Col>
 

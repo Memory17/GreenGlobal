@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Typography, Rate, Button } from "antd";
 import { TrophyOutlined, ShoppingCartOutlined, ArrowRightOutlined, CrownFilled, LeftOutlined, RightOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 import "../style/BestSellers.css";
 
 const { Title, } = Typography;
 
 const BestSellers = ({ products, onProductClick, onAddToCart }) => {
+  const { t } = useTranslation();
   const [activeIndex, setActiveIndex] = useState(0);
 
   // Logic to select "Best Sellers"
@@ -47,11 +49,11 @@ const BestSellers = ({ products, onProductClick, onAddToCart }) => {
                 <TrophyOutlined />
             </div>
             <Title level={3} className="best-sellers-title">
-            BẢNG XẾP HẠNG BÁN CHẠY
+            {t('best_sellers_title')}
             </Title>
         </div>
         <Button type="link" className="view-all-link">
-          Xem tất cả <ArrowRightOutlined />
+          {t('view_all')} <ArrowRightOutlined />
         </Button>
       </div>
 
@@ -106,7 +108,7 @@ const BestSellers = ({ products, onProductClick, onAddToCart }) => {
                         <div className="carousel-card">
                             <div className="carousel-img-wrapper">
                                 <img src={product.thumbnail} alt={product.title} />
-                                {isCenter && <div className="champion-badge">#1 Champion</div>}
+                                {isCenter && <div className="champion-badge">{t('champion_badge')}</div>}
                             </div>
                             
                             <div className="carousel-info">
@@ -124,7 +126,7 @@ const BestSellers = ({ products, onProductClick, onAddToCart }) => {
                                         className="carousel-btn-main"
                                         onClick={(e) => { e.stopPropagation(); onAddToCart(e, product); }}
                                     >
-                                        Mua Ngay
+                                        {t('buy_now')}
                                     </Button>
                                 ) : (
                                     <Button 

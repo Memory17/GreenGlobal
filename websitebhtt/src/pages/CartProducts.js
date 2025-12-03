@@ -41,6 +41,7 @@ import {
 import { useCart } from "../context/CartContext";
 import { useOrderHistory } from "../context/OrderHistoryContext";
 import { useAuth } from "../context/AuthContext";
+import { useTranslation } from "react-i18next";
 
 import { getAllCoupons } from "../data/discountServiceUser.js";
 import { getAllShippingDiscounts } from "../data/shippingServiceUser.js";
@@ -77,6 +78,7 @@ const parseCurrency = (value) => {
 };
 
 const CartProducts = () => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const { currentUser } = useAuth();
     const [selectAll, setSelectAll] = useState(false);
@@ -400,13 +402,13 @@ const CartProducts = () => {
 
     // Mapping of UI keys to status matchers and titles. Add common synonyms to be resilient.
     const STATUS_MAP = {
-        confirming: { title: "Đang Xác nhận", match: (s) => s === "Processing" || s === "Pending" },
-        confirmed: { title: "Đã Xác nhận", match: (s) => s === "Confirmed" || s === "Processed" },
-        delivering: { title: "Đang Giao hàng", match: (s) => s === "Shipping" || s === "Delivering" || s === "Shipped" },
-        delivered: { title: "Đã Giao", match: (s) => s === "Delivered" || s === "Completed" },
+        confirming: { title: t('status_confirming'), match: (s) => s === "Processing" || s === "Pending" },
+        confirmed: { title: t('status_confirmed'), match: (s) => s === "Confirmed" || s === "Processed" },
+        delivering: { title: t('status_delivering'), match: (s) => s === "Shipping" || s === "Delivering" || s === "Shipped" },
+        delivered: { title: t('status_delivered'), match: (s) => s === "Delivered" || s === "Completed" },
     // Include delivered/completed orders in the review bucket so they appear in both lists
-    review: { title: "Chờ Đánh giá", match: (s) => s === "AwaitingReview" || s === "PendingReview" || s === "Review" || s === "Delivered" || s === "Completed" },
-        cancelled: { title: "Đã Hủy", match: (s) => s === "Cancelled" || s === "Canceled" },
+    review: { title: t('status_review'), match: (s) => s === "AwaitingReview" || s === "PendingReview" || s === "Review" || s === "Delivered" || s === "Completed" },
+        cancelled: { title: t('status_cancelled'), match: (s) => s === "Cancelled" || s === "Canceled" },
     };
 
     // Open modal for a given status key
@@ -424,21 +426,21 @@ const CartProducts = () => {
     // Handler to cancel a confirming order (asks for confirmation then calls context)
     const handleCancelOrder = (orderId) => {
         Modal.confirm({
-            title: 'Hủy đơn hàng',
-            content: 'Bạn có chắc chắn muốn hủy đơn hàng này? Hành động này không thể hoàn tác.',
-            okText: 'Hủy đơn',
+            title: t('cancel_order_title'),
+            content: t('cancel_order_confirm'),
+            okText: t('cancel_order_btn'),
             okType: 'danger',
-            cancelText: 'Đóng',
+            cancelText: t('close'),
             onOk: async () => {
                 const ok = cancelOrder ? cancelOrder(orderId) : false;
                 if (ok) {
-                    message.success('Đã hủy đơn hàng.');
+                    message.success(t('cancel_order_success'));
                     // refresh modal list from updated orderHistory (orderHistory state from context should update)
                     const def = STATUS_MAP[statusModalKey];
                     const filtered = Array.isArray(orderHistory) ? orderHistory.filter((order) => def.match(order.status)) : [];
                     setStatusModalOrders(filtered);
                 } else {
-                    message.error('Không thể hủy đơn hàng. Vui lòng thử lại.');
+                    message.error(t('cancel_order_fail'));
                 }
             }
         });
@@ -474,11 +476,11 @@ const CartProducts = () => {
         if (!reviewingItem) return;
 
         if (currentRating === 0) {
-            message.warning("Vui lòng chọn số sao đánh giá.");
+            message.warning(t('review_rating_required'));
             return;
         }
         if (!currentComment.trim()) {
-            message.warning("Vui lòng nhập nhận xét của bạn.");
+            message.warning(t('review_comment_required'));
             return;
         }
 
@@ -495,7 +497,7 @@ const CartProducts = () => {
         if (addReview) {
             try {
                 await addReview(reviewingItem.orderId, reviewingItem.product.id, reviewData);
-                message.success("Cảm ơn bạn đã đánh giá sản phẩm!");
+                message.success(t('review_submit_success'));
                 handleCloseReviewModal();
                 // Context nên tự động cập nhật orderHistory, làm cho modal "Chờ Đánh giá"
                 // tự động cập nhật khi mở lại.
@@ -505,12 +507,12 @@ const CartProducts = () => {
                 setStatusModalOrders(filtered);
 
             } catch (error) {
-                message.error("Không thể gửi đánh giá. Vui lòng thử lại.");
+                message.error(t('review_submit_fail'));
             }
         } else {
             // Hành vi giả lập nếu `addReview` không tồn tại
             console.error("Hàm 'addReview' không được cung cấp từ OrderHistoryContext.");
-            message.warning("Chức năng đánh giá chưa được kết nối (thiếu addReview).");
+            message.warning(t('review_feature_missing'));
             // Tạm thời đóng modal
             handleCloseReviewModal();
         }
@@ -522,20 +524,20 @@ const CartProducts = () => {
     // --- HÀM MỚI: XỬ LÝ XÓA SẢN PHẨM KHỎI LỊCH SỬ ---
     const handleRemoveProduct = (orderId, product) => {
         Modal.confirm({
-            title: 'Xác nhận xóa sản phẩm',
-            content: `Bạn có chắc muốn xóa sản phẩm "${product.title}" khỏi lịch sử đơn hàng này không? Hành động này chỉ để dọn dẹp và không thể hoàn tác.`,
-            okText: 'Xóa',
+            title: t('confirm_remove_product_title'),
+            content: t('confirm_remove_product_content', { title: product.title }),
+            okText: t('remove'),
             okType: 'danger',
-            cancelText: 'Hủy',
+            cancelText: t('cancel'),
             onOk: async () => {
                 if (removeProductFromOrder) {
                     const success = await removeProductFromOrder(orderId, product.id);
                     if (success) {
-                        message.success('Đã xóa sản phẩm khỏi lịch sử.');
+                        message.success(t('remove_product_success'));
                         // Tải lại danh sách trong modal đang mở
                         openStatusModal(statusModalKey);
                     } else {
-                        message.error('Không thể xóa sản phẩm.');
+                        message.error(t('remove_product_fail'));
                     }
                 }
             },
@@ -559,14 +561,14 @@ const CartProducts = () => {
             <div className="cart-gif-container">
                 <Image className="cart-gif" src={cartGif} preview={false} />
                 <Title className="shopping-cart-title" level={2}>
-                    GIỎ HÀNG CỦA BẠN
+                    {t('your_shopping_cart')}
                 </Title>
             </div>
 
             {/* Trạng thái Đơn hàng (giả định) */}
             <Row gutter={[16, 16]} className="order-status-shopping">
                 <Col className="order-confirm" xs={24} lg={3}>
-                    <Text className="order-status-title">Trạng thái Đơn hàng: </Text>
+                    <Text className="order-status-title">{t('order_status_label')}</Text>
                 </Col>
                 <Col className="order-confirm" xs={12} sm={8} md={4} lg={3}>
                     <div
@@ -577,7 +579,7 @@ const CartProducts = () => {
                         <Badge count={Array.isArray(orderHistory) ? orderHistory.filter(o => STATUS_MAP.confirming.match(o.status)).length : 0} color="red" offset={[-2, 5]} showZero>
                             <Loading3QuartersOutlined style={{ fontSize: 24 }} />
                         </Badge>
-                        <Text>Đang Xác nhận</Text>
+                        <Text>{t('status_confirming')}</Text>
                         <span className="checkpoint" />
                     </div>
                 </Col>
@@ -586,7 +588,7 @@ const CartProducts = () => {
                             <Badge count={Array.isArray(orderHistory) ? orderHistory.filter(o => STATUS_MAP.confirmed.match(o.status)).length : 0} color="green" offset={[-2, 5]} showZero>
                                 <CheckCircleOutlined style={{ fontSize: 24 }} />
                             </Badge>
-                            <Text>Đã Xác nhận</Text>
+                            <Text>{t('status_confirmed')}</Text>
                             <span className="checkpoint" />
                         </div>
                     </Col>
@@ -595,7 +597,7 @@ const CartProducts = () => {
                             <Badge count={Array.isArray(orderHistory) ? orderHistory.filter(o => STATUS_MAP.delivering.match(o.status)).length : 0} color="blue" offset={[-2, 5]} showZero>
                                 <ShoppingCartOutlined style={{ fontSize: 24 }} />
                             </Badge>
-                            <Text>Đang Giao hàng</Text>
+                            <Text>{t('status_delivering')}</Text>
                             <span className="checkpoint" />
                         </div>
                     </Col>
@@ -610,7 +612,7 @@ const CartProducts = () => {
                                 color="purple" offset={[-2, 5]} showZero>
                                 <SmileOutlined style={{ fontSize: 24 }} />
                             </Badge>
-                            <Text>Đã Giao</Text>
+                            <Text>{t('status_delivered')}</Text>
                             <span className="checkpoint" />
                         </div>
                     </Col>
@@ -622,7 +624,7 @@ const CartProducts = () => {
                                 color="gold" offset={[-2, 5]} showZero>
                                 <StarOutlined style={{ fontSize: 24 }} />
                             </Badge>
-                            <Text>Chờ Đánh giá</Text>
+                            <Text>{t('status_review')}</Text>
                             <span className="checkpoint" />
                         </div>
                     </Col>
@@ -631,16 +633,16 @@ const CartProducts = () => {
                             <Badge count={Array.isArray(orderHistory) ? orderHistory.filter(o => STATUS_MAP.cancelled.match(o.status)).length : 0} color="gray" offset={[-2, 5]} showZero>
                                 <CloseCircleOutlined style={{ fontSize: 24, color: '#888' }} />
                             </Badge>
-                            <Text>Đã Hủy</Text>
+                            <Text>{t('status_cancelled')}</Text>
                             <span className="checkpoint" />
                         </div>
                     </Col>
             </Row>
 
             <div>
-                <img className="cart-img" src={cartImg} alt="Giỏ hàng" style={{ width: "35px", height: "35px" }} />
+                <img className="cart-img" src={cartImg} alt={t('shopping_cart')} style={{ width: "35px", height: "35px" }} />
                 <Title className="cart-title-shopping" level={3}>
-                    Giỏ Hàng
+                    {t('shopping_cart')}
                 </Title>
             </div>
 
@@ -650,10 +652,10 @@ const CartProducts = () => {
                         <div className="select-card">
                             <div className="select-card-item">
                                 <Checkbox className="select-checkbox" checked={selectAll} onChange={(e) => setSelectAll(e.target.checked)}>
-                                    Chọn Tất cả
+                                    {t('select_all')}
                                 </Checkbox>
                                 <Button type="primary" className="delete-cart-button" onClick={handleDeleteClick} disabled={!selectAll || cartItems.length === 0}>
-                                    Xóa
+                                    {t('delete')}
                                 </Button>
                             </div>
                         </div>
@@ -661,7 +663,7 @@ const CartProducts = () => {
                         <div className="product-card-shopping">
                             <div className="product-card-shopping-item">
                                 {cartItems.length === 0 ? (
-                                    <Empty description="Giỏ hàng của bạn trống" />
+                                    <Empty description={t('empty_cart_desc')} />
                                 ) : (
                                     cartItems.map((item) => (
                                         <React.Fragment key={item.product.id}>
@@ -701,44 +703,44 @@ const CartProducts = () => {
                         <div className="sumary-card">
                             <div className="sumary-item">
                                 <Title level={5} className="order-sumary">
-                                    Tóm Tắt Đơn Hàng
+                                    {t('order_summary')}
                                 </Title>
 
                                 <div className="coupon-apply">
                                     <div className="coupon-left">
                                         <TagsOutlined style={{ fontSize: "20px" }} />
-                                        <Input className="coupoint-text" placeholder="Mã Giảm giá Sản phẩm" value={couponCode} onChange={(e) => setCouponCode(e.target.value)} />
+                                        <Input className="coupoint-text" placeholder={t('product_coupon_placeholder')} value={couponCode} onChange={(e) => setCouponCode(e.target.value)} />
                                     </div>
                                     <Button className="apply-button" type="primary" onClick={handleApplyCoupon} loading={isApplyingCoupon}>
-                                        Áp dụng
+                                        {t('apply')}
                                     </Button>
                                 </div>
 
                                 <div style={{ width: "100%", textAlign: "right",  }}>
                                     <Button type="link" onClick={handleShowCouponModal} icon={<TagsOutlined />} style={{ paddingRight: "0" }}>
-                                        Xem tất cả mã giảm giá
+                                        {t('view_all_coupons')}
                                     </Button>
                                 </div>
                                 <div style={{ width: "100%", textAlign: "right", marginTop: "-10px" }}>
                                     <Button type="link" onClick={handleShowLuckyRewardsModal} icon={<GiftOutlined />} style={{ paddingRight: "0", color: "#fa8c16" }}>
-                                        Phần thưởng từ vòng quay may mắn
+                                        {t('lucky_wheel_rewards')}
                                     </Button>
                                 </div>
 
                                 <Row className="price-summary">
                                     <Col span={12} className="price-summary-col">
-                                        <Text className="title-price-summary">Tổng phụ</Text>
+                                        <Text className="title-price-summary">{t('subtotal')}</Text>
                                         <br />
-                                        <Text className="title-price-summary">{appliedCoupon ? `Giảm giá (${appliedCoupon.name})` : "Giảm giá"}</Text>
+                                        <Text className="title-price-summary">{appliedCoupon ? `${t('discount')} (${appliedCoupon.name})` : t('discount')}</Text>
                                         <br />
                                         {/* Hiển thị dòng Phần thưởng vòng quay nếu có giảm giá */}
                                         {(luckyDiscountAmount > 0) && (
                                             <>
                                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                                     <Text className="title-price-summary" style={{ color: '#fa8c16' }}>
-                                                        Phần thưởng vòng quay
+                                                        {t('lucky_reward')}
                                                         {appliedLuckyCoupon ? ` (${appliedLuckyCoupon.label})` : ''}
-                                                        {useLuckyCoins && appliedLuckyCoupon ? ' + Xu' : (useLuckyCoins ? ' (Xu)' : '')}
+                                                        {useLuckyCoins && appliedLuckyCoupon ? ` + ${t('lucky_coins')}` : (useLuckyCoins ? ` (${t('lucky_coins')})` : '')}
                                                     </Text>
                                                     <CloseCircleOutlined 
                                                         style={{ color: '#ff4d4f', cursor: 'pointer', marginLeft: '8px' }} 
@@ -751,7 +753,7 @@ const CartProducts = () => {
                                                 <br />
                                             </>
                                         )}
-                                        <Text className="title-price-summary">{appliedShippingRule ? `Phí Giao hàng (${appliedShippingRule.ruleName})` : "Phí Giao hàng"}</Text>
+                                        <Text className="title-price-summary">{appliedShippingRule ? `${t('shipping_fee')} (${appliedShippingRule.ruleName})` : t('shipping_fee')}</Text>
                                     </Col>
                                     <Col span={12} className="value-price-summary">
                                         <Text className="text-price-summary">${subtotal.toFixed(2)}</Text>
@@ -783,7 +785,7 @@ const CartProducts = () => {
 
                                 <Row className="price-summary">
                                     <Col className="total-title" span={12}>
-                                        Tổng cộng
+                                        {t('total')}
                                     </Col>
                                     <Col className="total-value" span={12}>
                                         ${total.toFixed(2)}
@@ -791,7 +793,7 @@ const CartProducts = () => {
                                 </Row>
 
                                 <Button className="go-to-checkout" type="primary" onClick={handleGoToCheckout}>
-                                    Tiến hành Thanh toán →
+                                    {t('proceed_to_checkout')}
                                 </Button>
                             </div>
                         </div>
@@ -799,12 +801,12 @@ const CartProducts = () => {
                 </Row>
             </div>
 
-            <Modal title="Mã giảm giá có sẵn" open={isCouponModalVisible} onCancel={handleCloseCouponModal} footer={[<Button key="close" onClick={handleCloseCouponModal}>Đóng</Button>]} width={700}>
+            <Modal title={t('available_coupons_title')} open={isCouponModalVisible} onCancel={handleCloseCouponModal} footer={[<Button key="close" onClick={handleCloseCouponModal}>{t('close')}</Button>]} width={700}>
                 <Title level={5}>
-                    <TagsOutlined /> Mã giảm giá sản phẩm
+                    <TagsOutlined /> {t('product_coupons')}
                 </Title>
                 <List loading={loadingProductCoupons} itemLayout="horizontal" dataSource={activeProductCoupons} renderItem={(item) => (
-                    <List.Item className="coupon-list-item" actions={[<Button type="primary" className="coupon-item-apply-btn" onClick={() => handleApplyCouponFromModal(item, "product")} disabled={appliedCoupon && appliedCoupon.code === item.code}>{appliedCoupon && appliedCoupon.code === item.code ? "Đã áp dụng" : "Áp dụng"}</Button>] }>
+                    <List.Item className="coupon-list-item" actions={[<Button type="primary" className="coupon-item-apply-btn" onClick={() => handleApplyCouponFromModal(item, "product")} disabled={appliedCoupon && appliedCoupon.code === item.code}>{appliedCoupon && appliedCoupon.code === item.code ? t('applied') : t('apply')}</Button>] }>
                         <List.Item.Meta avatar={<Avatar src={item.avatar} icon={<TagsOutlined />} />} title={<span className="coupon-item-name">{item.name}</span>} description={<span className="coupon-item-desc">{item.description}</span>} />
                         <div className="coupon-item-action"><Text className="coupon-item-discount">{item.discount}</Text><Tag className="coupon-item-code coupon-code-default">{item.code}</Tag></div>
                     </List.Item>
@@ -812,23 +814,23 @@ const CartProducts = () => {
 
                 <Divider />
 
-                <Title level={5}><CarOutlined /> Hỗ trợ vận chuyển</Title>
+                <Title level={5}><CarOutlined /> {t('shipping_support')}</Title>
                 <List loading={loadingShippingCoupons} itemLayout="horizontal" dataSource={activeShippingCoupons} renderItem={(item) => (
-                    <List.Item className="coupon-list-item" actions={[<Button type="primary" className="coupon-item-apply-btn" onClick={() => handleApplyCouponFromModal(item, "shipping")} disabled={appliedShippingRule && appliedShippingRule.id === item.id}>{appliedShippingRule && appliedShippingRule.id === item.id ? "Đã áp dụng" : "Áp dụng"}</Button>] }>
+                    <List.Item className="coupon-list-item" actions={[<Button type="primary" className="coupon-item-apply-btn" onClick={() => handleApplyCouponFromModal(item, "shipping")} disabled={appliedShippingRule && appliedShippingRule.id === item.id}>{appliedShippingRule && appliedShippingRule.id === item.id ? t('applied') : t('apply')}</Button>] }>
                         <List.Item.Meta avatar={<Avatar className="shipping-coupon-avatar" icon={<CarOutlined />} />} title={<span className="coupon-item-name">{item.ruleName}</span>} description={<span className="coupon-item-desc">{item.description}</span>} />
-                        <div className="coupon-item-action"><Text className="coupon-item-discount">{item.discountType === "FREE" ? "MIỄN PHÍ SHIP" : item.discountValue}</Text><Tag className="coupon-item-code shipping-coupon-tag" color="green">{`Đơn hàng từ ${item.minOrderValue}`}</Tag></div>
+                        <div className="coupon-item-action"><Text className="coupon-item-discount">{item.discountType === "FREE" ? t('free_shipping') : item.discountValue}</Text><Tag className="coupon-item-code shipping-coupon-tag" color="green">{`${t('order_from')} ${item.minOrderValue}`}</Tag></div>
                     </List.Item>
                 )} />
             </Modal>
 
             {/* === MODAL PHẦN THƯỞNG VÒNG QUAY MAY MẮN === */}
             <Modal
-                title="Phần thưởng từ vòng quay may mắn"
+                title={t('lucky_rewards_title')}
                 open={isLuckyRewardsModalVisible}
                 onCancel={handleCloseLuckyRewardsModal}
                 footer={[
                     <Button key="close" onClick={handleCloseLuckyRewardsModal}>
-                        Đóng
+                        {t('close')}
                     </Button>,
                 ]}
                 width={600}
@@ -841,13 +843,13 @@ const CartProducts = () => {
                             icon={<DollarCircleFilled style={{ color: '#fa8c16', fontSize: '20px' }} />} 
                         />
                         <div>
-                            <Text strong style={{ fontSize: '16px' }}>Xu tích lũy</Text>
+                            <Text strong style={{ fontSize: '16px' }}>{t('accumulated_coins')}</Text>
                             <br/>
-                            <Text type="secondary">Tổng cộng: <span style={{ color: '#fa8c16', fontWeight: 'bold' }}>{useLuckyCoins ? 0 : totalCoins} Xu</span></Text>
+                            <Text type="secondary">{t('total')}: <span style={{ color: '#fa8c16', fontWeight: 'bold' }}>{useLuckyCoins ? 0 : totalCoins} {t('lucky_coins')}</span></Text>
                         </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <Text>Sử dụng ngay</Text>
+                        <Text>{t('use_now')}</Text>
                         <Switch 
                             checked={useLuckyCoins} 
                             onChange={(checked) => setUseLuckyCoins(checked)} 
@@ -856,12 +858,12 @@ const CartProducts = () => {
                     </div>
                 </div>
 
-                <Divider orientation="left">Mã giảm giá của bạn</Divider>
+                <Divider orientation="left">{t('your_coupons')}</Divider>
 
                 <List
                     itemLayout="horizontal"
                     dataSource={groupedCoupons}
-                    locale={{ emptyText: "Bạn chưa có mã giảm giá nào." }}
+                    locale={{ emptyText: t('no_coupons_yet') }}
                     renderItem={(item) => {
                         const isApplied = appliedLuckyCoupon && appliedLuckyCoupon.id === item.id;
                         const displayQuantity = isApplied ? item.quantity - 1 : item.quantity;
@@ -883,7 +885,7 @@ const CartProducts = () => {
                                             }
                                         }}
                                     >
-                                        {isApplied ? "Bỏ chọn" : "Áp dụng"}
+                                        {isApplied ? t('unselect') : t('apply')}
                                     </Button>
                                 ]}
                             >
@@ -910,11 +912,11 @@ const CartProducts = () => {
             </Modal>
             
             {/* === MODAL TRẠNG THÁI ĐƠN HÀNG (ĐÃ CHỈNH SỬA) === */}
-            <Modal title={`${statusModalTitle} (${statusModalOrders.length})`} open={statusModalVisible} onCancel={closeStatusModal} footer={[<Button key="close" onClick={closeStatusModal}>Đóng</Button>]} width={800}>
+            <Modal title={`${statusModalTitle} (${statusModalOrders.length})`} open={statusModalVisible} onCancel={closeStatusModal} footer={[<Button key="close" onClick={closeStatusModal}>{t('close')}</Button>]} width={800}>
                 <List
                     itemLayout="vertical" // Thay đổi layout để hiển thị sản phẩm bên dưới
                     dataSource={statusModalOrders}
-                    locale={{ emptyText: "Không có đơn hàng." }}
+                    locale={{ emptyText: t('no_orders') }}
                     renderItem={(order) => {                        
                         // ⭐️ THAY ĐỔI: Tách biệt logic cho từng modal
                         const isReviewModal = (statusModalKey === 'review');
@@ -931,17 +933,17 @@ const CartProducts = () => {
                             return (
                                 <List.Item key={order.id} className="order-list-item">
                                     <List.Item.Meta
-                                        title={<Text strong>Mã đơn hàng: {order.id}</Text>}
+                                        title={<Text strong>{t('order_id', { id: order.id })}</Text>}
                                         description={
                                             <>
-                                                <Text>Đặt lúc: {formatDate(order.orderDate)} | Giao tới: {order.delivery?.name || "-"} | </Text>
-                                                <Text strong>Tổng: {formatCurrency(order.totals?.total || order.totals)}</Text>
+                                                <Text>{t('ordered_at', { date: formatDate(order.orderDate) })} | {t('deliver_to', { name: order.delivery?.name || "-" })} | </Text>
+                                                <Text strong>{t('total')}: {formatCurrency(order.totals?.total || order.totals)}</Text>
                                                 <br/>
                                                 <Tag color="green">{order.status}</Tag>
                                             </>
                                         }
                                     />
-                                    <Text strong style={{display: 'block', marginTop: '12px'}}>Sản phẩm trong đơn:</Text>
+                                    <Text strong style={{display: 'block', marginTop: '12px'}}>{t('products_in_order')}</Text>
                                     <List
                                         // ⭐️ SỬ DỤNG DATASOURCE ĐÃ LỌC
                                         dataSource={itemsToReview}
@@ -960,14 +962,14 @@ const CartProducts = () => {
                                                             onClick={() => handleOpenReviewModal(order.id, item.product)}
                                                             disabled={hasReviewed}
                                                         >
-                                                            {hasReviewed ? "Đã đánh giá" : "Viết đánh giá"}
+                                                            {hasReviewed ? t('reviewed') : t('write_review_btn')}
                                                         </Button>
                                                     ]}
                                                 >
                                                     <List.Item.Meta
                                                         avatar={<Avatar src={item.product.thumbnail} />}
                                                         title={item.product.title}
-                                                        description={`Số lượng: ${item.quantity}`}
+                                                        description={`${t('quantity')}: ${item.quantity}`}
                                                     />
                                                     {/* Hiển thị đánh giá hiện có nếu có */}
                                                     {hasReviewed && (
@@ -995,17 +997,17 @@ const CartProducts = () => {
                             return (
                                 <List.Item key={order.id} className="order-list-item">
                                     <List.Item.Meta
-                                        title={<Text strong>Mã đơn hàng: {order.id}</Text>}
+                                        title={<Text strong>{t('order_id', { id: order.id })}</Text>}
                                         description={
                                             <>
-                                                <Text>Đặt lúc: {formatDate(order.orderDate)} | Giao tới: {order.delivery?.name || "-"} | </Text>
-                                                <Text strong>Tổng: {formatCurrency(order.totals?.total || order.totals)}</Text>
+                                                <Text>{t('ordered_at', { date: formatDate(order.orderDate) })} | {t('deliver_to', { name: order.delivery?.name || "-" })} | </Text>
+                                                <Text strong>{t('total')}: {formatCurrency(order.totals?.total || order.totals)}</Text>
                                                 <br/>
                                                 <Tag color="green">{order.status}</Tag>
                                             </>
                                         }
                                     />
-                                    <Text strong style={{display: 'block', marginTop: '12px'}}>Sản phẩm trong đơn:</Text>
+                                    <Text strong style={{display: 'block', marginTop: '12px'}}>{t('products_in_order')}</Text>
                                     <List
                                         // Hiển thị TẤT CẢ sản phẩm
                                         dataSource={order.items}
@@ -1017,7 +1019,7 @@ const CartProducts = () => {
                                                     className="order-product-item"
                                                     actions={[ // ⭐️ THÊM THÙNG RÁC
                                                         <Button type="primary" onClick={() => handleOpenReviewModal(order.id, item.product)} disabled={hasReviewed}>
-                                                            {hasReviewed ? "Đã đánh giá" : "Viết đánh giá"}
+                                                            {hasReviewed ? t('reviewed') : t('write_review_btn')}
                                                         </Button>,
                                                         <Button danger type="text" icon={<DeleteOutlined />} onClick={() => handleRemoveProduct(order.id, item.product)} />
                                                     ]}
@@ -1025,7 +1027,7 @@ const CartProducts = () => {
                                                     <List.Item.Meta
                                                         avatar={<Avatar src={item.product.thumbnail} />}
                                                         title={item.product.title}
-                                                        description={`Số lượng: ${item.quantity}`}
+                                                        description={`${t('quantity')}: ${item.quantity}`}
                                                     />
                                                 </List.Item>
                                             );
@@ -1040,17 +1042,17 @@ const CartProducts = () => {
                             return (
                                 <List.Item key={order.id} className="order-list-item">
                                     <List.Item.Meta
-                                        title={<Text strong>Mã đơn hàng: {order.id}</Text>}
+                                        title={<Text strong>{t('order_id', { id: order.id })}</Text>}
                                         description={
                                             <>
-                                                <Text>Đặt lúc: {formatDate(order.orderDate)} | </Text>
-                                                <Text strong>Tổng: {formatCurrency(order.totals?.total || order.totals)}</Text>
+                                                <Text>{t('ordered_at', { date: formatDate(order.orderDate) })} | </Text>
+                                                <Text strong>{t('total')}: {formatCurrency(order.totals?.total || order.totals)}</Text>
                                                 <br/>
                                                 <Tag color="gray">{order.status}</Tag>
                                             </>
                                         }
                                     />
-                                    <Text strong style={{display: 'block', marginTop: '12px'}}>Sản phẩm trong đơn:</Text>
+                                    <Text strong style={{display: 'block', marginTop: '12px'}}>{t('products_in_order')}</Text>
                                     <List
                                         dataSource={order.items}
                                         renderItem={(item) => {
@@ -1065,7 +1067,7 @@ const CartProducts = () => {
                                                     <List.Item.Meta
                                                         avatar={<Avatar src={item.product.thumbnail} />}
                                                         title={item.product.title}
-                                                        description={`Số lượng: ${item.quantity}`}
+                                                        description={`${t('quantity')}: ${item.quantity}`}
                                                     />
                                                 </List.Item>
                                             );
@@ -1080,12 +1082,12 @@ const CartProducts = () => {
                             <List.Item
                                 key={order.id}
                                 extra={<div style={{ textAlign: "right", minWidth: "100px" }}><Text strong>{formatCurrency(order.totals?.total || order.totals)}</Text><br/><Tag color="blue">{order.status}</Tag></div>}
-                                actions={statusModalKey === 'confirming' ? [<Button danger onClick={() => handleCancelOrder(order.id)} key="cancel" className="cart-order-cancel-button">Hủy đơn hàng</Button>] : []}
+                                actions={statusModalKey === 'confirming' ? [<Button danger onClick={() => handleCancelOrder(order.id)} key="cancel" className="cart-order-cancel-button">{t('cancel_order_btn')}</Button>] : []}
                             >
                                 <List.Item.Meta
                                     avatar={<Avatar src={order.items?.[0]?.product?.thumbnail} icon={<ShoppingCartOutlined />} />}
                                     title={<Text strong>{order.id}</Text>}
-                                    description={`Đặt lúc: ${formatDate(order.orderDate)} - Giao tới: ${order.delivery?.name || "-"}`}
+                                    description={`${t('ordered_at', { date: formatDate(order.orderDate) })} - ${t('deliver_to', { name: order.delivery?.name || "-" })}`}
                                 />
                             </List.Item>
                         );
@@ -1095,15 +1097,15 @@ const CartProducts = () => {
 
             {/* === MODAL ĐÁNH GIÁ SẢN PHẨM MỚI === */}
             <Modal
-                title="Đánh giá sản phẩm"
+                title={t('review_product_title')}
                 open={isReviewModalVisible}
                 onCancel={handleCloseReviewModal}
                 footer={[
                     <Button key="back" onClick={handleCloseReviewModal}>
-                        Hủy
+                        {t('cancel_btn')}
                     </Button>,
                     <Button key="submit" type="primary" loading={submittingReview} onClick={handleSubmitReview}>
-                        Gửi Đánh giá
+                        {t('submit_review_btn')}
                     </Button>,
                 ]}
             >
@@ -1118,7 +1120,7 @@ const CartProducts = () => {
                         />
                         <Title level={5}>{reviewingItem.product.title}</Title>
                         <div style={{ margin: "24px 0" }}>
-                            <Text>Bạn cảm thấy sản phẩm này thế nào?</Text>
+                            <Text>{t('how_do_you_feel')}</Text>
                             <br />
                             <Rate
                                 value={currentRating}
@@ -1129,7 +1131,7 @@ const CartProducts = () => {
                         </div>
                         <TextArea
                             rows={4}
-                            placeholder="Vui lòng chia sẻ nhận xét của bạn về sản phẩm (tối thiểu 10 ký tự)..."
+                            placeholder={t('review_placeholder')}
                             value={currentComment}
                             onChange={(e) => setCurrentComment(e.target.value)}
                         />
