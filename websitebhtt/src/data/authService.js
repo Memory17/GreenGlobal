@@ -287,3 +287,26 @@ export const loginUser = (username, password) => {
     }, 500);
   });
 };
+/**
+ * Quên m?t kh?u (Gi? l?p)
+ * Ki?m tra email, n?u t?n t?i trong local storage thì cho phép d?t l?i m?t kh?u m?i.
+ */
+export const resetPassword = (email, newPassword) => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const users = getUsersFromStorage();
+      const idx = users.findIndex(u => u.email === email);
+
+      if (idx !== -1) {
+        users[idx].password = newPassword;
+        saveUsersToStorage(users);
+        resolve({ success: true, message: 'M?t kh?u dã du?c d?t l?i thành công.' });
+      } else {
+        // N?u không tìm th?y trong local, có th? là user API ho?c không t?n t?i.
+        // V?i demo, ta ch? h? tr? user local ho?c tr? v? l?i gi? l?p.
+        reject(new Error('Email không t?n t?i trong h? th?ng.'));
+      }
+    }, 1000);
+  });
+};
+

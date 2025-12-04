@@ -7,6 +7,7 @@ import AppFooter from "./components/Footer";
 import ProductsList from "./pages/ProductsList";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
 import Profile from "./pages/Profile";
 import CartProducts from "./pages/CartProducts";
 import Checkout from "./pages/Checkout";
@@ -80,6 +81,7 @@ function AppRoutes() {
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/products" element={<ProductsList />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/cart" element={<CartProducts />} />

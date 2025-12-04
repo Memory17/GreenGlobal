@@ -1,0 +1,414 @@
+
+/* Wrapper */
+.wishlist-page-wrapper {
+  background-color: #f9f9f9;
+  min-height: 100vh;
+  padding-bottom: 60px;
+}
+
+/* Header */
+.wishlist-header-section {
+  background: #fff;
+  padding: 40px 0;
+  margin-bottom: 40px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+.wishlist-header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.back-btn {
+  border: none;
+  background: #f0f0f0;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+  background: #e6e6e6;
+  transform: translateX(-4px);
+}
+
+.wishlist-main-title {
+  margin: 0 !important;
+  font-weight: 800 !important;
+  color: #1f1f1f;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.wishlist-count {
+  font-size: 0.6em;
+  color: #ff4d4f;
+  background: #fff1f0;
+  padding: 4px 12px;
+  border-radius: 20px;
+  vertical-align: middle;
+}
+
+.wishlist-subtitle {
+  font-size: 16px;
+  color: #8c8c8c;
+  margin-top: 8px;
+  display: block;
+}
+
+/* Grid Container */
+.wishlist-grid-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Card Design */
+.wishlist-card {
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border: 1px solid #f0f0f0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.wishlist-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+  border-color: transparent;
+}
+
+/* Image Area */
+.wishlist-card-image-wrapper {
+  position: relative;
+  padding: 20px;
+  background: #fff;
+  height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.wishlist-card-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transition: transform 0.5s ease;
+}
+
+.wishlist-card:hover .wishlist-card-img {
+  transform: scale(1.08);
+}
+
+/* Remove Button */
+.wishlist-remove-btn-wrapper {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+}
+
+.wishlist-card:hover .wishlist-remove-btn-wrapper {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.wishlist-remove-btn {
+  background: #fff !important;
+  color: #ff4d4f !important;
+  border: 1px solid #ffccc7 !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.wishlist-remove-btn:hover {
+  background: #ff4d4f !important;
+  color: #fff !important;
+  border-color: #ff4d4f !important;
+}
+
+/* Discount Badge */
+.wishlist-discount-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #ff4d4f;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(255, 77, 79, 0.3);
+}
+
+/* Content Area */
+.wishlist-card-content {
+  padding: 20px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-top: 1px solid #f5f5f5;
+}
+
+.wishlist-card-info {
+  cursor: pointer;
+  margin-bottom: 16px;
+}
+
+.wishlist-card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+  margin: 0 0 8px;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color 0.2s;
+}
+
+.wishlist-card:hover .wishlist-card-title {
+  color: #1890ff;
+}
+
+.wishlist-card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.wishlist-price-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.current-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1890ff;
+}
+
+.original-price {
+  font-size: 12px;
+  color: #bfbfbf;
+  text-decoration: line-through;
+}
+
+.wishlist-rate {
+  font-size: 14px;
+  color: #fadb14;
+  line-height: 1;
+  white-space: nowrap; /* Ngăn xuống dòng */
+  flex-shrink: 0;      /* Không bị co lại khi thiếu chỗ */
+  margin-left: 8px;
+}
+
+.wishlist-rate .ant-rate-star {
+  margin-right: 3px !important;
+}
+
+/* Add to Cart Button */
+.wishlist-add-cart-btn {
+  height: 40px;
+  border-radius: 20px;
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(24, 144, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.wishlist-add-cart-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(24, 144, 255, 0.3);
+}
+
+/* Empty State */
+.wishlist-empty-container {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f9f9f9;
+}
+
+.wishlist-empty-content {
+  text-align: center;
+  background: #fff;
+  padding: 60px 40px;
+  border-radius: 24px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  max-width: 500px;
+  width: 100%;
+}
+
+.empty-heart-icon {
+  font-size: 64px;
+  color: #ffccc7;
+  margin-bottom: 24px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+
+/* --- LOVED THEME ENHANCEMENTS --- */
+
+/* 1. Card Border & Shadow (Pink/Red Theme) */
+.wishlist-card {
+  border: 1px solid #fff0f6 !important; /* Very light pink */
+}
+
+.wishlist-card:hover {
+  border-color: #ffadd2 !important; /* Stronger pink on hover */
+  box-shadow: 0 15px 30px rgba(255, 77, 79, 0.15) !important; /* Reddish glow */
+}
+
+/* 2. Image Background */
+.wishlist-card-image-wrapper {
+  background: radial-gradient(circle, #fff 50%, #fff0f6 100%) !important; /* Subtle spotlight */
+}
+
+/* 3. Heart Button (Remove) */
+.wishlist-remove-btn {
+  color: #ff4d4f !important;
+  border-color: #ffccc7 !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 0 4px 10px rgba(255, 77, 79, 0.2) !important;
+  width: 40px !important;
+  height: 40px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.wishlist-remove-btn:hover {
+  background: #ff4d4f !important;
+  color: #fff !important;
+  border-color: #ff4d4f !important;
+  transform: scale(1.1) rotate(10deg); /* Playful rotation */
+}
+
+/* 4. Add to Cart Button (Gradient) */
+.wishlist-add-cart-btn {
+  background: linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%) !important;
+  border: none !important;
+  box-shadow: 0 4px 15px rgba(255, 77, 79, 0.3) !important;
+}
+
+.wishlist-add-cart-btn:hover {
+  background: linear-gradient(135deg, #ff7875 0%, #ff4d4f 100%) !important;
+  box-shadow: 0 8px 20px rgba(255, 77, 79, 0.4) !important;
+  transform: translateY(-2px);
+}
+
+/* 5. Discount Badge (Heart Shape or softer) */
+.wishlist-discount-badge {
+  background: #ff4d4f !important;
+  border-radius: 12px 0 12px 0 !important; /* Leaf shape */
+  box-shadow: 0 4px 10px rgba(255, 77, 79, 0.3) !important;
+}
+
+
+/* --- DARK MODE SUPPORT --- */
+body.dark-mode .wishlist-page-wrapper {
+  background-color: #141414;
+}
+
+body.dark-mode .wishlist-header-section {
+  background: #1f1f1f;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+
+body.dark-mode .back-btn {
+  background: #303030;
+  color: #fff;
+}
+
+body.dark-mode .back-btn:hover {
+  background: #434343;
+}
+
+body.dark-mode .wishlist-main-title {
+  color: #fff !important;
+}
+
+body.dark-mode .wishlist-subtitle {
+  color: #a6a6a6;
+}
+
+body.dark-mode .wishlist-card {
+  background: #1f1f1f;
+  border-color: #303030 !important;
+}
+
+body.dark-mode .wishlist-card:hover {
+  border-color: #ff4d4f !important;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4) !important;
+}
+
+body.dark-mode .wishlist-card-image-wrapper {
+  background: radial-gradient(circle, #2a2a2a 50%, #1f1f1f 100%) !important;
+}
+
+body.dark-mode .wishlist-card-content {
+  border-top-color: #303030;
+}
+
+body.dark-mode .wishlist-card-title {
+  color: #fff;
+}
+
+body.dark-mode .wishlist-card:hover .wishlist-card-title {
+  color: #ff4d4f;
+}
+
+body.dark-mode .wishlist-remove-btn {
+  background: #303030 !important;
+  border-color: #434343 !important;
+}
+
+body.dark-mode .wishlist-remove-btn:hover {
+  background: #ff4d4f !important;
+  border-color: #ff4d4f !important;
+  color: #fff !important;
+}
+
+body.dark-mode .wishlist-empty-container {
+  background: #141414;
+}
+
+body.dark-mode .wishlist-empty-content {
+  background: #1f1f1f;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+body.dark-mode .wishlist-empty-content h3 {
+  color: #fff;
+}
+
+body.dark-mode .wishlist-empty-content .ant-typography-secondary {
+  color: #a6a6a6;
+}
+

@@ -12,6 +12,8 @@ import { OrderProvider } from "./context/OrderContext"; // Context (đếm count
 import { OrderHistoryProvider } from "./context/OrderHistoryContext"; // <-- THÊM MỚI (để lưu lịch sử)
 import { Web3Provider } from "./context/Web3Context"; // <-- THÊM: Web3/MetaMask Context
 import { ThemeProvider } from "./context/ThemeContext"; // <-- THÊM: Theme Context
+import { CompareProvider } from "./context/CompareContext"; // <-- THÊM: Compare Context
+import { WishlistProvider } from "./context/WishlistContext"; // <-- THÊM: Wishlist Context
 
 // 🏠 --- USER COMPONENTS ---
 // (import Header, Footer, ... giữ nguyên)
@@ -20,6 +22,7 @@ import Footer from "./components/Footer";
 import ChatBubble from "./components/ChatBubble";
 import LuckyWheel from "./components/LuckyWheel";
 import Banner from "./components/Banner";
+import CompareFloatingBar from "./components/CompareFloatingBar"; // <-- THÊM: Compare Floating Bar
 
 // 🧩 --- ADMIN COMPONENTS ---
 // (import AppHeader, AppFooter, ... giữ nguyên)
@@ -36,6 +39,7 @@ import Contact from "./pages/Contact";
 import ProductsList from "./pages/ProductsList";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword"; // <-- THÊM: Forgot Password Page
 import Profile from "./pages/Profile";
 import CartProducts from "./pages/CartProducts";
 import Checkout from "./pages/Checkout";
@@ -47,6 +51,8 @@ import Blog from "./pages/Blog";
 import OrderHistory from "./pages/OrderHistory/OrderHistory"; // <-- THÊM MỚI (trang lịch sử)
 import TermsAndPolicies from "./pages/TermsAndPolicies/TermsAndPolicies";
 import VipPackages from "./pages/VipPackages/VipPackages";
+import CompareProducts from "./pages/CompareProducts"; // <-- THÊM: Compare Page
+import Wishlist from "./pages/Wishlist"; // <-- THÊM: Wishlist Page
 
 
 const ADMIN_DARK_MODE_KEY = "admin_dark_mode"; // Key riêng cho Admin
@@ -68,6 +74,7 @@ function UserLayout() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/products" element={<ProductsList />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} /> {/* <-- THÊM: Route Forgot Password */}
         <Route path="/register" element={<Register />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/cart" element={<CartProducts />} />
@@ -76,13 +83,16 @@ function UserLayout() {
         <Route path="/product" element={<Product />} />
         <Route path="/shoppingcart" element={<ShoppingCart />} />
         <Route path="/revieworder" element={<ReviewOrder />} />
-        <Route path="/blog" element={<Blog />} /> 
+        <Route path="/blog" element={<Blog />} />
         <Route path="/order-history" element={<OrderHistory />} /> {/* <-- THÊM MỚI (route cho trang lịch sử) */}
         <Route path="/terms-and-policies" element={<TermsAndPolicies />} />
         <Route path="/vip-packages" element={<VipPackages />} />
+        <Route path="/compare" element={<CompareProducts />} /> {/* <-- THÊM: Route so sánh */}
+        <Route path="/wishlist" element={<Wishlist />} /> {/* <-- THÊM: Route Wishlist */}
       </Routes>
       <ChatBubble />
       <LuckyWheel />
+      <CompareFloatingBar /> {/* <-- THÊM: Thanh so sánh nổi */}
       <Footer />
     </>
   );
@@ -160,17 +170,21 @@ function App() {
               <OrderProvider> {/* Context (đếm count) CÓ SẴN */}
                 <OrderHistoryProvider> {/* <-- THÊM MỚI (Context để lưu lịch sử) */}
                   <Web3Provider> {/* <-- THÊM: Web3/MetaMask Provider */}
-                    <Routes>
-                      <Route
-                        path="/admin/*"
-                        element={
-                          <RequireAdminAuth>
-                            <AdminLayout />
-                          </RequireAdminAuth>
-                        }
-                      />
-                      <Route path="/*" element={<UserLayout />} />
-                    </Routes>
+                    <CompareProvider> {/* <-- THÊM: Compare Provider */}
+                      <WishlistProvider> {/* <-- THÊM: Wishlist Provider */}
+                        <Routes>
+                          <Route
+                            path="/admin/*"
+                            element={
+                              <RequireAdminAuth>
+                                <AdminLayout />
+                              </RequireAdminAuth>
+                            }
+                          />
+                          <Route path="/*" element={<UserLayout />} />
+                        </Routes>
+                      </WishlistProvider> {/* <-- THÊM: Đóng WishlistProvider */}
+                    </CompareProvider> {/* <-- THÊM: Đóng CompareProvider */}
                   </Web3Provider> {/* <-- THÊM: Đóng Web3Provider */}
                 </OrderHistoryProvider> {/* <-- THÊM MỚI (Đóng) */}
               </OrderProvider>

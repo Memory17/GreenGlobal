@@ -1076,3 +1076,32 @@ body.dark-mode .flash-cart-icon-wrapper:hover {
   background: rgba(255, 77, 79, 0.1);
   border-color: #ff4d4f;
 }
+/* --- UNIFIED ACTION ICONS --- */
+.product-card-action-icon {
+  font-size: 24px !important; /* Equal size */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-left: 12px;
+  background: transparent;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-card-action-icon:hover {
+  transform: scale(1.2);
+}
+
+.product-card-action-icon.cart {
+  color: var(--primary-color);
+}
+
+.product-card-action-icon.compare {
+  color: var(--primary-color);
+}
+
+.product-card-action-icon.wishlist {
+  color: var(--danger-color);
+}
+

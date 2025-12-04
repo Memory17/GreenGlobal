@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Spin, Button } from 'antd';
-import { ArrowRightOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { ArrowRightOutlined, LeftOutlined, RightOutlined, SwapOutlined, HeartOutlined, HeartFilled } from '@ant-design/icons';
 import { getProductsByFullUrl } from '../data/productService';
 import { useTranslation } from "react-i18next";
+import { useCompare } from '../context/CompareContext';
+import { useWishlist } from '../context/WishlistContext'; // <-- THÊM
 import '../style/ProductCatalog.css';
 
 const ProductCatalog = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { addToCompare } = useCompare();
+  const { addToWishlist, isInWishlist } = useWishlist(); // <-- THÊM
   
   // Store full lists of products
   const [productsMap, setProductsMap] = useState({
@@ -154,6 +158,30 @@ const ProductCatalog = () => {
             <Button type="primary" shape="round" size="large" className="catalog-action-btn">
                {t('view_details')} <ArrowRightOutlined />
             </Button>
+            <Button 
+              shape="circle" 
+              size="large" 
+              className="catalog-compare-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                addToCompare(product);
+              }}
+              style={{ marginLeft: 8 }}
+              icon={<SwapOutlined />}
+              title={t('add_to_compare') || "So sánh"}
+            />
+            <Button 
+              shape="circle" 
+              size="large" 
+              className="catalog-wishlist-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                addToWishlist(product);
+              }}
+              style={{ marginLeft: 8, color: isInWishlist(product.id) ? '#ff4d4f' : 'inherit' }}
+              icon={isInWishlist(product.id) ? <HeartFilled /> : <HeartOutlined />}
+              title={isInWishlist(product.id) ? (t('remove_from_wishlist') || "Bỏ yêu thích") : (t('add_to_wishlist') || "Yêu thích")}
+            />
           </div>
         </div>
       </div>

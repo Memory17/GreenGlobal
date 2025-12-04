@@ -27,6 +27,7 @@ import {
   BellOutlined, // ⭐️ THÊM: Icon chuông
   SearchOutlined,
   ArrowRightOutlined, // MỚI: Icon mũi tên
+  HeartOutlined, // <-- THÊM: Icon trái tim
 } from "@ant-design/icons";
 import { useNavigate, useLocation } from "react-router-dom"; // MỚI: Thêm useLocation
 import logo from "../assets/images/logo2.jpg";
@@ -35,6 +36,7 @@ import React, { useState, useEffect, useCallback } from "react"; // MỚI: Thêm
 import Categories from "../pages/Categories";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
+import { useWishlist } from "../context/WishlistContext"; // <-- THÊM: Wishlist Context
 import { searchProducts } from "../data/productService"; // MỚI: Import hàm search
 import "../style/Header.css";
 import { useTranslation } from "react-i18next"; // <-- IMPORT TRANSLATION
@@ -64,6 +66,7 @@ const AppHeader = () => {
   const [debouncedSearchValue, setDebouncedSearchValue] = useState(searchValue);
 
   const { cartItems } = useCart();
+  const { wishlistItems } = useWishlist(); // <-- THÊM: Lấy wishlistItems
   const { isLoggedIn, logout, currentUser } = useAuth();
 
   const totalItems = cartItems.reduce(
@@ -383,14 +386,24 @@ const AppHeader = () => {
             </Badge>
           )}
 
+          {/* ⭐️ THÊM: Icon Wishlist */}
+          <Badge count={wishlistItems.length} showZero offset={[0, 5]}>
+            <Button
+              type="text"
+              icon={<HeartOutlined style={{ fontSize: "24px" }} />}
+              onClick={() => navigate("/wishlist")}
+              className="header-action-btn"
+            />
+          </Badge>
+
           <Popover
             overlayClassName="cart-popover-overlay"
             content={
-              <div className="cart-popover-content">
+              <div className="cart-popover-content" style={{padding: "16px"}}>
                 <div className="cart-popover-header">
                   <div className="cart-popover-icon">
                     <ShoppingCartOutlined
-                      style={{ fontSize: "24px", color: "#ff4d4f" }}
+                      style={{ fontSize: "22px", color: "#ff4d4f" }}
                     />
                   </div>
                   <div style={{ flex: 1 }}>
@@ -398,46 +411,46 @@ const AppHeader = () => {
                       {t('cart')}
                     </Text>
                     <Text type="secondary" className="cart-popover-desc">
-                      {t('cart_reminder', { count: totalItems })}
+                      {totalItems > 0 
+                        ? t('cart_reminder', { count: totalItems }) 
+                        : t('empty_cart')}
                     </Text>
                   </div>
                 </div>
 
-                <Button
-                  type="primary"
-                  block
-                  size="large"
-                  icon={<ArrowRightOutlined />}
-                  style={{
-                    background:
-                      "linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%)",
-                    border: "none",
-                    borderRadius: "12px",
-                    height: "42px",
-                    fontWeight: 600,
-                    boxShadow: "0 4px 12px rgba(255, 77, 79, 0.3)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "8px",
-                  }}
-                  onClick={() => {
-                    setCartPopoverOpen(false);
-                    navigate("/cart");
-                  }}
-                >
-                  {t('checkout')}
-                </Button>
+                {totalItems > 0 && (
+                  <Button
+                    type="primary"
+                    block
+                    size="large"
+                    icon={<ArrowRightOutlined />}
+                    style={{
+                      background:
+                        "linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%)",
+                      border: "none",
+                      borderRadius: "12px",
+                      height: "42px",
+                      fontWeight: 600,
+                      boxShadow: "0 4px 12px rgba(255, 77, 79, 0.3)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "8px",
+                    }}
+                    onClick={() => {
+                      setCartPopoverOpen(false);
+                      navigate("/cart");
+                    }}
+                  >
+                    {t('checkout')}
+                  </Button>
+                )}
               </div>
             }
             title={null}
             trigger="hover"
-            open={cartPopoverOpen && totalItems > 0}
-            onOpenChange={(visible) => {
-              if (totalItems > 0) {
-                setCartPopoverOpen(visible);
-              }
-            }}
+            open={cartPopoverOpen}
+            onOpenChange={(visible) => setCartPopoverOpen(visible)}
             placement="bottomRight"
             overlayStyle={{ paddingTop: "8px" }}
           >

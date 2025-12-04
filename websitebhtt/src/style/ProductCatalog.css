@@ -323,3 +323,18 @@ body.dark-mode .catalog-nav-btn {
 body.dark-mode .catalog-nav-btn:hover {
   background: #1f1f1f;
 }
+
+/* --- ICON BUTTON STYLES (No Border) --- */
+.catalog-compare-btn,
+.catalog-wishlist-btn {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.catalog-compare-btn:hover,
+.catalog-wishlist-btn:hover {
+  background: rgba(0,0,0,0.05) !important;
+  transform: scale(1.1);
+}
+

@@ -1,33 +1,42 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
+import { useAuth } from "./AuthContext"; // <-- Import useAuth
 
 // --- KEY ĐỂ LƯU TRỮ TRONG LOCALSTORAGE ---
-const CART_STORAGE_KEY = 'shopping_cart_items';
-
-// --- HÀM HELPER ĐỂ LẤY GIỎ HÀNG TỪ LOCALSTORAGE ---
-const getInitialCartState = () => {
-  try {
-    const storedCart = localStorage.getItem(CART_STORAGE_KEY);
-    // Nếu có dữ liệu trong localStorage, parse nó, nếu không, trả về mảng rỗng
-    return storedCart ? JSON.parse(storedCart) : [];
-  } catch (error) {
-    console.error("Lỗi khi đọc giỏ hàng từ localStorage:", error);
-    // Nếu có lỗi (ví dụ dữ liệu bị hỏng), trả về mảng rỗng để tránh crash
-    return [];
-  }
-};
+// const CART_STORAGE_KEY = 'shopping_cart_items'; // <-- BỎ KEY TĨNH
 
 // 1. Tạo Context
 const CartContext = createContext();
 
 // 2. Tạo Provider Component
 export const CartProvider = ({ children }) => {
-  // ⭐ THAY ĐỔI 1: Khởi tạo state từ localStorage thay vì mảng rỗng
-  const [cartItems, setCartItems] = useState(getInitialCartState);
+  const { currentUser } = useAuth(); // <-- Lấy currentUser
 
-  // ⭐ THAY ĐỔI 2: Sử dụng useEffect để lưu vào localStorage mỗi khi cartItems thay đổi
+  // Hàm helper lấy key theo user
+  const getCartKey = (user) => {
+    const userId = user ? (user.username || user.email) : 'guest';
+    return `shopping_cart_items_${userId}`;
+  };
+
+  // Khởi tạo state
+  const [cartItems, setCartItems] = useState(() => {
+    const key = getCartKey(currentUser);
+    const stored = localStorage.getItem(key);
+    return stored ? JSON.parse(stored) : [];
+  });
+
+  // Effect 1: Tải lại giỏ hàng khi user thay đổi
   useEffect(() => {
-    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems));
-  }, [cartItems]); // Hook này sẽ chạy mỗi khi `cartItems` có sự thay đổi
+    const key = getCartKey(currentUser);
+    const stored = localStorage.getItem(key);
+    setCartItems(stored ? JSON.parse(stored) : []);
+  }, [currentUser]);
+
+  // Effect 2: Lưu giỏ hàng khi cartItems thay đổi
+  // LƯU Ý: Không thêm currentUser vào dependency để tránh lưu đè dữ liệu cũ sang user mới khi chuyển đổi
+  useEffect(() => {
+    const key = getCartKey(currentUser);
+    localStorage.setItem(key, JSON.stringify(cartItems));
+  }, [cartItems]); // eslint-disable-line react-hooks/exhaustive-deps
   // Hàm thêm sản phẩm vào giỏ (hỗ trợ quantity tuỳ chọn)
   const addToCart = (product, qty = 1) => {
     const quantityToAdd = Math.max(1, Number(qty) || 1);

@@ -1,0 +1,146 @@
+.compare-page-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 80vh;
+}
+
+.compare-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.compare-empty-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+}
+
+.compare-header-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0;
+}
+
+.compare-actions {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 8px;
+}
+
+.product-name-link {
+  margin-top: 8px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.product-name-link:hover {
+  color: #1890ff;
+}
+
+.compare-description {
+  max-height: 100px;
+  overflow-y: auto;
+  font-size: 13px;
+  color: #666;
+}
+
+.compare-table .ant-table-cell {
+  vertical-align: top;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .compare-page-container {
+    padding: 12px;
+  }
+}
+
+.compare-add-to-cart-btn {
+  margin-top: 12px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.compare-add-to-cart-btn:hover {
+  transform: scale(1.25);
+  background: transparent !important;
+}
+
+
+/* --- RESPONSIVE TABLE STYLES (FIXED) --- */
+
+/* Mobile View: Force Horizontal Scroll with Sticky Column */
+@media (max-width: 768px) {
+  .compare-page-container {
+    padding: 12px;
+    overflow-x: hidden; /* Prevent page scroll */
+  }
+
+  /* Force table to scroll horizontally */
+  .compare-table .ant-table-content {
+    overflow-x: auto !important;
+  }
+
+  .compare-table table {
+    width: max-content !important; /* Ensure table expands */
+    min-width: 100%;
+  }
+
+  /* Sticky First Column (Attribute Name) */
+  .compare-table .ant-table-cell-fix-left,
+  .compare-table .ant-table-cell-fix-left-last {
+    position: sticky !important;
+    left: 0 !important;
+    z-index: 3 !important;
+    background: #fff !important;
+    box-shadow: 4px 0 8px rgba(0,0,0,0.05) !important;
+    border-right: 1px solid #f0f0f0 !important;
+  }
+
+  /* Ensure header cells align */
+  .compare-table thead > tr > th {
+    white-space: nowrap;
+    padding: 12px !important;
+  }
+
+  /* Ensure body cells align */
+  .compare-table tbody > tr > td {
+    padding: 12px !important;
+    vertical-align: middle;
+  }
+
+  /* Fix Image Size on Mobile */
+  .compare-header-cell .ant-image-img {
+    width: 60px !important;
+    height: 60px !important;
+  }
+
+  .product-name-link .ant-typography {
+    font-size: 12px;
+    max-width: 120px !important;
+    white-space: normal; /* Allow wrapping */
+  }
+
+  /* Hide "Remove" text, show icon only */
+  .compare-actions .ant-btn span {
+    display: none;
+  }
+  
+  .compare-actions .ant-btn {
+    padding: 4px !important;
+    height: auto !important;
+  }
+}
+

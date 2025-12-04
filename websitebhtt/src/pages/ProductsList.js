@@ -26,6 +26,9 @@ import {
   DollarOutlined,
   StarOutlined,
   CloseCircleFilled,
+  SwapOutlined, // <-- THÊM: Icon So sánh
+  HeartOutlined, // <-- THÊM: Icon trái tim rỗng
+  HeartFilled, // <-- THÊM: Icon trái tim đặc
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 
@@ -36,6 +39,7 @@ import HotDeal from "../components/HotDeal"; // Import HotDeal component
 import BestSellers from "../components/BestSellers"; // Import BestSellers component
 import TopRated from "../components/TopRated"; // Import TopRated component
 import ProductCatalog from "../components/ProductCatalog"; // Import ProductCatalog component
+import { useWishlist } from "../context/WishlistContext"; // <-- THÊM: Wishlist Context
 import {
   getProductCategories,
   // getProductsByFullUrl, // Không cần dùng hàm này nữa nếu lọc trên client
@@ -44,6 +48,7 @@ import {
 import { getMergedProducts } from "../API";
 import { useCart } from "../context/CartContext"; 
 import { useTranslation } from "react-i18next"; // Import useTranslation
+import { useCompare } from "../context/CompareContext"; // <-- THÊM: Import useCompare
 
 const { Title } = Typography;
 const { Meta } = Card;
@@ -51,6 +56,8 @@ const { Meta } = Card;
 function Product() {
   const { t } = useTranslation(); // Initialize hook
   const { addToCart } = useCart();
+  const { addToCompare } = useCompare(); // <-- THÊM: useCompare hook
+  const { addToWishlist, isInWishlist } = useWishlist(); // <-- THÊM: useWishlist hook
   const navigate = useNavigate();
 
   const [categories, setCategories] = useState([]);
@@ -508,9 +515,39 @@ function Product() {
 
                   <Tooltip title={t('add_to_cart')}>
                     <ShoppingCartOutlined
-                      className="add-to-cart-icon"
+                      className="product-card-action-icon cart"
                       onClick={(e) => handleAddToCartClick(e, product)}
                     />
+                  </Tooltip>
+
+                  <Tooltip title={t('add_to_compare') || "So sánh"}>
+                    <SwapOutlined
+                      className="product-card-action-icon compare"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        addToCompare(product);
+                      }}
+                    />
+                  </Tooltip>
+
+                  <Tooltip title={isInWishlist(product.id) ? (t('remove_from_wishlist') || "Bỏ yêu thích") : (t('add_to_wishlist') || "Yêu thích")}>
+                    {isInWishlist(product.id) ? (
+                      <HeartFilled
+                        className="product-card-action-icon wishlist"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addToWishlist(product);
+                        }}
+                      />
+                    ) : (
+                      <HeartOutlined
+                        className="product-card-action-icon wishlist"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addToWishlist(product);
+                        }}
+                      />
+                    )}
                   </Tooltip>
                 </div>
               </Card>

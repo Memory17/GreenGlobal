@@ -26,11 +26,17 @@ import {
   MoneyCollectOutlined,
   UserOutlined,
   SendOutlined, // 👈 THÊM
+  SwapOutlined, // 👈 THÊM: Icon So sánh
+  HeartOutlined, // <-- THÊM
+  HeartFilled, // <-- THÊM
 } from "@ant-design/icons";
+import { useWishlist } from "../context/WishlistContext"; // <-- THÊM
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useCart } from "../context/CartContext"; 
 import { useAuth } from "../context/AuthContext"; // 👈 THÊM
 import { useTranslation, Trans } from "react-i18next"; // Import useTranslation
+import { useCompare } from "../context/CompareContext"; // 👈 THÊM: Import useCompare
+
 // import { useOrderHistory } from "../context/OrderHistoryContext"; // 👈 BỎ: Không dùng nữa
 
 // 🐞 FIX: getProductById was not found in '../API'. Adding a mock implementation here.
@@ -48,6 +54,8 @@ const ProductDetail = () => {
   const location = useLocation(); 
   const { id: productId } = useParams(); // 👈 Lấy ID từ URL
   const { currentUser } = useAuth(); // 👈 Lấy thông tin user
+  const { addToCompare } = useCompare(); // 👈 THÊM: useCompare hook
+  const { addToWishlist, isInWishlist } = useWishlist(); // 👈 THÊM: useWishlist hook
   // const { addAdminReply } = useOrderHistory(); // 👈 BỎ: Tự xử lý reply tại đây để hỗ trợ cả user thường
   
   const [product, setProduct] = useState(null); // ⭐️ SỬA: Luôn bắt đầu với null
@@ -446,6 +454,28 @@ const ProductDetail = () => {
                 onClick={handleBuyNow}
               >
                 {t('buy_now')}
+              </Button>
+            </Col>
+          </Row>
+
+          {/* === NÚT SO SÁNH & YÊU THÍCH === */}
+          <Row style={{ marginTop: '16px' }} gutter={16}>
+            <Col span={12}>
+              <Button 
+                block 
+                icon={<SwapOutlined />} 
+                onClick={() => addToCompare(product)}
+              >
+                {t('add_to_compare') || "So sánh"}
+              </Button>
+            </Col>
+            <Col span={12}>
+              <Button 
+                block 
+                icon={isInWishlist(product.id) ? <HeartFilled style={{ color: '#ff4d4f' }} /> : <HeartOutlined />} 
+                onClick={() => addToWishlist(product)}
+              >
+                {isInWishlist(product.id) ? (t('remove_from_wishlist') || "Bỏ yêu thích") : (t('add_to_wishlist') || "Yêu thích")}
               </Button>
             </Col>
           </Row>
