@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { FloatButton, Card, List, Avatar, Typography, Input, Badge } from 'antd';
+import { FloatButton, Card, List, Avatar, Typography, Input } from 'antd';
 import {
   CloseOutlined,
   SendOutlined,
@@ -533,29 +533,29 @@ const ChatBubble = () => {
         </div>
       )}
 
-      <Badge count={unreadCount} offset={[12, -6]} size="small">
-        <FloatButton
-          icon={isMessengerOpen ? <CloseOutlined /> : <WechatOutlined />}
-          type="primary"
-          style={{
-            right: 24,
-            bottom: calcBottom(88),
-            zIndex: 1300,
-            transform: 'scale(1.5)'
-          }}
-          onClick={toggleMessenger}
-          tooltip={<div>{isMessengerOpen ? 'Đóng Messenger' : 'Mở Messenger'}</div>}
-        />
-      </Badge>
+      <FloatButton
+        className="chat-float-button"
+        icon={isMessengerOpen ? <CloseOutlined /> : <WechatOutlined />}
+        type="primary"
+        style={{
+          right: 14,
+          bottom: calcBottom(48),
+          zIndex: 1300,
+        }}
+        badge={{ count: unreadCount, offset: [2, 5], size: 'small' }}
+        onClick={toggleMessenger}
+        tooltip={<div>{isMessengerOpen ? 'Đóng Messenger' : 'Mở Messenger'}</div>}
+      />
 
       <FloatButton
+        className="chat-float-button"
         icon={isPopupVisible ? <CloseOutlined /> : <CustomerServiceOutlined />}
         type="primary"
         style={{
-          right: 24,
-          bottom: calcBottom(24),
+          right: 14,
+          bottom: calcBottom(-20),
           zIndex: 1300,
-          transform: 'scale(1.5)',
+          // transform removed, handled in CSS
         }}
         onClick={togglePopup}
         tooltip={<div>{isPopupVisible ? 'Đóng hỗ trợ' : 'Mở hỗ trợ'}</div>}

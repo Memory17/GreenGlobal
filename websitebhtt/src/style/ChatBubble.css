@@ -1209,3 +1209,33 @@
     height: 75vh;
   }
 }
+
+/* --- Chat Float Button Animation (Match LuckyWheel) --- */
+
+@keyframes chatGentleFloat {
+  0%,
+  100% {
+    transform: scale(1.5) translateY(0);
+  }
+  50% {
+    transform: scale(1.5) translateY(-3px);
+  }
+}
+
+.chat-float-button {
+  /* Base scale */
+  transform: scale(1.5);
+  /* Float Animation */
+  animation: chatGentleFloat 3s ease-in-out infinite;
+  transition: transform 0.3s ease !important; /* Ensure transition works */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Match LuckyWheel shadow intensity if needed, though Antd has its own */
+}
+
+.chat-float-button:hover {
+  /* Lift up and scale slightly more (1.5 * 1.1 = 1.65) */
+  transform: scale(1.65) translateY(-5px) !important;
+}
+
+/* Ensure the badge scales with the button or stays positioned correctly */
+/* Antd Badge wraps the element. If the element transforms, the badge might need adjustment if it's not inside the transform context.
+   Usually Antd Badge works fine. */
