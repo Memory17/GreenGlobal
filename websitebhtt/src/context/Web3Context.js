@@ -337,15 +337,32 @@ export const Web3Provider = ({ children }) => {
       }
     };
 
-    window.ethereum.on('accountsChanged', handleAccountsChanged);
-    window.ethereum.on('chainChanged', handleChainChanged);
+    try {
+      window.ethereum.on('accountsChanged', handleAccountsChanged);
+      window.ethereum.on('chainChanged', handleChainChanged);
+    } catch (error) {
+      console.warn('[Web3] Failed to add event listeners:', error);
+    }
 
     // Kiểm tra nếu đã kết nối trước đó
     const checkConnection = async () => {
+      if (!isMetaMaskInstalled()) return;
+      
       try {
-        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+        // Thêm delay nhỏ để đảm bảo MetaMask đã inject xong
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Kiểm tra xem có thể gọi request không
+        if (!window.ethereum || !window.ethereum.request) return;
+
+        const accounts = await window.ethereum.request({ method: 'eth_accounts' })
+          .catch(err => {
+            console.warn('[Web3] Failed to get accounts (likely locked or not ready):', err);
+            return [];
+          });
+
         console.debug('[Web3] checkConnection -> accounts', accounts, 'isUserDisconnected', isUserDisconnected);
-        if (accounts.length > 0 && !isUserDisconnected) {
+        if (accounts && accounts.length > 0 && !isUserDisconnected) {
           const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
           const web3Signer = web3Provider.getSigner();
           const network = await web3Provider.getNetwork();
@@ -357,16 +374,20 @@ export const Web3Provider = ({ children }) => {
           await fetchBalance(accounts[0], web3Provider);
         }
       } catch (error) {
-        console.error('Error checking wallet connection:', error);
+        console.warn('Error checking wallet connection (handled):', error);
       }
     };
 
     checkConnection();
 
     return () => {
-      if (window.ethereum.removeListener) {
-        window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
-        window.ethereum.removeListener('chainChanged', handleChainChanged);
+      try {
+        if (window.ethereum && window.ethereum.removeListener) {
+          window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+          window.ethereum.removeListener('chainChanged', handleChainChanged);
+        }
+      } catch (error) {
+        console.warn('[Web3] Failed to remove event listeners:', error);
       }
     };
   }, [account, provider, fetchBalance, isUserDisconnected]);

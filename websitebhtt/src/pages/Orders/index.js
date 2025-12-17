@@ -808,11 +808,8 @@ function Orders() {
                 width={screenSize === 'xs' ? '100%' : 380}
                 /* Ensure Drawer is mounted to body and above other overlays so it's interactable */
                 getContainer={() => document.body}
-                zIndex={99999}
-                style={{ zIndex: 99999 }}
-                wrapClassName="orders-quickview-drawer"
+                rootClassName="orders-quickview-drawer"
                 maskClosable={true}
-                maskStyle={{ backgroundColor: 'rgba(0,0,0,0.45)', zIndex: 99998 }}
             >
                 {quickViewOrder && (
                     <Space direction="vertical" size={14} style={{ width: '100%' }}>
@@ -957,16 +954,18 @@ function Orders() {
                 }
 
                 /* Force Drawer wrapper above all other elements and enable pointer events */
-                .orders-quickview-drawer,
-                .orders-quickview-drawer .ant-drawer,
-                .orders-quickview-drawer .ant-drawer-content-wrapper {
-                    z-index: 2147483647 !important;
-                    pointer-events: auto !important;
+                .orders-quickview-drawer {
+                    z-index: 99999 !important;
+                }
+                
+                .orders-quickview-drawer .ant-drawer-mask {
+                    z-index: 99999 !important;
+                    background-color: rgba(0, 0, 0, 0.45) !important;
                 }
 
-                .orders-quickview-drawer .ant-drawer-mask {
-                    z-index: 2147483646 !important;
-                    pointer-events: auto !important;
+                .orders-quickview-drawer .ant-drawer-content-wrapper {
+                    z-index: 100000 !important;
+                    box-shadow: -6px 0 16px -8px rgba(0,0,0,0.08), -9px 0 28px 0 rgba(0,0,0,0.05), -12px 0 48px 16px rgba(0,0,0,0.03) !important;
                 }
 
                 /* If there's a transformed ancestor creating a new stacking context, ensure Drawer is fixed to viewport */
